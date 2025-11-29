@@ -1,3 +1,5 @@
+<img width="192" height="192" alt="NotiFilter app icon" src="https://github.com/user-attachments/assets/cfc0215b-e55c-4ce6-ab0d-851ce3b52a27" />
+
 # NotiFilter
 
 **Silence annoying notifications**
@@ -16,6 +18,6 @@ filters.
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
 - **Free, open-source & private**
     - No ads, subscriptions, or in-app purchases 🆓
-    - Licensed under the [GPLv3](https://github.com/BURG3R5/notifilter/blob/master/LICENSE) 📃
+    - Licensed under the [GPLv3](https://github.com/BURG3R5/notifilter/blob/dev/LICENSE) 📃
     - Fully offline; your data never leaves your device 🔐
 - **Lightweight** - Runs in the background with minimal battery and memory usage ⏩
