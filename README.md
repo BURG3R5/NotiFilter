@@ -7,9 +7,7 @@ filters.
 
 ## Screenshots
 
-![NotiFilter screenshot: filters screen](https://github.com/BURG3R5/notifilter/blob/main/screenshots/NotiFilter-filters.png)
-
-![NotiFilter screenshot: block history](https://github.com/BURG3R5/notifilter/blob/main/screenshots/NotiFilter-block-history.png)
+<img alt="NotiFilter screenshot: filters screen" src="https://github.com/BURG3R5/notifilter/blob/dev/screenshots/NotiFilter-filters.png" width=30%> <img alt="NotiFilter screenshot: block history" src="https://github.com/BURG3R5/notifilter/blob/dev/screenshots/NotiFilter-block-history.png" width=30%>
 
 ## Features
 
