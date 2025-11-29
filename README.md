@@ -5,6 +5,12 @@
 NotiFilter listens to all device notifications and quietly dismisses the ones that match your
 filters.
 
+## Screenshots
+
+![NotiFilter screenshot: filters screen](https://github.com/BURG3R5/notifilter/blob/main/screenshots/NotiFilter-filters.png)
+
+![NotiFilter screenshot: block history](https://github.com/BURG3R5/notifilter/blob/main/screenshots/NotiFilter-block-history.png)
+
 ## Features
 
 - **Filters** - Use [regex](https://regexr.com/) to precisely target annoying notifications from
