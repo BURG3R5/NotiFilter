@@ -21,7 +21,12 @@ fun Navigator(controller: NavHostController) {
             else -> Routes.PERMISSION.name
         }
     ) {
-        composable(Routes.PERMISSION.name) { PermissionScreen { controller.navigate(Routes.FILTERS.name) } }
+        composable(Routes.PERMISSION.name) {
+            PermissionScreen {
+                controller.popBackStack()
+                controller.navigate(Routes.FILTERS.name)
+            }
+        }
         composable(Routes.FILTERS.name) { FiltersScreen({ controller.navigate(Routes.NOTIFICATIONS.name) }) }
         composable(Routes.NOTIFICATIONS.name) { NotificationsScreen({ controller.popBackStack() }) }
     }
