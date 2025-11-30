@@ -3,6 +3,7 @@ package co.adityarajput.notifilter.views
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
@@ -23,8 +24,10 @@ fun Navigator(controller: NavHostController) {
     ) {
         composable(Routes.PERMISSION.name) {
             PermissionScreen {
-                controller.popBackStack()
-                controller.navigate(Routes.FILTERS.name)
+                controller.navigate(
+                    Routes.FILTERS.name,
+                    NavOptions.Builder().setPopUpTo(Routes.PERMISSION.name, true).build(),
+                )
             }
         }
         composable(Routes.FILTERS.name) { FiltersScreen({ controller.navigate(Routes.NOTIFICATIONS.name) }) }
