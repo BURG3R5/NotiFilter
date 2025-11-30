@@ -14,5 +14,6 @@
     <string name="delete">Delete</string>
     <string name="block_history">Block History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
-    <string name="onboarding_info">NotiFilter runs a low-impact background service that listens to all notifications and dismisses them based on your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the network.</string>
+    <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all notifications and dismisses them based on your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
+    <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.</string>
 </resources>

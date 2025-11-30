@@ -1,12 +1,13 @@
 package co.adityarajput.notifilter.views.screens
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,21 +17,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.os.HandlerCompat.postDelayed
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
+import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
 
 @Composable
 fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
     val context = LocalContext.current
+    var hasRequiredPermission by remember { mutableStateOf(false) }
 
     val watchPermissions = object : Runnable {
         override fun run() {
-            val isPermissionGranted = context.hasNotificationListenerPermission()
-            if (isPermissionGranted) {
-                goToFiltersScreen()
-            } else {
-                postDelayed(Handler(Looper.getMainLooper()), this, null, 1000)
-            }
+            hasRequiredPermission = context.hasNotificationListenerPermission()
+            val hasOptionalPermission = context.hasUnrestrictedBackgroundUsagePermission()
+            if (hasRequiredPermission && hasOptionalPermission) goToFiltersScreen()
+            else postDelayed(Handler(Looper.getMainLooper()), this, null, 1000)
         }
     }
 
@@ -47,16 +48,37 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Text(stringResource(R.string.onboarding_info))
-                Button(
-                    {
-                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                        context.startActivity(intent)
-                        postDelayed(Handler(Looper.getMainLooper()), watchPermissions, null, 1000)
-                    },
-                    Modifier.padding(dimensionResource(R.dimen.padding_large)),
-                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                ) { Text("Grant permission") }
+                if (!hasRequiredPermission) {
+                    Text(stringResource(R.string.onboarding_info_1))
+                    Button(
+                        {
+                            val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                            context.startActivity(intent)
+                            postDelayed(
+                                Handler(Looper.getMainLooper()),
+                                watchPermissions,
+                                null,
+                                1000
+                            )
+                        },
+                        Modifier.padding(dimensionResource(R.dimen.padding_large)),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) { Text("Grant notification access") }
+                } else {
+                    Text(stringResource(R.string.onboarding_info_2))
+                    Button(
+                        {
+                            val intent = Intent(
+                                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                Uri.parse("package:${context.packageName}"),
+                            )
+                            context.startActivity(intent)
+                        },
+                        Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) { Text("Disable optimization") }
+                    TextButton(goToFiltersScreen) { Text("Skip") }
+                }
             }
         }
     }
