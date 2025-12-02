@@ -1,0 +1,21 @@
+name: ensure version updated
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  ensure-version-updated:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check diff
+        run: git diff HEAD~...HEAD -- app/build.gradle.kts | grep -E '^\+' | grep -q 'versionName' || (echo "No version update found in app/build.gradle.kts" && exit 1)
