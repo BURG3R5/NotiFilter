@@ -11,14 +11,20 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="delete_filter">Delete filter</string>
+    <string name="delete_confirmation">Are you sure you want to delete this filter?</string>
     <string name="delete">Delete</string>
     <string name="block_history">Block History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
     <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all notifications and dismisses them based on your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
+    <string name="grant_permission">Grant permission</string>
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.</string>
+    <string name="disable_optimization">Disable optimization</string>
+    <string name="skip">Skip</string>
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly dismisses the ones that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a>]]></string>
     <string name="app_permissions"><![CDATA[Permissions used: <ul><li>BIND_NOTIFICATION_LISTENER_SERVICE - to listen and react to notifications</li><li>QUERY_ALL_PACKAGES - to search through installed apps while adding filters</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (optional) - to prevent app from being killed in the background</li></ul>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
+    <string name="alttext_app_logo">App logo</string>
+    <string name="alttext_back_button">Back button</string>
 </resources>

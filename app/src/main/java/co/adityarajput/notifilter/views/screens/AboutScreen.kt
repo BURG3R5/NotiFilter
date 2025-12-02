@@ -46,7 +46,13 @@ fun AboutScreen(goBack: () -> Unit) {
                                 .size(80.dp)
                                 .background(MaterialTheme.colorScheme.primary, shape = CircleShape),
                             Alignment.Center,
-                        ) { Icon(NotificationsOff, "App logo", Modifier.size(50.dp)) }
+                        ) {
+                            Icon(
+                                NotificationsOff,
+                                stringResource(R.string.alttext_app_logo),
+                                Modifier.size(50.dp),
+                            )
+                        }
                     }
                     Text(
                         buildAnnotatedString {

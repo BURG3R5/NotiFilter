@@ -273,7 +273,7 @@ private fun DeleteFilterDialog(
     AlertDialog(
         hideDialog,
         title = { Text(stringResource(R.string.delete_filter)) },
-        text = { Text("Are you sure you want to delete this filter?") },
+        text = { Text(stringResource(R.string.delete_confirmation)) },
         confirmButton = {
             TextButton(
                 {
