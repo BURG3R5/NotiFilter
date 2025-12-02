@@ -16,7 +16,7 @@ import co.adityarajput.notifilter.views.icons.NotificationsOff
 fun AppBar(
     title: String,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit = {},
+    leadingIconOnClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
@@ -35,18 +35,16 @@ fun AppBar(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
         navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
+            IconButton(leadingIconOnClick) {
+                if (canNavigateBack) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back button"
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        stringResource(R.string.alttext_back_button)
                     )
-                }
-            } else {
-                IconButton(onClick = { }) {
+                } else {
                     Icon(
-                        imageVector = NotificationsOff,
-                        contentDescription = "App logo"
+                        NotificationsOff,
+                        stringResource(R.string.alttext_app_logo)
                     )
                 }
             }

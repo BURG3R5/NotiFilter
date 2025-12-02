@@ -63,7 +63,7 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         },
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    ) { Text("Grant notification access") }
+                    ) { Text(stringResource(R.string.grant_permission)) }
                 } else {
                     Text(stringResource(R.string.onboarding_info_2))
                     Button(
@@ -76,8 +76,8 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         },
                         Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    ) { Text("Disable optimization") }
-                    TextButton(goToFiltersScreen) { Text("Skip") }
+                    ) { Text(stringResource(R.string.disable_optimization)) }
+                    TextButton(goToFiltersScreen) { Text(stringResource(R.string.skip)) }
                 }
             }
         }

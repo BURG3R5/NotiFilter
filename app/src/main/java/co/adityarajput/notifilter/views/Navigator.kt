@@ -7,6 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
+import co.adityarajput.notifilter.views.screens.AboutScreen
 import co.adityarajput.notifilter.views.screens.FiltersScreen
 import co.adityarajput.notifilter.views.screens.NotificationsScreen
 import co.adityarajput.notifilter.views.screens.PermissionScreen
@@ -30,8 +31,14 @@ fun Navigator(controller: NavHostController) {
                 )
             }
         }
-        composable(Routes.FILTERS.name) { FiltersScreen({ controller.navigate(Routes.NOTIFICATIONS.name) }) }
+        composable(Routes.FILTERS.name) {
+            FiltersScreen(
+                { controller.navigate(Routes.NOTIFICATIONS.name) },
+                { controller.navigate(Routes.ABOUT.name) },
+            )
+        }
         composable(Routes.NOTIFICATIONS.name) { NotificationsScreen({ controller.popBackStack() }) }
+        composable(Routes.ABOUT.name) { AboutScreen({ controller.popBackStack() }) }
     }
 }
 
@@ -39,4 +46,5 @@ enum class Routes() {
     PERMISSION,
     FILTERS,
     NOTIFICATIONS,
+    ABOUT,
 }

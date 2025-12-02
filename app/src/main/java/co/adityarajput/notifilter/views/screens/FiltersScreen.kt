@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +33,7 @@ import java.lang.Integer.min
 @Composable
 fun FiltersScreen(
     goToNotificationsScreen: () -> Unit,
+    goToAboutScreen: () -> Unit,
     viewModel: FiltersViewModel = viewModel(factory = Provider.Factory),
 ) {
     val filtersState = viewModel.filtersState.collectAsState()
@@ -49,7 +49,8 @@ fun FiltersScreen(
             AppBar(
                 stringResource(R.string.app_name),
                 false,
-                actions = {
+                goToAboutScreen,
+                {
                     IconButton(goToNotificationsScreen) {
                         Icon(
                             History,
@@ -219,7 +220,7 @@ private fun AddFilterDialog(
                                 stringResource(R.string.regexr_link),
                                 TextLinkStyles(
                                     SpanStyle(
-                                        Color(0xFF70ACFF),
+                                        MaterialTheme.colorScheme.primary,
                                         textDecoration = TextDecoration.Underline,
                                     )
                                 )
@@ -272,7 +273,7 @@ private fun DeleteFilterDialog(
     AlertDialog(
         hideDialog,
         title = { Text(stringResource(R.string.delete_filter)) },
-        text = { Text("Are you sure you want to delete this filter?") },
+        text = { Text(stringResource(R.string.delete_confirmation)) },
         confirmButton = {
             TextButton(
                 {
