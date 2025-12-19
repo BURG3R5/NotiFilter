@@ -1,4 +1,4 @@
-<img width="192" height="192" alt="NotiFilter app icon" src="https://github.com/user-attachments/assets/cfc0215b-e55c-4ce6-ab0d-851ce3b52a27" />
+<img width="192" height="192" alt="NotiFilter app icon" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/icon.png" />
 
 # NotiFilter
 
@@ -9,7 +9,7 @@ filters.
 
 ## Screenshots
 
-<img alt="NotiFilter screenshot: filters screen" src="https://github.com/BURG3R5/notifilter/blob/dev/screenshots/NotiFilter-filters.png" width=30%> <img alt="NotiFilter screenshot: block history" src="https://github.com/BURG3R5/notifilter/blob/dev/screenshots/NotiFilter-block-history.png" width=30%>
+<img alt="NotiFilter screenshot: filters screen" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/1.png" width=30%> <img alt="NotiFilter screenshot: block history" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/2.png" width=30%>
 
 ## Features
 
