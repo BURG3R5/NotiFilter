@@ -25,6 +25,7 @@
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a>]]></string>
     <string name="app_permissions"><![CDATA[Permissions used: <ul><li>BIND_NOTIFICATION_LISTENER_SERVICE - to listen and react to notifications</li><li>QUERY_ALL_PACKAGES - to search through installed apps while adding filters</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (optional) - to prevent app from being killed in the background</li></ul>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
+    <string name="app_version">1.0.2</string>
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
 </resources>
