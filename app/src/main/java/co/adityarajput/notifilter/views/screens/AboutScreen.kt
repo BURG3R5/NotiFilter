@@ -2,7 +2,9 @@ package co.adityarajput.notifilter.views.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +31,7 @@ fun AboutScreen(goBack: () -> Unit) {
         ) {
             Column(
                 Modifier
-                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(R.dimen.padding_small)),
                 Arrangement.Top,
                 Alignment.CenterHorizontally,
@@ -90,7 +92,6 @@ fun AboutScreen(goBack: () -> Unit) {
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                Spacer(Modifier.weight(1f))
                 Column(
                     Modifier
                         .fillMaxWidth(),
@@ -99,7 +100,10 @@ fun AboutScreen(goBack: () -> Unit) {
                 ) {
                     Text(
                         "v${stringResource(R.string.app_version)}",
-                        Modifier.padding(bottom = dimensionResource(R.dimen.padding_small)),
+                        Modifier.padding(
+                            top = dimensionResource(R.dimen.padding_large),
+                            bottom = dimensionResource(R.dimen.padding_small),
+                        ),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                     Text(
