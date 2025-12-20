@@ -91,12 +91,17 @@ fun AboutScreen(goBack: () -> Unit) {
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                Box(
+                Column(
                     Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth(),
+                    Arrangement.Bottom,
+                    Alignment.CenterHorizontally,
                 ) {
+                    Text(
+                        "v${stringResource(R.string.app_version)}",
+                        Modifier.padding(bottom = dimensionResource(R.dimen.padding_small)),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                     Text(
                         AnnotatedString.fromHtml(
                             stringResource(R.string.dev_credit),
@@ -107,7 +112,7 @@ fun AboutScreen(goBack: () -> Unit) {
                                 ),
                             ),
                         ),
-                        Modifier.padding(dimensionResource(R.dimen.padding_large)),
+                        Modifier.padding(bottom = dimensionResource(R.dimen.padding_large)),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
