@@ -12,11 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,8 +99,10 @@ fun FiltersScreen(
                 ) { filter -> FilterCard(filter) { filterToDelete = it } }
             }
             if (filterToDelete != null)
-                DeleteFilterDialog(
-                    { viewModel.deleteFilter(filterToDelete!!) },
+                EditFilterDialog(
+                    filterToDelete!!.enabled,
+                    { viewModel.toggleEnabled(filterToDelete!!) },
+                    { viewModel.delete(filterToDelete!!) },
                     { filterToDelete = null },
                 )
         }
@@ -133,7 +132,15 @@ private fun FilterCard(filter: Filter, onClick: (Filter) -> Unit) {
             Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
             Text(
-                "/${filter.queryPattern}/",
+                buildAnnotatedString {
+                    append("/${filter.queryPattern}/")
+                    if (!filter.enabled) {
+                        append(" ")
+                        withStyle(MaterialTheme.typography.labelSmall.toSpanStyle()) {
+                            append("(${stringResource(R.string.disabled)})")
+                        }
+                    }
+                },
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
@@ -266,22 +273,41 @@ private fun AddFilterDialog(
 }
 
 @Composable
-private fun DeleteFilterDialog(
-    onConfirm: () -> Unit,
+private fun EditFilterDialog(
+    enabled: Boolean,
+    toggleEnabled: () -> Unit,
+    delete: () -> Unit,
     hideDialog: () -> Unit,
 ) {
     AlertDialog(
         hideDialog,
-        title = { Text(stringResource(R.string.delete_filter)) },
-        text = { Text(stringResource(R.string.delete_confirmation)) },
+        title = { Text(stringResource(R.string.edit_filter)) },
+        text = {
+            Text(
+                stringResource(
+                    R.string.delete_warning,
+                    if (enabled) stringResource(R.string.disable_suggestion) else ""
+                ),
+            )
+        },
         confirmButton = {
-            TextButton(
-                {
-                    onConfirm()
-                    hideDialog()
-                },
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
-            ) { Text(stringResource(R.string.delete)) }
+            Row {
+                TextButton(
+                    {
+                        toggleEnabled()
+                        hideDialog()
+                    },
+                ) {
+                    Text(stringResource(if (enabled) R.string.disable else R.string.enable))
+                }
+                TextButton(
+                    {
+                        delete()
+                        hideDialog()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
+                ) { Text(stringResource(R.string.delete)) }
+            }
         },
         dismissButton = {
             TextButton(hideDialog) {
@@ -298,10 +324,15 @@ private fun FilterCardPreview() =
 
 @Preview
 @Composable
+private fun DisabledFilterCardPreview() =
+    Theme { FilterCard(Filter(1, "com.example.app", ".*", 3, false), {}) }
+
+@Preview
+@Composable
 private fun AddFilterDialogPreview() =
     Theme { AddFilterDialog(FormState(), {}, {}, {}, listOf()) }
 
 @Preview
 @Composable
-private fun DeleteFilterDialogPreview() =
-    Theme { DeleteFilterDialog({}, {}) }
+private fun EditFilterDialogPreview() =
+    Theme { EditFilterDialog(true, {}, {}, {}) }
