@@ -65,6 +65,11 @@ class NotificationListener : NotificationListenerService() {
 
         Log.d("NotificationListener", "Matched $filter")
 
+        if (!filter.enabled) {
+            Log.d("NotificationListener", "Filter is disabled")
+            return
+        }
+
         cancelNotification(sbn.key)
         serviceScope.launch {
             notificationsRepository.save(notification)

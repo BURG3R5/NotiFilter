@@ -65,7 +65,14 @@ class FiltersViewModel(private val filtersRepository: FiltersRepository) : ViewM
         return null
     }
 
-    fun deleteFilter(filter: Filter) {
+    fun toggleEnabled(filter: Filter) {
+        viewModelScope.launch {
+            Log.d("FiltersViewModel", "Toggling enabled state of $filter")
+            filtersRepository.toggleEnabled(filter)
+        }
+    }
+
+    fun delete(filter: Filter) {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Deleting $filter")
             filtersRepository.delete(filter)

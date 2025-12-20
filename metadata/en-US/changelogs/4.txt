@@ -1,0 +1,2 @@
+• patch: Display app version in About screen
+• feat: Let user disable filters

@@ -7,5 +7,7 @@ class FiltersRepository(private val filterDao: FilterDao) {
 
     suspend fun registerHit(filter: Filter) = filterDao.registerHit(filter.id)
 
+    suspend fun toggleEnabled(filter: Filter) = filterDao.toggleEnabled(filter.id)
+
     suspend fun delete(filter: Filter) = filterDao.delete(filter)
 }
