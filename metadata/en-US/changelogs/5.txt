@@ -1,0 +1,1 @@
+• patch: Make About screen scrollable
