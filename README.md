@@ -7,6 +7,8 @@
 NotiFilter listens to all device notifications and quietly dismisses the ones that match your
 filters.
 
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/co.adityarajput.notifilter)
+
 ## Screenshots
 
 <img alt="NotiFilter screenshot: filters screen" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/1.png" width=30%> <img alt="NotiFilter screenshot: block history" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/phoneScreenshots/2.png" width=30%>
