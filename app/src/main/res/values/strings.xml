@@ -4,6 +4,8 @@
     <string name="disabled">disabled</string>
     <string name="display_hits_and_app"><![CDATA[filtered <strong>%1$d</strong> notifications<br>from <em>%2$s</em>]]></string>
     <string name="add_filter">Add filter</string>
+    <string name="show_system_packages">Show system packages?</string>
+    <string name="system_packages_warning">Notifications from system packages may contain critical information, and thus be marked non-dismissible by the OS.</string>
     <string name="package_name">Package name</string>
     <string name="search_apps">Search installed apps</string>
     <string name="query_pattern">Query pattern</string>

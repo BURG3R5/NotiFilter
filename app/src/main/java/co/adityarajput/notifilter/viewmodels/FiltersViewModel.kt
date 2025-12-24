@@ -27,8 +27,8 @@ class FiltersViewModel(private val filtersRepository: FiltersRepository) : ViewM
     var formState by mutableStateOf(FormState())
         private set
 
-    fun getPackages(packageManager: PackageManager): List<Pair<String, String>> {
-        val packages = packageManager.queryIntentActivities(
+    fun getVisibleApps(packageManager: PackageManager): List<Pair<String, String>> {
+        return packageManager.queryIntentActivities(
             Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
             0,
         ).map {
@@ -36,8 +36,16 @@ class FiltersViewModel(private val filtersRepository: FiltersRepository) : ViewM
                 it.activityInfo.packageName,
                 it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
             )
-        }
-        return packages.sortedBy { it.second }
+        }.sortedBy { it.second }
+    }
+
+    fun getAllPackages(packageManager: PackageManager): List<Pair<String, String>> {
+        return packageManager.getInstalledApplications(0).map {
+            Pair(
+                it.packageName,
+                it.loadLabel(packageManager).toString(),
+            )
+        }.sortedBy { it.second }
     }
 
     fun onFormUpdate(inputValues: InputValues) {

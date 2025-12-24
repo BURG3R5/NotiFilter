@@ -36,7 +36,8 @@ fun FiltersScreen(
     val filtersState = viewModel.filtersState.collectAsState()
 
     val context = LocalContext.current
-    val packages = remember { viewModel.getPackages(context.packageManager) }
+    val visibleApps = remember { viewModel.getVisibleApps(context.packageManager) }
+    val allPackages = remember { viewModel.getAllPackages(context.packageManager) }
 
     var filterToDelete by remember { mutableStateOf<Filter?>(null) }
     var showAddDialog by remember { mutableStateOf(false) }
@@ -112,7 +113,8 @@ fun FiltersScreen(
                 viewModel::onFormUpdate,
                 viewModel::onFormSubmit,
                 { showAddDialog = false },
-                packages,
+                visibleApps,
+                allPackages,
             )
     }
 }
@@ -164,10 +166,12 @@ private fun AddFilterDialog(
     onUpdate: (InputValues) -> Unit,
     onSubmit: suspend () -> Unit,
     hideDialog: () -> Unit,
-    packages: List<Pair<String, String>>,
+    visibleApps: List<Pair<String, String>>,
+    allPackages: List<Pair<String, String>>,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
+    var showSystemPackages by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var suggestions by remember { mutableStateOf(listOf<Pair<String, String>>()) }
 
@@ -181,13 +185,26 @@ private fun AddFilterDialog(
                     .padding(dimensionResource(R.dimen.padding_small)),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
             ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.Start,
+                    Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(R.string.show_system_packages))
+                    Checkbox(showSystemPackages, { showSystemPackages = it })
+                }
+                if (showSystemPackages)
+                    Text(
+                        stringResource(R.string.system_packages_warning),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
                 ExposedDropdownMenuBox(expanded, { expanded = it }) {
                     OutlinedTextField(
                         formState.inputValues.packageName,
                         { input ->
                             onUpdate(formState.inputValues.copy(packageName = input))
                             suggestions =
-                                packages.filter {
+                                (if (showSystemPackages) allPackages else visibleApps).filter {
                                     it.toString().contains(input, ignoreCase = true)
                                 }
                             expanded = suggestions.isNotEmpty()
@@ -330,7 +347,7 @@ private fun DisabledFilterCardPreview() =
 @Preview
 @Composable
 private fun AddFilterDialogPreview() =
-    Theme { AddFilterDialog(FormState(), {}, {}, {}, listOf()) }
+    Theme { AddFilterDialog(FormState(), {}, {}, {}, listOf(), listOf()) }
 
 @Preview
 @Composable
