@@ -26,7 +26,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "NotiFilter Debug")
+            resValue("string", "app_name_launcher", "NotiFilter Debug")
         }
         release {
             isDebuggable = false
