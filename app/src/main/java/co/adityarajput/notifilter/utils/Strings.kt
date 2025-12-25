@@ -18,3 +18,13 @@ fun Long.toShortHumanReadableTime(): String {
         else -> "just now"
     }
 }
+
+fun Int.withUnit(unit: String): String {
+    return when (this) {
+        1 -> "1 $unit"
+        else -> "$this ${unit}s"
+    }
+}
+
+fun String.getLast(length: Int): String =
+    if (this.length <= length) this else "..." + this.takeLast(length - 3)

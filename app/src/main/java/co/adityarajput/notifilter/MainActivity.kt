@@ -22,8 +22,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             Theme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     NotiFilter()
                 }

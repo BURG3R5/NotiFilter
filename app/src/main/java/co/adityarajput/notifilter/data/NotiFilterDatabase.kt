@@ -12,9 +12,10 @@ import co.adityarajput.notifilter.data.notification.NotificationDao
 
 @Database(
     entities = [Filter::class, Notification::class],
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(1, 2),
+        AutoMigration(2, 3),
     ],
 )
 abstract class NotiFilterDatabase : RoomDatabase() {

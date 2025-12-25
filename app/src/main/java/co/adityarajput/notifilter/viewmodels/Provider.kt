@@ -9,7 +9,10 @@ import co.adityarajput.notifilter.NotiFilterApplication
 object Provider {
     val Factory = viewModelFactory {
         initializer {
-            FiltersViewModel(notifilterApplication().container.filtersRepository)
+            FiltersViewModel(
+                notifilterApplication().container.filtersRepository,
+                notifilterApplication().packageManager,
+            )
         }
         initializer {
             NotificationsViewModel(notifilterApplication().container.notificationsRepository)

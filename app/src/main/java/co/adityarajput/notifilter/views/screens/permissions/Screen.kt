@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens
+package co.adityarajput.notifilter.views.screens.permissions
 
 import android.content.Intent
 import android.net.Uri
