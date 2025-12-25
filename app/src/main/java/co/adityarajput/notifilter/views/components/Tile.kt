@@ -101,7 +101,7 @@ private fun FilterTiles() {
                 Tile(
                     "/${filter.queryPattern}/",
                     stringResource(filter.action.displayString, filter.buttonPattern ?: ' '),
-                    filter.packageName.getLast(27),
+                    filter.packageName.getLast(30),
                     if (filter.enabled) filter.hits.withUnit(stringResource(R.string.hit))
                     else stringResource(R.string.disabled),
                     { },
@@ -125,7 +125,7 @@ private fun NotificationTile() {
         Tile(
             notification.title,
             notification.content,
-            notification.packageName.getLast(27),
+            notification.packageName.getLast(30),
             notification.timestamp.toShortHumanReadableTime(),
         )
     }

@@ -90,7 +90,7 @@ fun FiltersScreen(
                     Tile(
                         "/${it.queryPattern}/",
                         stringResource(it.action.displayString, it.buttonPattern ?: ' '),
-                        it.packageName.getLast(27),
+                        it.packageName.getLast(30),
                         if (it.enabled) it.hits.withUnit(stringResource(R.string.hit))
                         else stringResource(R.string.disabled),
                         { viewModel.selectedFilter = it },

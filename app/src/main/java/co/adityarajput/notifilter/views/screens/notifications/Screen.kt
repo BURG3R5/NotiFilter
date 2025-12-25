@@ -65,7 +65,7 @@ fun NotificationsScreen(
                     Tile(
                         it.title,
                         it.content,
-                        it.packageName.getLast(27),
+                        it.packageName.getLast(30),
                         it.timestamp.toShortHumanReadableTime(),
                     )
                 }
