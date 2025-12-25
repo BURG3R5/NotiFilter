@@ -7,10 +7,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
-import co.adityarajput.notifilter.views.screens.AboutScreen
-import co.adityarajput.notifilter.views.screens.FiltersScreen
-import co.adityarajput.notifilter.views.screens.NotificationsScreen
-import co.adityarajput.notifilter.views.screens.PermissionScreen
+import co.adityarajput.notifilter.views.screens.about.AboutScreen
+import co.adityarajput.notifilter.views.screens.filters.FiltersScreen
+import co.adityarajput.notifilter.views.screens.notifications.NotificationsScreen
+import co.adityarajput.notifilter.views.screens.permissions.PermissionScreen
 
 @Composable
 fun Navigator(controller: NavHostController) {
@@ -21,7 +21,7 @@ fun Navigator(controller: NavHostController) {
         when {
             hasPermission -> Routes.FILTERS.name
             else -> Routes.PERMISSION.name
-        }
+        },
     ) {
         composable(Routes.PERMISSION.name) {
             PermissionScreen {

@@ -1,0 +1,2 @@
+• feat: Add support for filters that tap notification buttons
+• feat: Show all packages in dropdown

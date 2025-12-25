@@ -4,10 +4,9 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import co.adityarajput.notifilter.data.AppContainer
+import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.FiltersRepository
 import co.adityarajput.notifilter.data.notification.Notification
-import co.adityarajput.notifilter.data.notification.NotificationsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,12 +16,8 @@ import kotlinx.coroutines.launch
 class NotificationListener : NotificationListenerService() {
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
-    private val filtersRepository: FiltersRepository by lazy {
-        AppContainer(this).filtersRepository
-    }
-    private val notificationsRepository: NotificationsRepository by lazy {
-        AppContainer(this).notificationsRepository
-    }
+    private val filtersRepository by lazy { AppContainer(this).filtersRepository }
+    private val notificationsRepository by lazy { AppContainer(this).notificationsRepository }
 
     @Volatile
     private var filters: List<Filter> = emptyList()
@@ -46,16 +41,11 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val notification = Notification(
-            title = sbn.notification.extras.getString("android.title") ?: "",
-            content = sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-            packageName = sbn.packageName,
+            sbn.notification.extras.getString("android.title") ?: "",
+            sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
+            sbn.packageName,
         )
         Log.d("NotificationListener", "Received $notification")
-
-        if (!sbn.isClearable) {
-            Log.d("NotificationListener", "Is unclearable")
-            return
-        }
 
         val filter = filters.find {
             notification.packageName == it.packageName &&
@@ -70,7 +60,24 @@ class NotificationListener : NotificationListenerService() {
             return
         }
 
-        cancelNotification(sbn.key)
+        when (filter.action) {
+            Action.DISMISS ->
+                if (sbn.isClearable) {
+                    cancelNotification(sbn.key)
+                } else {
+                    Log.d("NotificationListener", "Is unclearable")
+                    return
+                }
+
+            Action.TAP ->
+                try {
+                    sbn.notification.actions.find { Regex(filter.buttonPattern!!).containsMatchIn(it.title) }?.actionIntent?.send()
+                } catch (e: Exception) {
+                    Log.e("NotificationListener", "Failed to tap button", e)
+                    return
+                }
+        }
+
         serviceScope.launch {
             notificationsRepository.save(notification)
             filtersRepository.registerHit(filter)

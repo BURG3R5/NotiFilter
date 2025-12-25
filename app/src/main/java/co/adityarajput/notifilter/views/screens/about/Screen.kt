@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens
+package co.adityarajput.notifilter.views.screens.about
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

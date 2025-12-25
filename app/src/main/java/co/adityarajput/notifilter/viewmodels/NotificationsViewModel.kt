@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 
 data class NotificationsState(val notifications: List<Notification>? = null)
 
-class NotificationsViewModel(private val notificationsRepository: NotificationsRepository) :
+class NotificationsViewModel(notificationsRepository: NotificationsRepository) :
     ViewModel() {
     val notificationsState: StateFlow<NotificationsState> =
         notificationsRepository.list()
