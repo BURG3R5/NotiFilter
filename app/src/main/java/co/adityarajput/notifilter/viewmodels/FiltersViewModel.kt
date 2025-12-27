@@ -26,9 +26,11 @@ class FiltersViewModel : ViewModel {
 
     var showAddDialog by mutableStateOf(false)
 
-    val visibleApps: List<Pair<String, String>>
+    var visibleApps: List<Pair<String, String>> = emptyList()
+        private set
 
-    val allPackages: List<Pair<String, String>>
+    var allPackages: List<Pair<String, String>> = emptyList()
+        private set
 
     var formState by mutableStateOf(FormState())
 
@@ -40,21 +42,24 @@ class FiltersViewModel : ViewModel {
         filtersState = filtersRepository.list()
             .map { FiltersState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersState())
-        visibleApps = packageManager.queryIntentActivities(
-            Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
-            0,
-        ).map {
-            Pair(
-                it.activityInfo.packageName,
-                it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
-            )
-        }.sortedBy { it.second }
-        allPackages = packageManager.getInstalledApplications(0).map {
-            Pair(
-                it.packageName,
-                it.loadLabel(packageManager).toString(),
-            )
-        }.sortedBy { it.second }
+
+        viewModelScope.launch {
+            visibleApps = packageManager.queryIntentActivities(
+                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
+                0,
+            ).map {
+                Pair(
+                    it.activityInfo.packageName,
+                    it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
+                )
+            }.sortedBy { it.second }
+            allPackages = packageManager.getInstalledApplications(0).map {
+                Pair(
+                    it.packageName,
+                    it.loadLabel(packageManager).toString(),
+                )
+            }.sortedBy { it.second }
+        }
     }
 
     fun updateForm(page: FormPage, values: FormValues) {

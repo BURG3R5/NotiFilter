@@ -1,0 +1,2 @@
+• patch: Optimize app size and performance
+• chore: Update dependencies

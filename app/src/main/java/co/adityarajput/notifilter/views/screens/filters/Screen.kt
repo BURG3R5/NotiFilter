@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +21,7 @@ import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.Tile
+import co.adityarajput.notifilter.views.icons.Add
 import co.adityarajput.notifilter.views.icons.History
 
 @Composable
@@ -59,7 +58,7 @@ fun FiltersScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             ) {
                 Icon(
-                    Icons.Default.Add,
+                    Add,
                     stringResource(R.string.add_filter),
                     tint = MaterialTheme.colorScheme.onSurface,
                 )
