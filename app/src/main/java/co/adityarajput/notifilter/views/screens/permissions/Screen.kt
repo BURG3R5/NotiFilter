@@ -1,7 +1,7 @@
 package co.adityarajput.notifilter.views.screens.permissions
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.core.os.HandlerCompat.postDelayed
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
@@ -21,6 +22,7 @@ import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
 
+@SuppressLint("BatteryLife")
 @Composable
 fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
     val context = LocalContext.current
@@ -39,14 +41,14 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(R.dimen.padding_extra_large)),
                 Arrangement.Center,
-                Alignment.CenterHorizontally
+                Alignment.CenterHorizontally,
             ) {
                 if (!hasRequiredPermission) {
                     Text(stringResource(R.string.onboarding_info_1))
@@ -58,7 +60,7 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                                 Handler(Looper.getMainLooper()),
                                 watchPermissions,
                                 null,
-                                1000
+                                1000,
                             )
                         },
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
@@ -70,7 +72,7 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         {
                             val intent = Intent(
                                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                Uri.parse("package:${context.packageName}"),
+                                "package:${context.packageName}".toUri(),
                             )
                             context.startActivity(intent)
                         },
