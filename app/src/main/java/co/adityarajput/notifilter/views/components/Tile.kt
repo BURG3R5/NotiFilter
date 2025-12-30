@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
+import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
@@ -26,8 +27,9 @@ import java.util.Date
 fun Tile(
     title: String,
     content: String,
-    subtitle: String,
+    leading: String,
     trailing: String,
+    preContent: String? = null,
     onClick: () -> Unit = {},
     dividerBetweenTitleAndContent: Boolean = false,
 ) {
@@ -49,7 +51,7 @@ fun Tile(
                 Alignment.CenterVertically,
             ) {
                 Text(
-                    subtitle,
+                    leading,
                     style = MaterialTheme.typography.bodySmall.copy(
                         MaterialTheme.colorScheme.onSurfaceVariant,
                         11.sp,
@@ -68,6 +70,12 @@ fun Tile(
                 style = MaterialTheme.typography.titleMedium,
             )
             if (dividerBetweenTitleAndContent) HorizontalDivider()
+            if (preContent != null && preContent.isNotEmpty())
+                Text(
+                    preContent,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 11.sp,
+                )
             Text(
                 content,
                 style = MaterialTheme.typography.bodySmall,
@@ -85,6 +93,8 @@ private fun FilterTiles() {
             "software update",
             Action.TAP,
             "Remind me",
+            9 * 60 to 17 * 60,
+            setOf(1, 2, 3, 4, 5),
             69,
         ),
         Filter(
@@ -104,6 +114,7 @@ private fun FilterTiles() {
                     filter.packageName.getLast(30),
                     if (filter.enabled) filter.hits.withUnit(stringResource(R.string.hit))
                     else stringResource(R.string.disabled),
+                    filter.getScheduleString(),
                     { },
                     true,
                 )

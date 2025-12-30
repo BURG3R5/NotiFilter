@@ -23,8 +23,8 @@ class AppContainer(private val context: Context) {
                     "com.google.android.deskclock",
                     "Upcoming alarm",
                     Action.DISMISS,
-                    "",
-                    87,
+                    activeTime = 9 * 60 to 17 * 60,
+                    hits = 87,
                 ),
             )
             filtersRepository.create(
@@ -33,7 +33,8 @@ class AppContainer(private val context: Context) {
                     "software update",
                     Action.TAP,
                     "Remind me",
-                    23,
+                    activeDays = setOf(1, 2, 3, 4, 5),
+                    hits = 23,
                 ),
             )
             notificationsRepository.save(

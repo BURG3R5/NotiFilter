@@ -18,6 +18,7 @@ your filters.
 - **Filters** - Use [regex](https://regexr.com/) to precisely target annoying notifications from
   each app 🎯
 - **Actions** - Choose whether to tap a button in the notification or to dismiss it entirely ⚙
+- **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
 - **Free, open-source & private**
     - No ads, subscriptions, or in-app purchases 🆓

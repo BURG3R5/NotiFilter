@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class NotificationListener : NotificationListenerService() {
     private val serviceJob = SupervisorJob()
@@ -47,10 +48,14 @@ class NotificationListener : NotificationListenerService() {
         )
         Log.d("NotificationListener", "Received $notification")
 
+        val calendar = Calendar.getInstance()
+        val minutesOfDay = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
         val filter = filters.find {
             notification.packageName == it.packageName &&
                     (Regex(it.queryPattern).containsMatchIn(notification.title) ||
-                            Regex(it.queryPattern).containsMatchIn(notification.content))
+                            Regex(it.queryPattern).containsMatchIn(notification.content)) &&
+                    it.activeDays.contains(calendar.get(Calendar.DAY_OF_WEEK)) &&
+                    it.activeTime.first <= minutesOfDay && minutesOfDay <= it.activeTime.second
         } ?: return
 
         Log.d("NotificationListener", "Matched $filter")
