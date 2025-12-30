@@ -35,18 +35,18 @@ fun Filter.getScheduleString(): String {
     return buildString {
         when (activeDays) {
             setOf(1, 2, 3, 4, 5, 6, 7) -> append("")
-            setOf(1, 2, 3, 4, 5) -> append("on weekdays ")
-            setOf(6, 7) -> append("on weekends ")
+            setOf(2, 3, 4, 5, 6) -> append("on weekdays ")
+            setOf(1, 7) -> append("on weekends ")
             else -> {
                 val daysList = activeDays.sorted().map {
                     when (it) {
-                        1 -> "mon"
-                        2 -> "tue"
-                        3 -> "wed"
-                        4 -> "thu"
-                        5 -> "fri"
-                        6 -> "sat"
-                        else -> "sun"
+                        1 -> "sun"
+                        2 -> "mon"
+                        3 -> "tue"
+                        4 -> "wed"
+                        5 -> "thu"
+                        6 -> "fri"
+                        else -> "sat"
                     }
                 }
                 append("on " + daysList.joinToString(", ") + " ")

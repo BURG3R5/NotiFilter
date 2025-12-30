@@ -377,4 +377,4 @@ private fun Form(viewModel: FiltersViewModel) {
 }
 
 private val daysOfTheWeek =
-    listOf(1 to "M", 2 to "T", 3 to "W", 4 to "T", 5 to "F", 6 to "S", 7 to "S")
+    listOf(1 to "S", 2 to "M", 3 to "T", 4 to "W", 5 to "T", 6 to "F", 7 to "S")
