@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.withUnit
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
@@ -92,6 +93,7 @@ fun FiltersScreen(
                         it.packageName.getLast(30),
                         if (it.enabled) it.hits.withUnit(stringResource(R.string.hit))
                         else stringResource(R.string.disabled),
+                        it.getScheduleString(),
                         { viewModel.selectedFilter = it },
                         true,
                     )

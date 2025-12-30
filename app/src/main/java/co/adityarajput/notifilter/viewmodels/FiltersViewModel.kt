@@ -100,6 +100,15 @@ class FiltersViewModel : ViewModel {
                     return FormError.INVALID_BUTTON_REGEX
                 }
             }
+
+            FormPage.TIME -> {
+                if (values.activeDays.isEmpty()) return FormError.BLANK_FIELDS
+                if (values.activeTime.first < 0 || values.activeTime.second > 1439 ||
+                    values.activeTime.first >= values.activeTime.second
+                ) {
+                    return FormError.INVALID_TIME_RANGE
+                }
+            }
         }
         return null
     }
@@ -126,9 +135,9 @@ data class FormState(
 )
 
 enum class FormPage {
-    PACKAGE, PATTERN, ACTION;
+    PACKAGE, PATTERN, ACTION, TIME;
 
-    fun isFinalPage() = this == ACTION
+    fun isFinalPage() = this == TIME
 }
 
 data class FormValues(
@@ -136,8 +145,11 @@ data class FormValues(
     val queryPattern: String = "",
     val action: Action = Action.DISMISS,
     val buttonPattern: String = "",
+    val activeTime: Pair<Int, Int> = 0 to 1439,
+    val activeDays: Set<Int> = setOf(1, 2, 3, 4, 5, 6, 7),
 )
 
-fun FormValues.toFilter() = Filter(packageName, queryPattern, action, buttonPattern)
+fun FormValues.toFilter() =
+    Filter(packageName, queryPattern, action, buttonPattern, activeTime, activeDays)
 
-enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX }
+enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX, INVALID_TIME_RANGE }

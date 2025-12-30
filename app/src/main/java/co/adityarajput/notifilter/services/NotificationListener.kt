@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class NotificationListener : NotificationListenerService() {
     private val serviceJob = SupervisorJob()
@@ -57,6 +58,17 @@ class NotificationListener : NotificationListenerService() {
 
         if (!filter.enabled) {
             Log.d("NotificationListener", "Filter is disabled")
+            return
+        }
+
+        val now = Calendar.getInstance()
+        if (!filter.activeDays.contains(now.get(Calendar.DAY_OF_WEEK))) {
+            Log.d("NotificationListener", "Filter is not active today")
+            return
+        }
+        val minutesOfDay = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+        if (filter.activeTime.first >= minutesOfDay || filter.activeTime.second <= minutesOfDay) {
+            Log.d("NotificationListener", "Filter is not active at this time")
             return
         }
 

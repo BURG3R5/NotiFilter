@@ -21,6 +21,9 @@
     <string name="dismiss_long">Dismiss the notification</string>
     <string name="tap_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
+    <string name="schedule">Schedule:</string>
+    <string name="empty_active_days">No days selected</string>
+    <string name="invalid_time_range">Time range is invalid</string>
     <string name="next">Next</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
