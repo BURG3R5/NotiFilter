@@ -71,7 +71,7 @@ class NotificationListener : NotificationListenerService() {
                     cancelNotification(sbn.key)
                 } else {
                     Log.d("NotificationListener", "Is unclearable")
-                    return
+                    snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
             Action.TAP ->

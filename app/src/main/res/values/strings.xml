@@ -11,7 +11,7 @@
 
     <string name="add_filter">Add filter</string>
     <string name="show_system_packages">Show system packages?</string>
-    <string name="system_packages_warning">Notifications from system packages may contain critical information, and thus be marked non-dismissible by the OS.</string>
+    <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>
     <string name="search_apps">Search installed apps</string>
     <string name="notification_pattern">Notification pattern</string>
