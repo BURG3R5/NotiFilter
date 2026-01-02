@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.data
 
 import android.content.Context
+import co.adityarajput.notifilter.data.active_notification.ActiveNotificationsRepository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
@@ -14,6 +15,11 @@ class AppContainer(private val context: Context) {
     }
     val notificationsRepository: NotificationsRepository by lazy {
         NotificationsRepository(NotiFilterDatabase.getDatabase(context).notificationDao())
+    }
+    val activeNotificationsRepository by lazy {
+        ActiveNotificationsRepository(
+            NotiFilterDatabase.getDatabase(context).activeNotificationDao(),
+        )
     }
 
     fun seedDemoData() {
@@ -33,7 +39,7 @@ class AppContainer(private val context: Context) {
                     "software update",
                     Action.TAP,
                     "Remind me",
-                    activeDays = setOf(1, 2, 3, 4, 5),
+                    activeDays = setOf(2, 3, 4, 5, 6),
                     hits = 23,
                 ),
             )

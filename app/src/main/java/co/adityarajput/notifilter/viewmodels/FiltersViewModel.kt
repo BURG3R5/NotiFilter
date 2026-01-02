@@ -1,13 +1,18 @@
 package co.adityarajput.notifilter.viewmodels
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.adityarajput.notifilter.Constants
+import co.adityarajput.notifilter.data.active_notification.ActiveNotification
+import co.adityarajput.notifilter.data.active_notification.ActiveNotificationsRepository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
@@ -19,12 +24,25 @@ import kotlinx.coroutines.launch
 
 data class FiltersState(val filters: List<Filter>? = null)
 
+data class ActiveNotificationsState(val value: List<ActiveNotification>? = null)
+
 class FiltersViewModel : ViewModel {
-    private val repository: FiltersRepository
+    private val filtersRepository: FiltersRepository
+
+    private val activeNotificationsRepository: ActiveNotificationsRepository
+
+    private val sharedPreferences: SharedPreferences
 
     val filtersState: StateFlow<FiltersState>
 
+    val activeNotificationsState: StateFlow<ActiveNotificationsState>
+
+    var isStoringActiveNotifications by mutableStateOf(false)
+        private set
+
     var showAddDialog by mutableStateOf(false)
+
+    var showSettingsDialog by mutableStateOf(false)
 
     var visibleApps: List<Pair<String, String>> = emptyList()
         private set
@@ -34,14 +52,34 @@ class FiltersViewModel : ViewModel {
 
     var formState by mutableStateOf(FormState())
 
+    var isDoneWithZapper by mutableStateOf(false)
+
     var selectedFilter by mutableStateOf<Filter?>(null)
 
-    constructor(filtersRepository: FiltersRepository, packageManager: PackageManager) : super() {
-        repository = filtersRepository
+    constructor(
+        filtersRepository: FiltersRepository,
+        activeNotificationsRepository: ActiveNotificationsRepository,
+        packageManager: PackageManager,
+        sharedPreferences: SharedPreferences,
+    ) : super() {
+        this.filtersRepository = filtersRepository
+        this.activeNotificationsRepository = activeNotificationsRepository
+        this.sharedPreferences = sharedPreferences
 
         filtersState = filtersRepository.list()
             .map { FiltersState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersState())
+
+        activeNotificationsState = activeNotificationsRepository.list()
+            .map { ActiveNotificationsState(it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                ActiveNotificationsState(),
+            )
+
+        isStoringActiveNotifications =
+            sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)
 
         viewModelScope.launch {
             visibleApps = packageManager.queryIntentActivities(
@@ -62,6 +100,22 @@ class FiltersViewModel : ViewModel {
         }
     }
 
+    fun toggleStoringActiveNotifications() {
+        val current = isStoringActiveNotifications
+        sharedPreferences.edit { putBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, !current) }
+        isStoringActiveNotifications = !current
+        if (!isStoringActiveNotifications) viewModelScope.launch { activeNotificationsRepository.deleteAll() }
+    }
+
+    fun ensureCorrectInitialFormPage() {
+        if (isDoneWithZapper) return
+        if (isStoringActiveNotifications && formState.page != FormPage.ZAPPER) {
+            formState = formState.copy(page = FormPage.ZAPPER)
+        } else if (!isStoringActiveNotifications && formState.page != FormPage.PACKAGE) {
+            formState = formState.copy(page = FormPage.PACKAGE)
+        }
+    }
+
     fun updateForm(page: FormPage, values: FormValues) {
         formState = FormState(page, values, getError(page, values))
     }
@@ -70,7 +124,7 @@ class FiltersViewModel : ViewModel {
         if (getError() == null) {
             val filter = formState.values.toFilter()
             Log.d("FiltersViewModel", "Adding $filter")
-            repository.create(filter)
+            filtersRepository.create(filter)
             formState = FormState()
         }
     }
@@ -80,6 +134,8 @@ class FiltersViewModel : ViewModel {
         values: FormValues = formState.values,
     ): FormError? {
         when (page) {
+            FormPage.ZAPPER -> return null
+
             FormPage.PACKAGE -> if (values.packageName.isBlank()) return FormError.BLANK_FIELDS
 
             FormPage.PATTERN -> {
@@ -116,28 +172,36 @@ class FiltersViewModel : ViewModel {
     fun toggleFilter() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Toggling enabled state of $selectedFilter")
-            repository.toggleEnabled(selectedFilter!!)
+            filtersRepository.toggleEnabled(selectedFilter!!)
         }
     }
 
     fun deleteFilter() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Deleting $selectedFilter")
-            repository.delete(selectedFilter!!)
+            filtersRepository.delete(selectedFilter!!)
         }
     }
 }
 
 data class FormState(
-    val page: FormPage = FormPage.PACKAGE,
+    val page: FormPage = FormPage.ZAPPER,
     val values: FormValues = FormValues(),
-    val error: FormError? = FormError.BLANK_FIELDS,
+    val error: FormError? = null,
 )
 
 enum class FormPage {
-    PACKAGE, PATTERN, ACTION, TIME;
+    ZAPPER, PACKAGE, PATTERN, ACTION, TIME;
 
     fun isFinalPage() = this == TIME
+
+    fun nextPage() = when (this) {
+        ZAPPER -> PACKAGE
+        PACKAGE -> PATTERN
+        PATTERN -> ACTION
+        ACTION -> TIME
+        TIME -> TIME
+    }
 }
 
 data class FormValues(

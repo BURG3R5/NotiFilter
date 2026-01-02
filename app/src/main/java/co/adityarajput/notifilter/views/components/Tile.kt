@@ -28,7 +28,7 @@ fun Tile(
     title: String,
     content: String,
     leading: String,
-    trailing: String,
+    trailing: String? = null,
     preContent: String? = null,
     onClick: () -> Unit = {},
     dividerBetweenTitleAndContent: Boolean = false,
@@ -57,13 +57,14 @@ fun Tile(
                         11.sp,
                     ),
                 )
-                Text(
-                    trailing,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        MaterialTheme.colorScheme.onSurfaceVariant,
-                        8.sp,
-                    ),
-                )
+                if (trailing != null)
+                    Text(
+                        trailing,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            8.sp,
+                        ),
+                    )
             }
             Text(
                 title,

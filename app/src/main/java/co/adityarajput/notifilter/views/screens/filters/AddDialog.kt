@@ -4,6 +4,8 @@ import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -19,13 +21,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
+import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.FormState
+import co.adityarajput.notifilter.views.components.Tile
 import kotlinx.coroutines.launch
 import java.lang.Integer.min
 import java.util.Locale
@@ -43,12 +48,15 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
             TextButton(
                 {
                     if (!viewModel.formState.page.isFinalPage()) {
+                        if (listOf(
+                                FormPage.ZAPPER,
+                                FormPage.PACKAGE,
+                            ).contains(viewModel.formState.page)
+                        ) {
+                            viewModel.isDoneWithZapper = true
+                        }
                         viewModel.updateForm(
-                            when (viewModel.formState.page) {
-                                FormPage.PACKAGE -> FormPage.PATTERN
-                                FormPage.PATTERN -> FormPage.ACTION
-                                else -> FormPage.TIME
-                            },
+                            viewModel.formState.page.nextPage(),
                             viewModel.formState.values,
                         )
                     } else {
@@ -62,7 +70,8 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
             ) {
                 Text(
-                    if (viewModel.formState.page.isFinalPage()) stringResource(R.string.add)
+                    if (viewModel.formState.page == FormPage.ZAPPER) stringResource(R.string.skip)
+                    else if (viewModel.formState.page.isFinalPage()) stringResource(R.string.add)
                     else stringResource(R.string.next),
                 )
             }
@@ -70,6 +79,7 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
         dismissButton = {
             TextButton(
                 {
+                    viewModel.isDoneWithZapper = false
                     viewModel.formState = FormState()
                     viewModel.showAddDialog = false
                 },
@@ -83,8 +93,12 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Form(viewModel: FiltersViewModel) {
+    viewModel.ensureCorrectInitialFormPage()
+
     val context = LocalContext.current
     val formState = viewModel.formState
+
+    val activeNotifications by viewModel.activeNotificationsState.collectAsState()
 
     var showSystemPackages by remember { mutableStateOf(false) }
 
@@ -98,6 +112,38 @@ private fun Form(viewModel: FiltersViewModel) {
         Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
     ) {
         when (formState.page) {
+            FormPage.ZAPPER -> {
+                if (activeNotifications.value == null) {
+                    Box(Modifier.fillMaxWidth(), Alignment.Center) { CircularProgressIndicator() }
+                } else if (activeNotifications.value!!.isEmpty()) {
+                    Box(Modifier.fillMaxWidth(), Alignment.Center) {
+                        Text(
+                            stringResource(R.string.no_active_notifications),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                } else {
+                    Text(stringResource(R.string.active_notifications))
+                    LazyColumn(Modifier.fillMaxWidth()) {
+                        items(activeNotifications.value!!, { it.notification.id }) {
+                            Tile(
+                                it.notification.title,
+                                it.notification.content,
+                                it.notification.packageName.getLast(30),
+                                onClick = {
+                                    viewModel.updateForm(
+                                        FormPage.PACKAGE,
+                                        formState.values.copy(packageName = it.notification.packageName),
+                                    )
+                                    viewModel.isDoneWithZapper = true
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
             FormPage.PACKAGE -> {
                 ExposedDropdownMenuBox(dropdownExpanded, { dropdownExpanded = it }) {
                     OutlinedTextField(
@@ -191,6 +237,10 @@ private fun Form(viewModel: FiltersViewModel) {
                         disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
                     singleLine = true,
+                )
+                Text(
+                    stringResource(R.string.pattern_advice),
+                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                 )
                 if (formState.error == FormError.INVALID_NOTIFICATION_REGEX) {
                     Text(

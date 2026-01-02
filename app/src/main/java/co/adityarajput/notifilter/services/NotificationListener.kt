@@ -3,7 +3,10 @@ package co.adityarajput.notifilter.services
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import co.adityarajput.notifilter.Constants
+import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.data.AppContainer
+import co.adityarajput.notifilter.data.active_notification.ActiveNotification
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.notification.Notification
@@ -19,6 +22,8 @@ class NotificationListener : NotificationListenerService() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
     private val filtersRepository by lazy { AppContainer(this).filtersRepository }
     private val notificationsRepository by lazy { AppContainer(this).notificationsRepository }
+    private val activeNotificationsRepository by lazy { AppContainer(this).activeNotificationsRepository }
+    private val sharedPreferences by lazy { this.getSharedPreferences(SETTINGS, MODE_PRIVATE) }
 
     @Volatile
     private var filters: List<Filter> = emptyList()
@@ -48,6 +53,12 @@ class NotificationListener : NotificationListenerService() {
         )
         Log.d("NotificationListener", "Received $notification")
 
+        if (sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)) {
+            serviceScope.launch {
+                activeNotificationsRepository.create(ActiveNotification(notification.copy(id = sbn.key.hashCode())))
+            }
+        }
+
         val calendar = Calendar.getInstance()
         val minutesOfDay = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
         val filter = filters.find {
@@ -71,7 +82,7 @@ class NotificationListener : NotificationListenerService() {
                     cancelNotification(sbn.key)
                 } else {
                     Log.d("NotificationListener", "Is unclearable")
-                    return
+                    snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
             Action.TAP ->
@@ -87,6 +98,10 @@ class NotificationListener : NotificationListenerService() {
             notificationsRepository.save(notification)
             filtersRepository.registerHit(filter)
         }
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification) {
+        serviceScope.launch { activeNotificationsRepository.delete(sbn.key.hashCode()) }
     }
 
     override fun onListenerDisconnected() {

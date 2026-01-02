@@ -1,0 +1,4 @@
+• feat: Snooze uncancellable notifications
+• feat: Optionally display active notifications
+
+If a notification cannot be dismissed, it will instead be repeatedly snoozed. Even if the corresponding filter is deleted, already snoozed notifications may not reappear for a while.
