@@ -24,6 +24,7 @@ import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.Tile
 import co.adityarajput.notifilter.views.icons.Add
 import co.adityarajput.notifilter.views.icons.History
+import co.adityarajput.notifilter.views.icons.Settings
 
 @Composable
 fun FiltersScreen(
@@ -40,6 +41,13 @@ fun FiltersScreen(
                 false,
                 goToAboutScreen,
                 {
+                    IconButton({ viewModel.showSettingsDialog = true }) {
+                        Icon(
+                            Settings,
+                            stringResource(R.string.app_settings),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                     IconButton(goToNotificationsScreen) {
                         Icon(
                             History,
@@ -53,17 +61,9 @@ fun FiltersScreen(
         floatingActionButton = {
             FloatingActionButton(
                 { viewModel.showAddDialog = true },
-                Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                MaterialTheme.shapes.medium,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            ) {
-                Icon(
-                    Add,
-                    stringResource(R.string.add_filter),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
+            ) { Icon(Add, stringResource(R.string.add_filter)) }
         },
     ) { paddingValues ->
         if (filtersState.value.filters == null) {
@@ -101,6 +101,7 @@ fun FiltersScreen(
             }
         }
         if (viewModel.showAddDialog) AddFilterDialog(viewModel)
+        if (viewModel.showSettingsDialog) SettingsDialog(viewModel)
         if (viewModel.selectedFilter != null) EditFilterDialog(viewModel)
     }
 }

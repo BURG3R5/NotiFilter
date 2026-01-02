@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.views.screens.permissions
 
 import android.annotation.SuppressLint
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -14,8 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.edit
 import androidx.core.net.toUri
-import androidx.core.os.HandlerCompat.postDelayed
+import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
@@ -26,15 +28,24 @@ import co.adityarajput.notifilter.views.components.AppBar
 @Composable
 fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
     val context = LocalContext.current
-    var hasRequiredPermission by remember { mutableStateOf(false) }
+    val handler = remember { Handler(Looper.getMainLooper()) }
+    val sharedPreferences =
+        remember { context.getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
 
-    val watchPermissions = object : Runnable {
+    var hasRequiredPermission by remember { mutableStateOf(false) }
+    var hasOptionalPermission by remember { mutableStateOf(false) }
+    var skipOptionalPermission by remember { mutableStateOf(false) }
+
+    val watcher = object : Runnable {
         override fun run() {
             hasRequiredPermission = context.hasNotificationListenerPermission()
-            val hasOptionalPermission = context.hasUnrestrictedBackgroundUsagePermission()
-            if (hasRequiredPermission && hasOptionalPermission) goToFiltersScreen()
-            else postDelayed(Handler(Looper.getMainLooper()), this, null, 1000)
+            hasOptionalPermission = context.hasUnrestrictedBackgroundUsagePermission()
+            handler.postDelayed(this, 1000)
         }
+    }
+    DisposableEffect(Unit) {
+        handler.post(watcher)
+        onDispose { handler.removeCallbacksAndMessages(null) }
     }
 
     Scaffold(topBar = { AppBar(stringResource(R.string.app_name), false) }) { paddingValues ->
@@ -56,17 +67,11 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         {
                             val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
                             context.startActivity(intent)
-                            postDelayed(
-                                Handler(Looper.getMainLooper()),
-                                watchPermissions,
-                                null,
-                                1000,
-                            )
                         },
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     ) { Text(stringResource(R.string.grant_permission)) }
-                } else {
+                } else if (!hasOptionalPermission && !skipOptionalPermission) {
                     Text(stringResource(R.string.onboarding_info_2))
                     Button(
                         {
@@ -79,6 +84,24 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     ) { Text(stringResource(R.string.disable_optimization)) }
+                    TextButton({ skipOptionalPermission = true }) {
+                        Text(stringResource(R.string.skip))
+                    }
+                } else {
+                    Text(stringResource(R.string.onboarding_info_3))
+                    Button(
+                        {
+                            sharedPreferences.edit {
+                                putBoolean(
+                                    Constants.STORE_ACTIVE_NOTIFICATIONS,
+                                    true,
+                                )
+                            }
+                            goToFiltersScreen()
+                        },
+                        Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) { Text(stringResource(R.string.enable_storage)) }
                     TextButton(goToFiltersScreen) { Text(stringResource(R.string.skip)) }
                 }
             }

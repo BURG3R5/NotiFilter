@@ -9,13 +9,24 @@
     <string name="hit">hit</string>
     <string name="disabled">disabled</string>
 
+    <string name="app_settings">App settings</string>
+    <string name="justify_ignoring_battery_optimization">Ignoring battery optimization minimizes delays in notification dismissal.</string>
+    <string name="justify_storing_active_notifications">Storing active notifications simplifies filter creation.</string>
+    <string name="enable_optimization">Enable optimization</string>
+    <string name="enable_storage">Enable storage</string>
+    <string name="disable_storage">Disable storage</string>
+    <string name="done">Done</string>
+
     <string name="add_filter">Add filter</string>
+    <string name="no_active_notifications">No active notifications detected recently.</string>
+    <string name="active_notifications">Active notifications:</string>
     <string name="show_system_packages">Show system packages?</string>
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>
     <string name="search_apps">Search installed apps</string>
     <string name="notification_pattern">Notification pattern</string>
     <string name="regexr_link"><![CDATA[Enter valid <a href=\"https://regexr.com/\">regex↗</a>]]></string>
+    <string name="pattern_advice">Tip: Include keywords but exclude non-essentials</string>
     <string name="invalid_regex">Regex pattern contains errors</string>
     <string name="action">Action:</string>
     <string name="dismiss_long">Dismiss the notification</string>
@@ -43,6 +54,7 @@
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.</string>
     <string name="disable_optimization">Disable optimization</string>
     <string name="skip">Skip</string>
+    <string name="onboarding_info_3">To simplify the filter creation process, NotiFilter can store \"active\" notifications, so you don\'t need to know the exact app or service sending the notification.</string>
 
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly dismisses the ones that match your filters."</string>
