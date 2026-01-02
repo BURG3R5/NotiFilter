@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">2.1.0</string>
+    <string name="app_version">3.0.0</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="dismiss_short">dismiss notification</string>

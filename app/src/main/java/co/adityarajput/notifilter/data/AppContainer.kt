@@ -39,7 +39,7 @@ class AppContainer(private val context: Context) {
                     "software update",
                     Action.TAP,
                     "Remind me",
-                    activeDays = setOf(1, 2, 3, 4, 5),
+                    activeDays = setOf(2, 3, 4, 5, 6),
                     hits = 23,
                 ),
             )
