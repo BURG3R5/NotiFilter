@@ -1,5 +1,9 @@
 package co.adityarajput.notifilter.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import co.adityarajput.notifilter.R
+
 fun Long.toShortHumanReadableTime(): String {
     val now = System.currentTimeMillis()
     val delta = now - this
@@ -28,3 +32,7 @@ fun Int.withUnit(unit: String): String {
 
 fun String.getLast(length: Int): String =
     if (this.length <= length) this else "..." + this.takeLast(length - 3)
+
+@Composable
+fun Boolean.getToggleString(): String =
+    stringResource(if (this) R.string.disable else R.string.enable)

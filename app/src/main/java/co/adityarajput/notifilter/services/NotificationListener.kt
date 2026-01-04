@@ -94,6 +94,11 @@ class NotificationListener : NotificationListenerService() {
                 }
         }
 
+        if (!filter.historyEnabled) {
+            Log.d("NotificationListener", "History is disabled for filter")
+            return
+        }
+
         serviceScope.launch {
             notificationsRepository.save(notification)
             filtersRepository.registerHit(filter)

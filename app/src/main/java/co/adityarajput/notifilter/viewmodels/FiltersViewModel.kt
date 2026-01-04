@@ -54,6 +54,8 @@ class FiltersViewModel : ViewModel {
 
     var isDoneWithZapper by mutableStateOf(false)
 
+    var dialogState by mutableStateOf<DialogState?>(null)
+
     var selectedFilter by mutableStateOf<Filter?>(null)
 
     constructor(
@@ -169,6 +171,13 @@ class FiltersViewModel : ViewModel {
         return null
     }
 
+    fun toggleHistory() {
+        viewModelScope.launch {
+            Log.d("FiltersViewModel", "Toggling history for $selectedFilter")
+            filtersRepository.toggleHistory(selectedFilter!!)
+        }
+    }
+
     fun toggleFilter() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Toggling enabled state of $selectedFilter")
@@ -217,3 +226,5 @@ fun FormValues.toFilter() =
     Filter(packageName, queryPattern, action, buttonPattern, activeTime, activeDays)
 
 enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX, INVALID_TIME_RANGE }
+
+enum class DialogState { TOGGLE_HISTORY, TOGGLE_FILTER, DELETE }

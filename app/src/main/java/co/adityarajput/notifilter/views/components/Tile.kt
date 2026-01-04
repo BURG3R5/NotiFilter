@@ -1,5 +1,8 @@
 package co.adityarajput.notifilter.views.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -31,13 +34,21 @@ fun Tile(
     trailing: String? = null,
     preContent: String? = null,
     onClick: () -> Unit = {},
+    buttons: @Composable RowScope.() -> Unit = {},
+    expanded: Boolean = false,
     dividerBetweenTitleAndContent: Boolean = false,
 ) {
     Card(
         onClick,
         Modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.padding_small)),
+            .padding(dimensionResource(R.dimen.padding_small))
+            .animateContentSize(
+                tween(
+                    durationMillis = 300,
+                    easing = LinearOutSlowInEasing,
+                ),
+            ),
     ) {
         Column(
             Modifier
@@ -81,6 +92,7 @@ fun Tile(
                 content,
                 style = MaterialTheme.typography.bodySmall,
             )
+            if (expanded) Row(Modifier.fillMaxWidth(), Arrangement.End) { buttons() }
         }
     }
 }
@@ -113,11 +125,13 @@ private fun FilterTiles() {
                     "/${filter.queryPattern}/",
                     stringResource(filter.action.displayString, filter.buttonPattern ?: ' '),
                     filter.packageName.getLast(30),
-                    if (filter.enabled) filter.hits.withUnit(stringResource(R.string.hit))
-                    else stringResource(R.string.disabled),
+                    if (!filter.enabled) stringResource(R.string.filter_disabled)
+                    else if (!filter.historyEnabled) stringResource(R.string.history_disabled)
+                    else filter.hits.withUnit(stringResource(R.string.hit)),
                     filter.getScheduleString(),
                     { },
-                    true,
+                    { Text("BUTTONS") },
+                    filter.enabled,
                 )
         }
     }

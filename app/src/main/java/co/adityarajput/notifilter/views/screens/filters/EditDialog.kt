@@ -3,43 +3,82 @@ package co.adityarajput.notifilter.views.screens.filters
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.utils.getToggleString
+import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 
 @Composable
 fun EditFilterDialog(viewModel: FiltersViewModel) {
-    val hideDialog = { viewModel.selectedFilter = null }
+    val hideDialog = { viewModel.dialogState = null }
+    val dialogState = viewModel.dialogState!!
+    val filter = viewModel.selectedFilter!!
 
     AlertDialog(
         hideDialog,
-        title = { Text(stringResource(R.string.edit_filter)) },
+        title = {
+            Text(
+                when (dialogState) {
+                    DialogState.TOGGLE_HISTORY -> stringResource(
+                        R.string.toggle_history,
+                        filter.historyEnabled.getToggleString(),
+                    )
+
+                    DialogState.TOGGLE_FILTER -> stringResource(
+                        R.string.toggle_filter,
+                        filter.enabled.getToggleString(),
+                    )
+
+                    DialogState.DELETE -> stringResource(R.string.delete_filter)
+                },
+            )
+        },
         text = {
             Text(
-                stringResource(
-                    R.string.delete_warning,
-                    if (viewModel.selectedFilter!!.enabled) stringResource(R.string.disable_suggestion) else "",
-                ),
+                when (dialogState) {
+                    DialogState.TOGGLE_HISTORY -> stringResource(
+                        if (filter.historyEnabled) R.string.disable_history_confirmation else R.string.enable_history_confirmation,
+                    )
+
+                    DialogState.TOGGLE_FILTER -> stringResource(
+                        R.string.toggle_filter_confirmation,
+                        filter.enabled.getToggleString(),
+                    )
+
+                    DialogState.DELETE -> stringResource(
+                        R.string.delete_confirmation,
+                        if (filter.enabled) stringResource(R.string.disable_suggestion) else "",
+                    )
+                },
             )
         },
         confirmButton = {
             Row {
                 TextButton(
                     {
-                        viewModel.toggleFilter()
+                        when (dialogState) {
+                            DialogState.TOGGLE_HISTORY -> viewModel.toggleHistory()
+                            DialogState.TOGGLE_FILTER -> viewModel.toggleFilter()
+                            DialogState.DELETE -> viewModel.deleteFilter()
+                        }
                         hideDialog()
                     },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = if (dialogState == DialogState.DELETE) MaterialTheme.colorScheme.tertiary
+                        else Color.Unspecified,
+                    ),
                 ) {
-                    Text(stringResource(if (viewModel.selectedFilter!!.enabled) R.string.disable else R.string.enable))
+                    Text(
+                        when (dialogState) {
+                            DialogState.TOGGLE_HISTORY -> filter.historyEnabled.getToggleString()
+                            DialogState.TOGGLE_FILTER -> filter.enabled.getToggleString()
+                            DialogState.DELETE -> stringResource(R.string.delete)
+                        },
+                    )
                 }
-                TextButton(
-                    {
-                        viewModel.deleteFilter()
-                        hideDialog()
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
-                ) { Text(stringResource(R.string.delete)) }
             }
         },
         dismissButton = {

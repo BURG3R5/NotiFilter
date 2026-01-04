@@ -17,14 +17,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.utils.getLast
+import co.adityarajput.notifilter.utils.getToggleString
 import co.adityarajput.notifilter.utils.withUnit
+import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.Tile
-import co.adityarajput.notifilter.views.icons.Add
-import co.adityarajput.notifilter.views.icons.History
-import co.adityarajput.notifilter.views.icons.Settings
+import co.adityarajput.notifilter.views.icons.*
 
 @Composable
 fun FiltersScreen(
@@ -91,10 +91,38 @@ fun FiltersScreen(
                         "/${it.queryPattern}/",
                         stringResource(it.action.displayString, it.buttonPattern ?: ' '),
                         it.packageName.getLast(30),
-                        if (it.enabled) it.hits.withUnit(stringResource(R.string.hit))
-                        else stringResource(R.string.disabled),
+                        if (!it.enabled) stringResource(R.string.filter_disabled)
+                        else if (!it.historyEnabled) stringResource(R.string.history_disabled)
+                        else it.hits.withUnit(stringResource(R.string.hit)),
                         it.getScheduleString(),
                         { viewModel.selectedFilter = it },
+                        {
+                            IconButton({ viewModel.dialogState = DialogState.TOGGLE_HISTORY }) {
+                                Icon(
+                                    ToggleHistory,
+                                    stringResource(
+                                        R.string.toggle_history,
+                                        it.historyEnabled.getToggleString(),
+                                    ),
+                                )
+                            }
+                            IconButton({ viewModel.dialogState = DialogState.TOGGLE_FILTER }) {
+                                Icon(
+                                    if (it.enabled) Archive else Unarchive,
+                                    stringResource(
+                                        R.string.toggle_filter,
+                                        it.enabled.getToggleString(),
+                                    ),
+                                )
+                            }
+                            IconButton(
+                                { viewModel.dialogState = DialogState.DELETE },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.tertiary,
+                                ),
+                            ) { Icon(Delete, stringResource(R.string.delete)) }
+                        },
+                        viewModel.selectedFilter == it,
                         true,
                     )
                 }
@@ -102,6 +130,8 @@ fun FiltersScreen(
         }
         if (viewModel.showAddDialog) AddFilterDialog(viewModel)
         if (viewModel.showSettingsDialog) SettingsDialog(viewModel)
-        if (viewModel.selectedFilter != null) EditFilterDialog(viewModel)
+        if (viewModel.selectedFilter != null && viewModel.dialogState != null) EditFilterDialog(
+            viewModel,
+        )
     }
 }

@@ -14,6 +14,9 @@ interface FilterDao {
     @Query("UPDATE filters SET hits = hits + 1 WHERE id = :id")
     suspend fun registerHit(id: Int)
 
+    @Query("UPDATE filters SET historyEnabled = 1 - historyEnabled WHERE id = :id")
+    suspend fun toggleHistory(id: Int)
+
     @Query("UPDATE filters SET enabled = 1 - enabled WHERE id = :id")
     suspend fun toggleEnabled(id: Int)
 

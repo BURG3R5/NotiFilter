@@ -21,6 +21,8 @@ data class Filter(
     val hits: Int = 0,
     @ColumnInfo(defaultValue = "1")
     val enabled: Boolean = true,
+    @ColumnInfo(defaultValue = "1")
+    val historyEnabled: Boolean = true,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
