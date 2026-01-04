@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.R
+import kotlinx.serialization.Serializable
 import java.util.Locale
 
+@Serializable
 @Entity(tableName = "filters")
 data class Filter(
     val packageName: String,
@@ -28,6 +30,7 @@ data class Filter(
     val id: Int = 0,
 )
 
+@Serializable
 enum class Action(val displayString: Int, val descriptionString: Int) {
     DISMISS(R.string.dismiss_short, R.string.dismiss_long),
     TAP(R.string.tap_short, R.string.tap_long),

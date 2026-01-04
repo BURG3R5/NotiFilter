@@ -29,34 +29,29 @@ import co.adityarajput.notifilter.views.icons.*
 @Composable
 fun FiltersScreen(
     goToNotificationsScreen: () -> Unit,
-    goToAboutScreen: () -> Unit,
+    goToSettingsScreen: () -> Unit,
     viewModel: FiltersViewModel = viewModel(factory = Provider.Factory),
 ) {
     val filtersState = viewModel.filtersState.collectAsState()
 
     Scaffold(
         topBar = {
-            AppBar(
-                stringResource(R.string.app_name),
-                false,
-                goToAboutScreen,
-                {
-                    IconButton({ viewModel.showSettingsDialog = true }) {
-                        Icon(
-                            Settings,
-                            stringResource(R.string.app_settings),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                    IconButton(goToNotificationsScreen) {
-                        Icon(
-                            History,
-                            stringResource(R.string.history),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                },
-            )
+            AppBar(stringResource(R.string.app_name), false) {
+                IconButton(goToSettingsScreen) {
+                    Icon(
+                        Settings,
+                        stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+                IconButton(goToNotificationsScreen) {
+                    Icon(
+                        History,
+                        stringResource(R.string.history),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -128,10 +123,9 @@ fun FiltersScreen(
                 }
             }
         }
-        if (viewModel.showAddDialog) AddFilterDialog(viewModel)
-        if (viewModel.showSettingsDialog) SettingsDialog(viewModel)
-        if (viewModel.selectedFilter != null && viewModel.dialogState != null) EditFilterDialog(
-            viewModel,
-        )
+        if (viewModel.showAddDialog)
+            AddFilterDialog(viewModel)
+        if (viewModel.selectedFilter != null && viewModel.dialogState != null)
+            EditFilterDialog(viewModel)
     }
 }

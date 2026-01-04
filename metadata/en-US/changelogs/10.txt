@@ -1,0 +1,2 @@
+• feat: Manage history for individual filters
+• feat: Add import/export functionality

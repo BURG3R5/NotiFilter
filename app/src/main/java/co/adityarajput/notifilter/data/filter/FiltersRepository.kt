@@ -3,6 +3,11 @@ package co.adityarajput.notifilter.data.filter
 class FiltersRepository(private val filterDao: FilterDao) {
     suspend fun create(filter: Filter) = filterDao.create(filter)
 
+    suspend fun replaceAll(filters: List<Filter>) {
+        filterDao.deleteAll()
+        filterDao.createAll(filters)
+    }
+
     fun list() = filterDao.list()
 
     suspend fun registerHit(filter: Filter) = filterDao.registerHit(filter.id)

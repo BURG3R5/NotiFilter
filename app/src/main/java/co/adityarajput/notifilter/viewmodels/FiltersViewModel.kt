@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.adityarajput.notifilter.Constants
@@ -37,12 +36,7 @@ class FiltersViewModel : ViewModel {
 
     val activeNotificationsState: StateFlow<ActiveNotificationsState>
 
-    var isStoringActiveNotifications by mutableStateOf(false)
-        private set
-
     var showAddDialog by mutableStateOf(false)
-
-    var showSettingsDialog by mutableStateOf(false)
 
     var visibleApps: List<Pair<String, String>> = emptyList()
         private set
@@ -80,9 +74,6 @@ class FiltersViewModel : ViewModel {
                 ActiveNotificationsState(),
             )
 
-        isStoringActiveNotifications =
-            sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)
-
         viewModelScope.launch {
             visibleApps = packageManager.queryIntentActivities(
                 Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
@@ -102,15 +93,12 @@ class FiltersViewModel : ViewModel {
         }
     }
 
-    fun toggleStoringActiveNotifications() {
-        val current = isStoringActiveNotifications
-        sharedPreferences.edit { putBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, !current) }
-        isStoringActiveNotifications = !current
-        if (!isStoringActiveNotifications) viewModelScope.launch { activeNotificationsRepository.deleteAll() }
-    }
-
     fun ensureCorrectInitialFormPage() {
         if (isDoneWithZapper) return
+
+        val isStoringActiveNotifications =
+            sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)
+
         if (isStoringActiveNotifications && formState.page != FormPage.ZAPPER) {
             formState = formState.copy(page = FormPage.ZAPPER)
         } else if (!isStoringActiveNotifications && formState.page != FormPage.PACKAGE) {

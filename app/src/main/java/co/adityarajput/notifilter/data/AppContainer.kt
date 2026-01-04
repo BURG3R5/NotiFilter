@@ -7,7 +7,9 @@ import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.data.notification.NotificationsRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 
 class AppContainer(private val context: Context) {
     val filtersRepository: FiltersRepository by lazy {
@@ -21,6 +23,12 @@ class AppContainer(private val context: Context) {
             NotiFilterDatabase.getDatabase(context).activeNotificationDao(),
         )
     }
+
+    suspend fun export() =
+        Json.encodeToString<List<Filter>>(filtersRepository.list().first())
+
+    suspend fun import(json: String) =
+        filtersRepository.replaceAll(Json.decodeFromString<List<Filter>>(json))
 
     fun seedDemoData() {
         runBlocking {
