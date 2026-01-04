@@ -20,6 +20,7 @@ your filters.
 - **Actions** - Choose whether to tap a button in the notification or to dismiss it entirely ⚙
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
+- **Export/Import** - Backup or transfer your filters as JSON files 📂
 - **Free, open-source & private**
     - No ads, subscriptions, or in-app purchases 🆓
     - Licensed under the [GPLv3](https://github.com/BURG3R5/notifilter/blob/dev/LICENSE) 📃
