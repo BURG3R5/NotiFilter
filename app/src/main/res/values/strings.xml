@@ -10,12 +10,17 @@
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
-    <string name="app_settings">App settings</string>
-    <string name="justify_ignoring_battery_optimization">Ignoring battery optimization minimizes delays in notification dismissal.</string>
-    <string name="justify_storing_active_notifications">Storing active notifications simplifies filter creation.</string>
-    <string name="enable_optimization">Enable optimization</string>
-    <string name="enable_storage">Enable storage</string>
-    <string name="disable_storage">Disable storage</string>
+    <string name="settings">Settings</string>
+    <string name="disable_battery_optimization">Disable battery optimization</string>
+    <string name="justify_disabling_battery_optimization">Unrestricted background usage minimizes delays in notification dismissal</string>
+    <string name="store_active_notifications">Store active notifications</string>
+    <string name="justify_storing_active_notifications">Storing active notifications simplifies filter creation</string>
+    <string name="import_filters">Import filters</string>
+    <string name="import_warning">Overrides your current filters</string>
+    <string name="import_success">Filters imported successfully</string>
+    <string name="export_filters">Export filters</string>
+    <string name="export_explanation">Generates a JSON export of your filters</string>
+    <string name="export_success">Filters exported successfully</string>
     <string name="done">Done</string>
 
     <string name="add_filter">Add filter</string>
@@ -61,6 +66,7 @@
     <string name="disable_optimization">Disable optimization</string>
     <string name="skip">Skip</string>
     <string name="onboarding_info_3">To simplify the filter creation process, NotiFilter can store \"active\" notifications, so you don\'t need to know the exact app or service sending the notification.</string>
+    <string name="enable_storage">Enable storage</string>
 
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly dismisses the ones that match your filters."</string>
@@ -70,4 +76,5 @@
 
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
+    <string name="alttext_info">Info</string>
 </resources>

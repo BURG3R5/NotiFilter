@@ -8,6 +8,9 @@ interface FilterDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun create(filter: Filter)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createAll(filters: List<Filter>)
+
     @Query("SELECT * from filters ORDER BY packageName ASC")
     fun list(): Flow<List<Filter>>
 
@@ -22,4 +25,7 @@ interface FilterDao {
 
     @Delete
     suspend fun delete(filter: Filter)
+
+    @Query("DELETE FROM filters")
+    suspend fun deleteAll()
 }

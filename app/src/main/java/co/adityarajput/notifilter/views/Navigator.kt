@@ -11,6 +11,7 @@ import co.adityarajput.notifilter.views.screens.about.AboutScreen
 import co.adityarajput.notifilter.views.screens.filters.FiltersScreen
 import co.adityarajput.notifilter.views.screens.notifications.NotificationsScreen
 import co.adityarajput.notifilter.views.screens.permissions.PermissionScreen
+import co.adityarajput.notifilter.views.screens.settings.SettingsScreen
 
 @Composable
 fun Navigator(controller: NavHostController) {
@@ -34,17 +35,24 @@ fun Navigator(controller: NavHostController) {
         composable(Routes.FILTERS.name) {
             FiltersScreen(
                 { controller.navigate(Routes.NOTIFICATIONS.name) },
-                { controller.navigate(Routes.ABOUT.name) },
+                { controller.navigate(Routes.SETTINGS.name) },
             )
         }
-        composable(Routes.NOTIFICATIONS.name) { NotificationsScreen({ controller.popBackStack() }) }
-        composable(Routes.ABOUT.name) { AboutScreen({ controller.popBackStack() }) }
+        composable(Routes.NOTIFICATIONS.name) { NotificationsScreen(controller::popBackStack) }
+        composable(Routes.SETTINGS.name) {
+            SettingsScreen(
+                { controller.navigate(Routes.ABOUT.name) },
+                controller::popBackStack,
+            )
+        }
+        composable(Routes.ABOUT.name) { AboutScreen(controller::popBackStack) }
     }
 }
 
-enum class Routes() {
+enum class Routes {
     PERMISSION,
     FILTERS,
     NOTIFICATIONS,
+    SETTINGS,
     ABOUT,
 }
