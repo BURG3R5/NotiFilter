@@ -3,10 +3,7 @@ package co.adityarajput.notifilter.services
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import co.adityarajput.notifilter.Constants
-import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.data.AppContainer
-import co.adityarajput.notifilter.data.active_notification.ActiveNotification
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.notification.Notification
@@ -18,18 +15,22 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class NotificationListener : NotificationListenerService() {
+    companion object {
+        @Volatile
+        var instance: NotificationListener? = null
+    }
+
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
     private val filtersRepository by lazy { AppContainer(this).filtersRepository }
     private val notificationsRepository by lazy { AppContainer(this).notificationsRepository }
-    private val activeNotificationsRepository by lazy { AppContainer(this).activeNotificationsRepository }
-    private val sharedPreferences by lazy { this.getSharedPreferences(SETTINGS, MODE_PRIVATE) }
 
     @Volatile
     private var filters: List<Filter> = emptyList()
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         Log.d("NotificationListener", "Service created")
 
         serviceScope.launch {
@@ -46,18 +47,8 @@ class NotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        val notification = Notification(
-            sbn.notification.extras.getString("android.title") ?: "",
-            sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-            sbn.packageName,
-        )
+        val notification = Notification(sbn)
         Log.d("NotificationListener", "Received $notification")
-
-        if (sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)) {
-            serviceScope.launch {
-                activeNotificationsRepository.create(ActiveNotification(notification.copy(id = sbn.key.hashCode())))
-            }
-        }
 
         val calendar = Calendar.getInstance()
         val minutesOfDay = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
@@ -105,12 +96,9 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    override fun onNotificationRemoved(sbn: StatusBarNotification) {
-        serviceScope.launch { activeNotificationsRepository.delete(sbn.key.hashCode()) }
-    }
-
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
+        if (instance == this) instance = null
         Log.d("NotificationListener", "Listener disconnected")
     }
 

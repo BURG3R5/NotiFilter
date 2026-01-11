@@ -1,7 +1,6 @@
 package co.adityarajput.notifilter.views.screens.settings
 
 import android.annotation.SuppressLint
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -21,9 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.edit
 import androidx.core.net.toUri
-import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
@@ -45,19 +42,12 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     val handler = remember { Handler(Looper.getMainLooper()) }
     val appContainer = remember { AppContainer(context) }
-    val sharedPreferences =
-        remember { context.getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
 
     var isInvincible by remember { mutableStateOf(true) }
-    var isStoringActiveNotifications by remember {
-        mutableStateOf(sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false))
-    }
 
     val watcher = object : Runnable {
         override fun run() {
             isInvincible = context.hasUnrestrictedBackgroundUsagePermission()
-            isStoringActiveNotifications =
-                sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)
             handler.postDelayed(this, 1000)
         }
     }
@@ -92,11 +82,13 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
+                            .padding(
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_medium),
+                            ),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column(Modifier.weight(1f)) {
@@ -123,34 +115,6 @@ fun SettingsScreen(
                             },
                         )
                     }
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.store_active_notifications))
-                            Text(
-                                stringResource(R.string.justify_storing_active_notifications),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                        Switch(
-                            isStoringActiveNotifications,
-                            {
-                                isStoringActiveNotifications = it
-                                sharedPreferences.edit {
-                                    putBoolean(
-                                        Constants.STORE_ACTIVE_NOTIFICATIONS,
-                                        it,
-                                    )
-                                }
-                            },
-                        )
-                    }
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
                 }
                 Card(
                     Modifier

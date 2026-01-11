@@ -1,7 +1,6 @@
 package co.adityarajput.notifilter.data
 
 import android.content.Context
-import co.adityarajput.notifilter.data.active_notification.ActiveNotificationsRepository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
@@ -17,11 +16,6 @@ class AppContainer(private val context: Context) {
     }
     val notificationsRepository: NotificationsRepository by lazy {
         NotificationsRepository(NotiFilterDatabase.getDatabase(context).notificationDao())
-    }
-    val activeNotificationsRepository by lazy {
-        ActiveNotificationsRepository(
-            NotiFilterDatabase.getDatabase(context).activeNotificationDao(),
-        )
     }
 
     suspend fun export() =

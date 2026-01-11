@@ -1,7 +1,6 @@
 package co.adityarajput.notifilter.views.screens.permissions
 
 import android.annotation.SuppressLint
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -15,9 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.edit
 import androidx.core.net.toUri
-import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
@@ -29,18 +26,16 @@ import co.adityarajput.notifilter.views.components.AppBar
 fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
-    val sharedPreferences =
-        remember { context.getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
 
     var hasRequiredPermission by remember { mutableStateOf(false) }
     var hasOptionalPermission by remember { mutableStateOf(false) }
-    var skipOptionalPermission by remember { mutableStateOf(false) }
 
     val watcher = object : Runnable {
         override fun run() {
             hasRequiredPermission = context.hasNotificationListenerPermission()
             hasOptionalPermission = context.hasUnrestrictedBackgroundUsagePermission()
-            handler.postDelayed(this, 1000)
+            if (hasRequiredPermission && hasOptionalPermission) goToFiltersScreen()
+            else handler.postDelayed(this, 500)
         }
     }
     DisposableEffect(Unit) {
@@ -71,7 +66,7 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     ) { Text(stringResource(R.string.grant_permission)) }
-                } else if (!hasOptionalPermission && !skipOptionalPermission) {
+                } else {
                     Text(stringResource(R.string.onboarding_info_2))
                     Button(
                         {
@@ -84,25 +79,9 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     ) { Text(stringResource(R.string.disable_optimization)) }
-                    TextButton({ skipOptionalPermission = true }) {
+                    TextButton(goToFiltersScreen) {
                         Text(stringResource(R.string.skip))
                     }
-                } else {
-                    Text(stringResource(R.string.onboarding_info_3))
-                    Button(
-                        {
-                            sharedPreferences.edit {
-                                putBoolean(
-                                    Constants.STORE_ACTIVE_NOTIFICATIONS,
-                                    true,
-                                )
-                            }
-                            goToFiltersScreen()
-                        },
-                        Modifier.padding(top = dimensionResource(R.dimen.padding_large)),
-                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    ) { Text(stringResource(R.string.enable_storage)) }
-                    TextButton(goToFiltersScreen) { Text(stringResource(R.string.skip)) }
                 }
             }
         }
