@@ -29,6 +29,7 @@ import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.services.NotificationListener
+import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.FormError
@@ -52,13 +53,6 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
             TextButton(
                 {
                     if (!viewModel.formState.page.isFinalPage()) {
-                        if (listOf(
-                                FormPage.ZAPPER,
-                                FormPage.PACKAGE,
-                            ).contains(viewModel.formState.page)
-                        ) {
-                            viewModel.isDoneWithZapper = true
-                        }
                         viewModel.updateForm(
                             viewModel.formState.page.nextPage(),
                             viewModel.formState.values,
@@ -83,7 +77,6 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
         dismissButton = {
             TextButton(
                 {
-                    viewModel.isDoneWithZapper = false
                     viewModel.formState = FormState()
                     viewModel.showAddDialog = false
                 },
@@ -158,9 +151,15 @@ private fun Form(viewModel: FiltersViewModel) {
                                 onClick = {
                                     viewModel.updateForm(
                                         FormPage.PACKAGE,
-                                        formState.values.copy(packageName = it.packageName),
+                                        formState.values.copy(
+                                            packageName = it.packageName,
+                                            queryPatternPlaceholder = context.getString(
+                                                R.string.query_pattern_placeholder_complex,
+                                                it.title.getFirst(20),
+                                                it.content.getFirst(20),
+                                            ),
+                                        ),
                                     )
-                                    viewModel.isDoneWithZapper = true
                                 },
                             )
                         }
@@ -187,7 +186,7 @@ private fun Form(viewModel: FiltersViewModel) {
                             .fillMaxWidth()
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                         label = { Text(stringResource(R.string.package_name)) },
-                        supportingText = { Text(stringResource(R.string.search_apps)) },
+                        placeholder = { Text(stringResource(R.string.package_name_placeholder)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                             unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -242,6 +241,13 @@ private fun Form(viewModel: FiltersViewModel) {
                     },
                     Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.notification_pattern)) },
+                    placeholder = {
+                        Text(
+                            formState.values.queryPatternPlaceholder ?: stringResource(
+                                R.string.query_pattern_placeholder_simple,
+                            ),
+                        )
+                    },
                     supportingText = {
                         Text(
                             AnnotatedString.fromHtml(

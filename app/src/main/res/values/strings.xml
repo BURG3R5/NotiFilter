@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">3.1.0</string>
+    <string name="app_version">3.1.1</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="dismiss_short">dismiss notification</string>
@@ -27,8 +27,10 @@
     <string name="show_system_packages">Show system packages?</string>
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>
-    <string name="search_apps">Search installed apps</string>
+    <string name="package_name_placeholder">Search installed apps</string>
     <string name="notification_pattern">Notification pattern</string>
+    <string name="query_pattern_placeholder_simple">Enter a regex pattern</string>
+    <string name="query_pattern_placeholder_complex">Enter a pattern targeting \'%1$s\' or \'%2$s\'</string>
     <string name="regexr_link"><![CDATA[Enter valid <a href=\"https://regexr.com/\">regex↗</a>]]></string>
     <string name="pattern_advice">Tip: Include keywords but exclude non-essentials</string>
     <string name="invalid_regex">Regex pattern contains errors</string>

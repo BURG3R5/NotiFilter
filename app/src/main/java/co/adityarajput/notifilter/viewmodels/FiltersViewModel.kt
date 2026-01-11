@@ -34,8 +34,6 @@ class FiltersViewModel : ViewModel {
 
     var formState by mutableStateOf(FormState())
 
-    var isDoneWithZapper by mutableStateOf(false)
-
     var dialogState by mutableStateOf<DialogState?>(null)
 
     var selectedFilter by mutableStateOf<Filter?>(null)
@@ -167,6 +165,7 @@ enum class FormPage {
 data class FormValues(
     val packageName: String = "",
     val queryPattern: String = "",
+    val queryPatternPlaceholder: String? = null,
     val action: Action = Action.DISMISS,
     val buttonPattern: String = "",
     val activeTime: Pair<Int, Int> = 0 to 1439,
