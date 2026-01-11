@@ -66,7 +66,7 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     ) { Text(stringResource(R.string.grant_permission)) }
-                } else {
+                } else if (!hasOptionalPermission) {
                     Text(stringResource(R.string.onboarding_info_2))
                     Button(
                         {
@@ -82,6 +82,8 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
                     TextButton(goToFiltersScreen) {
                         Text(stringResource(R.string.skip))
                     }
+                } else {
+                    CircularProgressIndicator()
                 }
             }
         }
