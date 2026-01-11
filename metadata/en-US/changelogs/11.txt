@@ -1,0 +1,4 @@
+feat: Use Android's getActiveNotifications() instead of storing them
+feat: Utilize zapped notification in query pattern input
+
+Rather than maintaining a table of "active notifications", the OS will be queried for active notifications during filter creation.
