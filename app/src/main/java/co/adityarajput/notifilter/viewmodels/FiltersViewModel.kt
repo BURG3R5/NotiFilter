@@ -1,7 +1,6 @@
 package co.adityarajput.notifilter.viewmodels
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,9 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.adityarajput.notifilter.Constants
-import co.adityarajput.notifilter.data.active_notification.ActiveNotification
-import co.adityarajput.notifilter.data.active_notification.ActiveNotificationsRepository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
@@ -23,18 +19,10 @@ import kotlinx.coroutines.launch
 
 data class FiltersState(val filters: List<Filter>? = null)
 
-data class ActiveNotificationsState(val value: List<ActiveNotification>? = null)
-
 class FiltersViewModel : ViewModel {
     private val filtersRepository: FiltersRepository
 
-    private val activeNotificationsRepository: ActiveNotificationsRepository
-
-    private val sharedPreferences: SharedPreferences
-
     val filtersState: StateFlow<FiltersState>
-
-    val activeNotificationsState: StateFlow<ActiveNotificationsState>
 
     var showAddDialog by mutableStateOf(false)
 
@@ -54,25 +42,13 @@ class FiltersViewModel : ViewModel {
 
     constructor(
         filtersRepository: FiltersRepository,
-        activeNotificationsRepository: ActiveNotificationsRepository,
         packageManager: PackageManager,
-        sharedPreferences: SharedPreferences,
     ) : super() {
         this.filtersRepository = filtersRepository
-        this.activeNotificationsRepository = activeNotificationsRepository
-        this.sharedPreferences = sharedPreferences
 
         filtersState = filtersRepository.list()
             .map { FiltersState(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersState())
-
-        activeNotificationsState = activeNotificationsRepository.list()
-            .map { ActiveNotificationsState(it) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                ActiveNotificationsState(),
-            )
 
         viewModelScope.launch {
             visibleApps = packageManager.queryIntentActivities(
@@ -90,19 +66,6 @@ class FiltersViewModel : ViewModel {
                     it.loadLabel(packageManager).toString(),
                 )
             }.sortedBy { it.second }
-        }
-    }
-
-    fun ensureCorrectInitialFormPage() {
-        if (isDoneWithZapper) return
-
-        val isStoringActiveNotifications =
-            sharedPreferences.getBoolean(Constants.STORE_ACTIVE_NOTIFICATIONS, false)
-
-        if (isStoringActiveNotifications && formState.page != FormPage.ZAPPER) {
-            formState = formState.copy(page = FormPage.ZAPPER)
-        } else if (!isStoringActiveNotifications && formState.page != FormPage.PACKAGE) {
-            formState = formState.copy(page = FormPage.PACKAGE)
         }
     }
 

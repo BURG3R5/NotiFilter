@@ -1,6 +1,8 @@
 package co.adityarajput.notifilter.views.screens.filters
 
 import android.app.TimePickerDialog
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
+import co.adityarajput.notifilter.data.notification.Notification
+import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.FormError
@@ -93,12 +97,34 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Form(viewModel: FiltersViewModel) {
-    viewModel.ensureCorrectInitialFormPage()
-
     val context = LocalContext.current
+    val handler = remember { Handler(Looper.getMainLooper()) }
+
     val formState = viewModel.formState
 
-    val activeNotifications by viewModel.activeNotificationsState.collectAsState()
+    var activeNotifications: List<Notification> by remember {
+        mutableStateOf(
+            NotificationListener.instance
+                ?.activeNotifications
+                ?.mapIndexed { i, sbn -> Notification(sbn, i) }
+                ?: listOf(),
+        )
+    }
+
+    val watcher = object : Runnable {
+        override fun run() {
+            activeNotifications =
+                NotificationListener.instance
+                    ?.activeNotifications
+                    ?.mapIndexed { i, sbn -> Notification(sbn, i) }
+                    ?: activeNotifications
+            handler.postDelayed(this, 500)
+        }
+    }
+    DisposableEffect(Unit) {
+        handler.post(watcher)
+        onDispose { handler.removeCallbacksAndMessages(null) }
+    }
 
     var showSystemPackages by remember { mutableStateOf(false) }
 
@@ -113,9 +139,7 @@ private fun Form(viewModel: FiltersViewModel) {
     ) {
         when (formState.page) {
             FormPage.ZAPPER -> {
-                if (activeNotifications.value == null) {
-                    Box(Modifier.fillMaxWidth(), Alignment.Center) { CircularProgressIndicator() }
-                } else if (activeNotifications.value!!.isEmpty()) {
+                if (activeNotifications.isEmpty()) {
                     Box(Modifier.fillMaxWidth(), Alignment.Center) {
                         Text(
                             stringResource(R.string.no_active_notifications),
@@ -126,15 +150,15 @@ private fun Form(viewModel: FiltersViewModel) {
                 } else {
                     Text(stringResource(R.string.active_notifications))
                     LazyColumn(Modifier.fillMaxWidth()) {
-                        items(activeNotifications.value!!, { it.notification.id }) {
+                        items(activeNotifications, { it.id }) {
                             Tile(
-                                it.notification.title,
-                                it.notification.content,
-                                it.notification.packageName.getLast(30),
+                                it.title,
+                                it.content,
+                                it.packageName.getLast(30),
                                 onClick = {
                                     viewModel.updateForm(
                                         FormPage.PACKAGE,
-                                        formState.values.copy(packageName = it.notification.packageName),
+                                        formState.values.copy(packageName = it.packageName),
                                     )
                                     viewModel.isDoneWithZapper = true
                                 },

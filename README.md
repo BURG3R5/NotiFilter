@@ -26,3 +26,7 @@ your filters.
     - Licensed under the [GPLv3](https://github.com/BURG3R5/notifilter/blob/dev/LICENSE) 📃
     - Fully offline; your data never leaves your device 🔐
 - **Lightweight** - Runs in the background with minimal battery and memory usage ⏩
+
+## Usage
+
+Refer to the [wiki](https://github.com/BURG3R5/NotiFilter/wiki) for instructions, examples, tips, and FAQs.
