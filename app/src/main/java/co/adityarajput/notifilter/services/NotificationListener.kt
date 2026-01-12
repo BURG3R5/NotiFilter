@@ -128,6 +128,23 @@ class NotificationListener : NotificationListenerService() {
                     min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
                 )
             }
+
+            Action.DELAY -> {
+                val zone = ZoneId.systemDefault()
+                val now = ZonedDateTime.now(zone)
+                val delay = now.until(
+                    now.toLocalDate().atStartOfDay(zone)
+                        .plusMinutes(filter.activeTime.second.toLong()),
+                    MILLIS,
+                )
+
+                if (delay < 1000L) {
+                    Log.d("NotificationListener", "Less than 1 second until filter deactivation")
+                    return
+                }
+
+                snoozeNotification(sbn.key, delay)
+            }
         }
 
         if (!filter.historyEnabled) {

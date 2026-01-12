@@ -26,49 +26,80 @@ class AppContainer(private val context: Context) {
 
     fun seedDemoData() {
         runBlocking {
-            filtersRepository.create(
-                Filter(
-                    "com.google.android.deskclock",
-                    "Upcoming alarm",
-                    Action.DISMISS,
-                    activeTime = 9 * 60 to 17 * 60,
-                    hits = 87,
-                ),
-            )
-            filtersRepository.create(
-                Filter(
-                    "com.wssyncmldm",
-                    "software update",
-                    Action.TAP,
-                    "Remind me",
-                    activeDays = setOf(2, 3, 4, 5, 6),
-                    hits = 23,
-                ),
-            )
-            notificationsRepository.save(
-                Notification(
-                    "Upcoming alarm",
-                    "Wed 8:30 AM - Wake up",
-                    "com.wssyncmldm",
-                    System.currentTimeMillis() - 3456789 - 4 * 3600000,
-                ),
-            )
-            notificationsRepository.save(
-                Notification(
-                    "Upcoming alarm",
-                    "Wed 11:50 AM - Exercise",
-                    "com.wssyncmldm",
-                    System.currentTimeMillis() - 3456789,
-                ),
-            )
-            notificationsRepository.save(
-                Notification(
-                    "Download paused",
-                    "A software update is available.",
-                    "com.wssyncmldm",
-                    System.currentTimeMillis() - 1234567,
-                ),
-            )
+            if (
+                filtersRepository.list().first().isEmpty() &&
+                notificationsRepository.list().first().isEmpty()
+            ) {
+                listOf(
+                    Filter(
+                        "com.google.android.deskclock",
+                        "Upcoming alarm",
+                        Action.DISMISS,
+                        hits = 87,
+                        enabled = false,
+                    ),
+                    Filter(
+                        "com.wssyncmldm",
+                        "software update",
+                        Action.TAP,
+                        "Remind me",
+                        activeDays = setOf(2, 3, 4, 5, 6),
+                        hits = 23,
+                    ),
+                    Filter(
+                        "com.google.android.gm",
+                        "[Nn]ewsletter",
+                        Action.BATCH,
+                        batchLengthInHours = 3,
+                        historyEnabled = false,
+                    ),
+                    Filter(
+                        "com.whatsapp",
+                        "Book Club",
+                        Action.DELAY,
+                        activeTime = 9 * 60 to 17 * 60,
+                        hits = 15,
+                    ),
+                ).forEach { filtersRepository.create(it) }
+                listOf(
+                    Notification(
+                        "Download paused",
+                        "A software update is available.",
+                        "com.wssyncmldm",
+                        System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
+                    ),
+                    Notification(
+                        "Upcoming alarm",
+                        "Wed 8:30 AM - Wake up",
+                        "com.wssyncmldm",
+                        System.currentTimeMillis() - 28 * 60 * 60 * 1000,
+                    ),
+                    Notification(
+                        "Upcoming alarm",
+                        "Wed 11:30 AM - Exercise",
+                        "com.wssyncmldm",
+                        System.currentTimeMillis() - 25 * 60 * 60 * 1000,
+                    ),
+                    Notification(
+                        "tom@newsletter.tomscott.com",
+                        "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
+                        "com.google.android.gm",
+                        System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+                    ),
+                    Notification(
+                        "Book Club",
+                        "Alice: @BURG3R5 Don't forget, it's your turn to pick this week",
+                        "com.whatsapp",
+                        System.currentTimeMillis() - 42 * 60 * 1000,
+                    ),
+                    Notification(
+                        "Book Club",
+                        "Bob: Please go for something lighter this time. I'm tired of tomes!",
+                        "com.whatsapp",
+                        System.currentTimeMillis() - 37 * 60 * 1000,
+                    ),
+                ).forEach { notificationsRepository.save(it) }
+            }
         }
     }
 }

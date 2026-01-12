@@ -4,8 +4,7 @@
 
 **Silence annoying notifications**
 
-NotiFilter listens to all device notifications and quietly dismisses or taps the ones that match
-your filters.
+NotiFilter listens to all device notifications and quietly manages those that match your filters.
 
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/co.adityarajput.notifilter) [<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/BURG3R5/NotiFilter)
 
@@ -17,7 +16,11 @@ your filters.
 
 - **Filters** - Use [regex](https://regexr.com/) to precisely target annoying notifications from
   each app 🎯
-- **Actions** - Choose whether to tap a button in the notification or to dismiss it entirely ⚙
+- **Actions** - Choose what to do with the filtered notifications ⚙
+    1. Dismiss it 🚫
+    2. Tap a button ✅
+    3. Delay it ⏳
+    4. Collect into batches 📦
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
 - **Export/Import** - Backup or transfer your filters as JSON files 📂
@@ -29,4 +32,5 @@ your filters.
 
 ## Usage
 
-Refer to the [wiki](https://github.com/BURG3R5/NotiFilter/wiki) for instructions, examples, tips, and FAQs.
+Refer to the [wiki](https://github.com/BURG3R5/NotiFilter/wiki) for instructions, examples, tips,
+and FAQs.

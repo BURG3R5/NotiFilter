@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,7 +20,6 @@ import co.adityarajput.notifilter.data.filter.getActionString
 import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.getToggleString
-import co.adityarajput.notifilter.utils.withUnit
 import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -89,7 +89,7 @@ fun FiltersScreen(
                         it.packageName.getLast(30),
                         if (!it.enabled) stringResource(R.string.filter_disabled)
                         else if (!it.historyEnabled) stringResource(R.string.history_disabled)
-                        else it.hits.withUnit(stringResource(R.string.hit)),
+                        else pluralStringResource(R.plurals.hit, it.hits, it.hits),
                         it.getScheduleString(),
                         { viewModel.selectedFilter = it },
                         {

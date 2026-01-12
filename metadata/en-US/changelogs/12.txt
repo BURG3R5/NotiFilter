@@ -1,0 +1,4 @@
+• feat: Add "BATCH" action (ensures notifications are sent in batches, once every X hours)
+• fix: Ignore group summary notifications
+• fix: Display schedule correctly
+• feat: Add "DELAY" action (snoozes notifications until the filter becomes inactive)

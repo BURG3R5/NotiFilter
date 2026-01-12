@@ -1,12 +1,12 @@
 package co.adityarajput.notifilter.data.filter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.utils.withUnit
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -40,6 +40,7 @@ enum class Action(val description: Int) {
     DISMISS(R.string.dismiss_long),
     TAP(R.string.tap_long),
     BATCH(R.string.batch_long),
+    DELAY(R.string.delay_long),
 }
 
 @Composable
@@ -49,8 +50,10 @@ fun Filter.getActionString(): String {
         Action.TAP -> stringResource(R.string.tap_short, buttonPattern!!)
         Action.BATCH -> stringResource(
             R.string.batch_short,
-            batchLengthInHours!!.withUnit(stringResource(R.string.hour)),
+            pluralStringResource(R.plurals.hour, batchLengthInHours!!, batchLengthInHours),
         )
+
+        Action.DELAY -> stringResource(R.string.delay_short)
     }
 }
 
@@ -84,7 +87,7 @@ fun Filter.getScheduleString(): String {
                     activeTime.first / 60,
                     activeTime.first % 60,
                     activeTime.second / 60,
-                    activeTime.first % 60,
+                    activeTime.second % 60,
                 ),
             )
         }

@@ -1,14 +1,13 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">3.1.1</string>
+    <string name="app_version">3.2.0</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="dismiss_short">dismiss notification</string>
     <string name="tap_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
-    <string name="hour">hour</string>
-    <string name="hit">hit</string>
+    <string name="delay_short">delay notifications</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
@@ -21,10 +20,9 @@
     <string name="export_filters">Export filters</string>
     <string name="export_explanation">Generates a JSON export of your filters</string>
     <string name="export_success">Filters exported successfully</string>
-    <string name="done">Done</string>
 
     <string name="add_filter">Add filter</string>
-    <string name="no_active_notifications">Waiting for active notifications...</string>
+    <string name="no_active_notifications">Waiting for active notifications…</string>
     <string name="active_notifications">Active notifications:</string>
     <string name="show_system_packages">Show system packages?</string>
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
@@ -41,8 +39,10 @@
     <string name="tap_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
     <string name="batch_long">Batch notifications</string>
-    <string name="batch_frequency">Every %1$d hour(s)</string>
+    <string name="batch_frequency">Every %1$s</string>
+    <string name="delay_long">Delay notifications</string>
     <string name="schedule">Schedule:</string>
+    <string name="delay_action_reminder">Any notifications received during this time will be snoozed until the filter becomes inactive.</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
     <string name="next">Next</string>
@@ -64,14 +64,14 @@
     <string name="history">History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
 
-    <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all notifications and dismisses them based on your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
+    <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
     <string name="grant_permission">Grant permission</string>
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.</string>
     <string name="disable_optimization">Disable optimization</string>
     <string name="skip">Skip</string>
 
     <string name="about">About</string>
-    <string name="app_description">" listens to all device notifications and quietly dismisses the ones that match your filters."</string>
+    <string name="app_description">" listens to all device notifications and quietly manages those that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
     <string name="app_permissions"><![CDATA[Permissions used: <ul><li>BIND_NOTIFICATION_LISTENER_SERVICE - to listen and react to notifications</li><li>QUERY_ALL_PACKAGES - to search through installed apps while adding filters</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (optional) - to prevent app from being killed in the background</li></ul>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
@@ -79,4 +79,13 @@
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
     <string name="alttext_info">Info</string>
+
+    <plurals name="hour">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="hit">
+        <item quantity="one">%1$d hit</item>
+        <item quantity="other">%1$d hits</item>
+    </plurals>
 </resources>

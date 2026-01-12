@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -370,11 +371,17 @@ private fun Form(viewModel: FiltersViewModel) {
                                 Text(
                                     stringResource(
                                         R.string.batch_frequency,
-                                        formState.values.batchLengthInHours,
+                                        pluralStringResource(
+                                            R.plurals.hour,
+                                            formState.values.batchLengthInHours,
+                                            formState.values.batchLengthInHours,
+                                        ),
                                     ),
                                     Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                                 )
                             }
+
+                            Action.DELAY -> {}
                         }
                     }
                 }
@@ -468,6 +475,12 @@ private fun Form(viewModel: FiltersViewModel) {
                             formState.values.activeTime.second % 60,
                         ),
                         Modifier.clickable { endTimePicker.show() },
+                    )
+                }
+                if (formState.values.action == Action.DELAY) {
+                    Text(
+                        stringResource(R.string.delay_action_reminder),
+                        Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                     )
                 }
                 if (formState.error == FormError.BLANK_FIELDS) {

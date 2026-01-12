@@ -23,13 +23,6 @@ fun Long.toShortHumanReadableTime(): String {
     }
 }
 
-fun Int.withUnit(unit: String): String {
-    return when (this) {
-        1 -> "1 $unit"
-        else -> "$this ${unit}s"
-    }
-}
-
 fun String.getFirst(length: Int): String =
     if (this.length <= length) this else this.take(length - 3) + "..."
 
