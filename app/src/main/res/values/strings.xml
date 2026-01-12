@@ -7,8 +7,6 @@
     <string name="dismiss_short">dismiss notification</string>
     <string name="tap_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
-    <string name="hour">hour</string>
-    <string name="hit">hit</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
@@ -21,7 +19,6 @@
     <string name="export_filters">Export filters</string>
     <string name="export_explanation">Generates a JSON export of your filters</string>
     <string name="export_success">Filters exported successfully</string>
-    <string name="done">Done</string>
 
     <string name="add_filter">Add filter</string>
     <string name="no_active_notifications">Waiting for active notifications...</string>
@@ -41,7 +38,7 @@
     <string name="tap_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
     <string name="batch_long">Batch notifications</string>
-    <string name="batch_frequency">Every %1$d hour(s)</string>
+    <string name="batch_frequency">Every %1$s</string>
     <string name="schedule">Schedule:</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
@@ -79,4 +76,13 @@
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
     <string name="alttext_info">Info</string>
+
+    <plurals name="hour">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="hit">
+        <item quantity="one">%1$d hit</item>
+        <item quantity="other">%1$d hits</item>
+    </plurals>
 </resources>

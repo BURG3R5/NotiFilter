@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -23,7 +24,6 @@ import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
-import co.adityarajput.notifilter.utils.withUnit
 import co.adityarajput.notifilter.views.Theme
 
 @Composable
@@ -134,7 +134,7 @@ private fun FilterTiles() {
                     filter.packageName.getLast(30),
                     if (!filter.enabled) stringResource(R.string.filter_disabled)
                     else if (!filter.historyEnabled) stringResource(R.string.history_disabled)
-                    else filter.hits.withUnit(stringResource(R.string.hit)),
+                    else pluralStringResource(R.plurals.hit, filter.hits, filter.hits),
                     filter.getScheduleString(),
                     { },
                     { Text("BUTTONS") },
