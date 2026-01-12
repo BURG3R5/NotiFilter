@@ -6,6 +6,8 @@
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="dismiss_short">dismiss notification</string>
     <string name="tap_short">tap \"%1$s\"</string>
+    <string name="batch_short">batch every %1$s</string>
+    <string name="hour">hour</string>
     <string name="hit">hit</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -38,6 +40,8 @@
     <string name="dismiss_long">Dismiss the notification</string>
     <string name="tap_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
+    <string name="batch_long">Batch notifications</string>
+    <string name="batch_frequency">Every %1$d hour(s)</string>
     <string name="schedule">Schedule:</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
@@ -68,7 +72,7 @@
 
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly dismisses the ones that match your filters."</string>
-    <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a>]]></string>
+    <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
     <string name="app_permissions"><![CDATA[Permissions used: <ul><li>BIND_NOTIFICATION_LISTENER_SERVICE - to listen and react to notifications</li><li>QUERY_ALL_PACKAGES - to search through installed apps while adding filters</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (optional) - to prevent app from being killed in the background</li></ul>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
 

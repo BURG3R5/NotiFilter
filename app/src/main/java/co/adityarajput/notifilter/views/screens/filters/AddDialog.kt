@@ -1,5 +1,7 @@
 package co.adityarajput.notifilter.views.screens.filters
 
+import android.annotation.SuppressLint
+import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.TimePickerDialog
 import android.os.Handler
 import android.os.Looper
@@ -87,6 +89,7 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
     )
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Form(viewModel: FiltersViewModel) {
@@ -99,6 +102,7 @@ private fun Form(viewModel: FiltersViewModel) {
         mutableStateOf(
             NotificationListener.instance
                 ?.activeNotifications
+                ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
                 ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                 ?: listOf(),
         )
@@ -109,6 +113,7 @@ private fun Form(viewModel: FiltersViewModel) {
             activeNotifications =
                 NotificationListener.instance
                     ?.activeNotifications
+                    ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
                     ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                     ?: activeNotifications
             handler.postDelayed(this, 500)
@@ -301,48 +306,76 @@ private fun Form(viewModel: FiltersViewModel) {
                             Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
                         )
                         Text(
-                            stringResource(it.descriptionString),
+                            stringResource(it.description),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
-                }
-                if (viewModel.formState.values.action == Action.TAP) {
-                    OutlinedTextField(
-                        formState.values.buttonPattern,
-                        {
-                            viewModel.updateForm(
-                                formState.page,
-                                formState.values.copy(buttonPattern = it),
-                            )
-                        },
-                        Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.button_pattern)) },
-                        supportingText = {
-                            Text(
-                                AnnotatedString.fromHtml(
-                                    stringResource(R.string.regexr_link),
-                                    TextLinkStyles(
-                                        SpanStyle(
-                                            MaterialTheme.colorScheme.primary,
-                                            textDecoration = TextDecoration.Underline,
-                                        ),
+                    if (it == viewModel.formState.values.action) {
+                        when (viewModel.formState.values.action) {
+                            Action.DISMISS -> {}
+
+                            Action.TAP -> {
+                                OutlinedTextField(
+                                    formState.values.buttonPattern,
+                                    { value ->
+                                        viewModel.updateForm(
+                                            formState.page,
+                                            formState.values.copy(buttonPattern = value),
+                                        )
+                                    },
+                                    Modifier.fillMaxWidth(),
+                                    label = { Text(stringResource(R.string.button_pattern)) },
+                                    supportingText = {
+                                        Text(
+                                            AnnotatedString.fromHtml(
+                                                stringResource(R.string.regexr_link),
+                                                TextLinkStyles(
+                                                    SpanStyle(
+                                                        MaterialTheme.colorScheme.primary,
+                                                        textDecoration = TextDecoration.Underline,
+                                                    ),
+                                                ),
+                                            ),
+                                        )
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                     ),
-                                ),
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        ),
-                        singleLine = true,
-                    )
-                    if (formState.error == FormError.INVALID_BUTTON_REGEX) {
-                        Text(
-                            stringResource(R.string.invalid_regex),
-                            Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
-                            MaterialTheme.colorScheme.tertiary,
-                        )
+                                    singleLine = true,
+                                )
+                                if (formState.error == FormError.INVALID_BUTTON_REGEX) {
+                                    Text(
+                                        stringResource(R.string.invalid_regex),
+                                        Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
+                                        MaterialTheme.colorScheme.tertiary,
+                                    )
+                                }
+                            }
+
+                            Action.BATCH -> {
+                                Slider(
+                                    formState.values.batchLengthInHours.toFloat(),
+                                    { value ->
+                                        viewModel.updateForm(
+                                            formState.page,
+                                            formState.values.copy(batchLengthInHours = value.toInt()),
+                                        )
+                                    },
+                                    Modifier.fillMaxWidth(),
+                                    valueRange = 1F..12F,
+                                    steps = 10,
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.batch_frequency,
+                                        formState.values.batchLengthInHours,
+                                    ),
+                                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
+                                )
+                            }
+                        }
                     }
                 }
             }

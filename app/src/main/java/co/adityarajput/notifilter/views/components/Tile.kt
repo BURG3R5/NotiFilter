@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
+import co.adityarajput.notifilter.data.filter.getActionString
 import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
 import co.adityarajput.notifilter.utils.withUnit
 import co.adityarajput.notifilter.views.Theme
-import java.util.Date
 
 @Composable
 fun Tile(
@@ -106,15 +106,22 @@ private fun FilterTiles() {
             "software update",
             Action.TAP,
             "Remind me",
-            9 * 60 to 17 * 60,
-            setOf(1, 2, 3, 4, 5),
-            69,
+            activeTime = 9 * 60 to 17 * 60,
+            activeDays = setOf(1, 2, 3, 4, 5),
+            hits = 69,
         ),
         Filter(
             "com.sec.android.app.clockpackage",
             "upcoming",
             Action.DISMISS,
             enabled = false,
+        ),
+        Filter(
+            "android",
+            "is displaying over other apps",
+            Action.BATCH,
+            batchLengthInHours = 6,
+            hits = 420,
         ),
     )
 
@@ -123,7 +130,7 @@ private fun FilterTiles() {
             for (filter in filters)
                 Tile(
                     "/${filter.queryPattern}/",
-                    stringResource(filter.action.displayString, filter.buttonPattern ?: ' '),
+                    filter.getActionString(),
                     filter.packageName.getLast(30),
                     if (!filter.enabled) stringResource(R.string.filter_disabled)
                     else if (!filter.historyEnabled) stringResource(R.string.history_disabled)
@@ -144,7 +151,7 @@ private fun NotificationTile() {
         "Notification Title",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
         "com.example.app",
-        Date().time - 12345600,
+        System.currentTimeMillis() - 12345600,
     )
 
     Theme {

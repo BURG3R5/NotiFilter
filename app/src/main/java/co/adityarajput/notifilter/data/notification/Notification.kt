@@ -9,7 +9,7 @@ data class Notification(
     val title: String,
     val content: String,
     val packageName: String,
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Long,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -19,4 +19,11 @@ data class Notification(
         sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
         sbn.packageName, sbn.postTime, id = id,
     )
+
+    fun isSimilar(other: Notification): Boolean {
+        return this.packageName == other.packageName &&
+                this.title == other.title &&
+                this.content == other.content &&
+                this.timestamp == other.timestamp
+    }
 }

@@ -1,9 +1,12 @@
 package co.adityarajput.notifilter.data.filter
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.utils.withUnit
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -16,6 +19,8 @@ data class Filter(
     val action: Action,
     @ColumnInfo(defaultValue = "null")
     val buttonPattern: String? = null,
+    @ColumnInfo(defaultValue = "null")
+    val batchLengthInHours: Int? = null,
     @ColumnInfo(defaultValue = "0,1439")
     val activeTime: Pair<Int, Int> = 0 to 1439,
     @ColumnInfo(defaultValue = "1,2,3,4,5,6,7")
@@ -31,9 +36,22 @@ data class Filter(
 )
 
 @Serializable
-enum class Action(val displayString: Int, val descriptionString: Int) {
-    DISMISS(R.string.dismiss_short, R.string.dismiss_long),
-    TAP(R.string.tap_short, R.string.tap_long),
+enum class Action(val description: Int) {
+    DISMISS(R.string.dismiss_long),
+    TAP(R.string.tap_long),
+    BATCH(R.string.batch_long),
+}
+
+@Composable
+fun Filter.getActionString(): String {
+    return when (action) {
+        Action.DISMISS -> stringResource(R.string.dismiss_short)
+        Action.TAP -> stringResource(R.string.tap_short, buttonPattern!!)
+        Action.BATCH -> stringResource(
+            R.string.batch_short,
+            batchLengthInHours!!.withUnit(stringResource(R.string.hour)),
+        )
+    }
 }
 
 fun Filter.getScheduleString(): String {
