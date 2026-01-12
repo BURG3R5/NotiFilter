@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter
 
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import co.adityarajput.notifilter.data.AppContainer
 
 class NotiFilterApplication : Application() {
@@ -11,9 +12,9 @@ class NotiFilterApplication : Application() {
 
         container = AppContainer(this)
 
-        // INFO: To be used when taking screenshots for store metadata
-        // if (0 != applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) {
-        //     container.seedDemoData()
-        // }
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            // INFO: While debugging, populate database with demo data for screenshots
+            container.seedDemoData()
+        }
     }
 }
