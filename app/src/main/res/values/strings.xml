@@ -7,6 +7,7 @@
     <string name="dismiss_short">dismiss notification</string>
     <string name="tap_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
+    <string name="delay_short">delay notifications</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
@@ -21,7 +22,7 @@
     <string name="export_success">Filters exported successfully</string>
 
     <string name="add_filter">Add filter</string>
-    <string name="no_active_notifications">Waiting for active notifications...</string>
+    <string name="no_active_notifications">Waiting for active notifications…</string>
     <string name="active_notifications">Active notifications:</string>
     <string name="show_system_packages">Show system packages?</string>
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
@@ -39,7 +40,9 @@
     <string name="button_pattern">Button pattern</string>
     <string name="batch_long">Batch notifications</string>
     <string name="batch_frequency">Every %1$s</string>
+    <string name="delay_long">Delay notifications</string>
     <string name="schedule">Schedule:</string>
+    <string name="delay_action_reminder">Any notifications received during this time will be snoozed until the filter becomes inactive.</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
     <string name="next">Next</string>

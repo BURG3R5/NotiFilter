@@ -181,7 +181,7 @@ fun FormValues.toFilter() =
         packageName,
         queryPattern,
         action,
-        if (action == Action.TAP) buttonPattern else "",
+        if (action == Action.TAP) buttonPattern else null,
         if (action == Action.BATCH) batchLengthInHours else null,
         activeTime,
         activeDays,

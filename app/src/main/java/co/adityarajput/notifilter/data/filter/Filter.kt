@@ -40,6 +40,7 @@ enum class Action(val description: Int) {
     DISMISS(R.string.dismiss_long),
     TAP(R.string.tap_long),
     BATCH(R.string.batch_long),
+    DELAY(R.string.delay_long),
 }
 
 @Composable
@@ -51,6 +52,8 @@ fun Filter.getActionString(): String {
             R.string.batch_short,
             pluralStringResource(R.plurals.hour, batchLengthInHours!!, batchLengthInHours),
         )
+
+        Action.DELAY -> stringResource(R.string.delay_short)
     }
 }
 
