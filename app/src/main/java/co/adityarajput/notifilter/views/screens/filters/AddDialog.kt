@@ -1,5 +1,7 @@
 package co.adityarajput.notifilter.views.screens.filters
 
+import android.annotation.SuppressLint
+import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.TimePickerDialog
 import android.os.Handler
 import android.os.Looper
@@ -87,6 +89,7 @@ fun AddFilterDialog(viewModel: FiltersViewModel) {
     )
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Form(viewModel: FiltersViewModel) {
@@ -99,6 +102,7 @@ private fun Form(viewModel: FiltersViewModel) {
         mutableStateOf(
             NotificationListener.instance
                 ?.activeNotifications
+                ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
                 ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                 ?: listOf(),
         )
@@ -109,6 +113,7 @@ private fun Form(viewModel: FiltersViewModel) {
             activeNotifications =
                 NotificationListener.instance
                     ?.activeNotifications
+                    ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
                     ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                     ?: activeNotifications
             handler.postDelayed(this, 500)

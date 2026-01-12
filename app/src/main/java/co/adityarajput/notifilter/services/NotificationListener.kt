@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.services
 
+import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -47,6 +48,11 @@ class NotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        if (sbn.notification.flags and FLAG_GROUP_SUMMARY != 0) {
+            Log.d("NotificationListener", "Ignoring group summary notification")
+            return
+        }
+
         val notification = Notification(sbn)
         Log.d("NotificationListener", "Received $notification")
 
