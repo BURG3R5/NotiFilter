@@ -84,7 +84,7 @@ fun Filter.getScheduleString(): String {
                     activeTime.first / 60,
                     activeTime.first % 60,
                     activeTime.second / 60,
-                    activeTime.first % 60,
+                    activeTime.second % 60,
                 ),
             )
         }
