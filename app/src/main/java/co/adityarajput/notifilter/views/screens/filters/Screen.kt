@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.filter.getActionString
 import co.adityarajput.notifilter.data.filter.getScheduleString
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.getToggleString
@@ -84,7 +85,7 @@ fun FiltersScreen(
                 items(filtersState.value.filters!!, { it.id }) {
                     Tile(
                         "/${it.queryPattern}/",
-                        stringResource(it.action.displayString, it.buttonPattern ?: ' '),
+                        it.getActionString(),
                         it.packageName.getLast(30),
                         if (!it.enabled) stringResource(R.string.filter_disabled)
                         else if (!it.historyEnabled) stringResource(R.string.history_disabled)

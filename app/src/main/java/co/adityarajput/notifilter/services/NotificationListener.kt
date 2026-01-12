@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.services
 
 import android.app.Notification.FLAG_GROUP_SUMMARY
+import android.content.pm.ApplicationInfo
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -12,8 +13,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.MILLIS
 import java.util.Calendar
+import kotlin.math.min
 
 class NotificationListener : NotificationListenerService() {
     companion object {
@@ -29,6 +35,9 @@ class NotificationListener : NotificationListenerService() {
     @Volatile
     private var filters: List<Filter> = emptyList()
 
+    @Volatile
+    private var notifications: List<Notification> = emptyList()
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -39,6 +48,7 @@ class NotificationListener : NotificationListenerService() {
                 filters = newFilters
                 Log.d("NotificationListener", "Filters updated: $filters")
             }
+            notifications = notificationsRepository.list().first()
         }
     }
 
@@ -84,11 +94,40 @@ class NotificationListener : NotificationListenerService() {
 
             Action.TAP ->
                 try {
-                    sbn.notification.actions.find { Regex(filter.buttonPattern!!).containsMatchIn(it.title) }?.actionIntent?.send()
+                    sbn.notification.actions.find {
+                        Regex(filter.buttonPattern!!).containsMatchIn(it.title)
+                    }?.actionIntent?.send()
                 } catch (e: Exception) {
                     Log.e("NotificationListener", "Failed to tap button", e)
                     return
                 }
+
+            Action.BATCH -> {
+                val zone = ZoneId.systemDefault()
+                val now = ZonedDateTime.now(zone)
+                val today = now.toLocalDate().atStartOfDay(zone)
+                var batchLength = filter.batchLengthInHours!! * 60 * 60 * 1000L
+                if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+                    // INFO: While debugging, batch for minutes instead of hours
+                    batchLength /= 60
+                }
+
+                val untilNextBatch = batchLength - today.until(now, MILLIS) % batchLength
+
+                if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
+                    Log.d("NotificationListener", "Less than 1 second to batch boundary")
+                    return
+                }
+                if (notifications.any(notification::isSimilar)) {
+                    Log.d("NotificationListener", "Already snoozed")
+                    return
+                }
+
+                snoozeNotification(
+                    sbn.key,
+                    min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
+                )
+            }
         }
 
         if (!filter.historyEnabled) {
@@ -99,6 +138,8 @@ class NotificationListener : NotificationListenerService() {
         serviceScope.launch {
             notificationsRepository.save(notification)
             filtersRepository.registerHit(filter)
+            notifications = notificationsRepository.list().first()
+            Log.d("NotificationListener", "Notifications updated: $notifications")
         }
     }
 

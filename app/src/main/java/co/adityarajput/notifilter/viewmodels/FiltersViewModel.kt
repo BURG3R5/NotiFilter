@@ -99,12 +99,15 @@ class FiltersViewModel : ViewModel {
             }
 
             FormPage.ACTION -> {
-                if (values.action == Action.DISMISS) return null
-                try {
-                    Regex(values.buttonPattern).pattern == values.buttonPattern
-                } catch (_: Exception) {
-                    Log.d("FiltersViewModel", "Button pattern regex invalid")
-                    return FormError.INVALID_BUTTON_REGEX
+                when (values.action) {
+                    Action.TAP -> try {
+                        Regex(values.buttonPattern).pattern == values.buttonPattern
+                    } catch (_: Exception) {
+                        Log.d("FiltersViewModel", "Button pattern regex invalid")
+                        return FormError.INVALID_BUTTON_REGEX
+                    }
+
+                    else -> {}
                 }
             }
 
@@ -168,12 +171,21 @@ data class FormValues(
     val queryPatternPlaceholder: String? = null,
     val action: Action = Action.DISMISS,
     val buttonPattern: String = "",
+    val batchLengthInHours: Int = 3,
     val activeTime: Pair<Int, Int> = 0 to 1439,
     val activeDays: Set<Int> = setOf(1, 2, 3, 4, 5, 6, 7),
 )
 
 fun FormValues.toFilter() =
-    Filter(packageName, queryPattern, action, buttonPattern, activeTime, activeDays)
+    Filter(
+        packageName,
+        queryPattern,
+        action,
+        if (action == Action.TAP) buttonPattern else "",
+        if (action == Action.BATCH) batchLengthInHours else null,
+        activeTime,
+        activeDays,
+    )
 
 enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX, INVALID_TIME_RANGE }
 

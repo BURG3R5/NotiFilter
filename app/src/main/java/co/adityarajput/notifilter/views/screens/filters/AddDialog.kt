@@ -306,48 +306,76 @@ private fun Form(viewModel: FiltersViewModel) {
                             Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
                         )
                         Text(
-                            stringResource(it.descriptionString),
+                            stringResource(it.description),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
-                }
-                if (viewModel.formState.values.action == Action.TAP) {
-                    OutlinedTextField(
-                        formState.values.buttonPattern,
-                        {
-                            viewModel.updateForm(
-                                formState.page,
-                                formState.values.copy(buttonPattern = it),
-                            )
-                        },
-                        Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.button_pattern)) },
-                        supportingText = {
-                            Text(
-                                AnnotatedString.fromHtml(
-                                    stringResource(R.string.regexr_link),
-                                    TextLinkStyles(
-                                        SpanStyle(
-                                            MaterialTheme.colorScheme.primary,
-                                            textDecoration = TextDecoration.Underline,
-                                        ),
+                    if (it == viewModel.formState.values.action) {
+                        when (viewModel.formState.values.action) {
+                            Action.DISMISS -> {}
+
+                            Action.TAP -> {
+                                OutlinedTextField(
+                                    formState.values.buttonPattern,
+                                    { value ->
+                                        viewModel.updateForm(
+                                            formState.page,
+                                            formState.values.copy(buttonPattern = value),
+                                        )
+                                    },
+                                    Modifier.fillMaxWidth(),
+                                    label = { Text(stringResource(R.string.button_pattern)) },
+                                    supportingText = {
+                                        Text(
+                                            AnnotatedString.fromHtml(
+                                                stringResource(R.string.regexr_link),
+                                                TextLinkStyles(
+                                                    SpanStyle(
+                                                        MaterialTheme.colorScheme.primary,
+                                                        textDecoration = TextDecoration.Underline,
+                                                    ),
+                                                ),
+                                            ),
+                                        )
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                     ),
-                                ),
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        ),
-                        singleLine = true,
-                    )
-                    if (formState.error == FormError.INVALID_BUTTON_REGEX) {
-                        Text(
-                            stringResource(R.string.invalid_regex),
-                            Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
-                            MaterialTheme.colorScheme.tertiary,
-                        )
+                                    singleLine = true,
+                                )
+                                if (formState.error == FormError.INVALID_BUTTON_REGEX) {
+                                    Text(
+                                        stringResource(R.string.invalid_regex),
+                                        Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
+                                        MaterialTheme.colorScheme.tertiary,
+                                    )
+                                }
+                            }
+
+                            Action.BATCH -> {
+                                Slider(
+                                    formState.values.batchLengthInHours.toFloat(),
+                                    { value ->
+                                        viewModel.updateForm(
+                                            formState.page,
+                                            formState.values.copy(batchLengthInHours = value.toInt()),
+                                        )
+                                    },
+                                    Modifier.fillMaxWidth(),
+                                    valueRange = 1F..12F,
+                                    steps = 10,
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.batch_frequency,
+                                        formState.values.batchLengthInHours,
+                                    ),
+                                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
+                                )
+                            }
+                        }
                     }
                 }
             }

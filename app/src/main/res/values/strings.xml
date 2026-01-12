@@ -6,6 +6,8 @@
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="dismiss_short">dismiss notification</string>
     <string name="tap_short">tap \"%1$s\"</string>
+    <string name="batch_short">batch every %1$s</string>
+    <string name="hour">hour</string>
     <string name="hit">hit</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -38,6 +40,8 @@
     <string name="dismiss_long">Dismiss the notification</string>
     <string name="tap_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
+    <string name="batch_long">Batch notifications</string>
+    <string name="batch_frequency">Every %1$d hour(s)</string>
     <string name="schedule">Schedule:</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
