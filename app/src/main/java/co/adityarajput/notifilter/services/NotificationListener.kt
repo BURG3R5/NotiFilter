@@ -72,10 +72,8 @@ class NotificationListener : NotificationListenerService() {
             notification.packageName == it.packageName &&
                     it.enabled &&
                     it.activeDays.contains(calendar.get(Calendar.DAY_OF_WEEK)) &&
-                    it.activeTime.first <= minutesOfDay && minutesOfDay <= it.activeTime.second
-        }.filter {
-            Regex(it.queryPattern).containsMatchIn(notification.title) ||
-                    Regex(it.queryPattern).containsMatchIn(notification.content)
+                    it.activeTime.first <= minutesOfDay && minutesOfDay <= it.activeTime.second &&
+                    it.matchesTextOf(notification)
         }.minByOrNull { it.id } ?: return
 
         Log.d("NotificationListener", "Matched $filter")

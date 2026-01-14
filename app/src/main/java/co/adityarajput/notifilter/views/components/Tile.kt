@@ -19,8 +19,7 @@ import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.getActionString
-import co.adityarajput.notifilter.data.filter.getScheduleString
+import co.adityarajput.notifilter.data.filter.RegexTarget
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
@@ -104,6 +103,8 @@ private fun FilterTiles() {
         Filter(
             "com.wssyncmldm",
             "software update",
+            null,
+            RegexTarget.CONTENT,
             Action.TAP,
             "Remind me",
             activeTime = 9 * 60 to 17 * 60,
@@ -113,15 +114,26 @@ private fun FilterTiles() {
         Filter(
             "com.sec.android.app.clockpackage",
             "upcoming",
+            null,
+            RegexTarget.TITLE,
             Action.DISMISS,
             enabled = false,
         ),
         Filter(
             "android",
             "is displaying over other apps",
+            null,
+            RegexTarget.OR,
             Action.BATCH,
             batchLengthInHours = 6,
             hits = 420,
+        ),
+        Filter(
+            "com.sec.android.app.samsungapps",
+            "Galaxy",
+            "update available",
+            RegexTarget.AND,
+            Action.DISMISS,
         ),
     )
 
@@ -129,7 +141,17 @@ private fun FilterTiles() {
         Column {
             for (filter in filters)
                 Tile(
-                    "/${filter.queryPattern}/",
+                    buildString {
+                        append("/")
+                        append(filter.queryPattern)
+                        append("/")
+
+                        if (filter.regexTarget == RegexTarget.AND) {
+                            append(" && /")
+                            append(filter.secondaryQueryPattern)
+                            append("/")
+                        }
+                    },
                     filter.getActionString(),
                     filter.packageName.getLast(30),
                     if (!filter.enabled) stringResource(R.string.filter_disabled)

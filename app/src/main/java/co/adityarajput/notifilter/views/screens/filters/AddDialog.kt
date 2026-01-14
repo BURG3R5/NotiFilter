@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
+import co.adityarajput.notifilter.data.filter.RegexTarget
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.getFirst
@@ -127,7 +128,6 @@ private fun Form(viewModel: FiltersViewModel) {
 
     var showSystemPackages by remember { mutableStateOf(false) }
 
-    var dropdownExpanded by remember { mutableStateOf(false) }
     var suggestions by remember { mutableStateOf(listOf<Pair<String, String>>()) }
 
     Column(
@@ -159,11 +159,7 @@ private fun Form(viewModel: FiltersViewModel) {
                                         FormPage.PACKAGE,
                                         formState.values.copy(
                                             packageName = it.packageName,
-                                            queryPatternPlaceholder = context.getString(
-                                                R.string.query_pattern_placeholder_complex,
-                                                it.title.getFirst(20),
-                                                it.content.getFirst(20),
-                                            ),
+                                            notification = it,
                                         ),
                                     )
                                 },
@@ -174,6 +170,7 @@ private fun Form(viewModel: FiltersViewModel) {
             }
 
             FormPage.PACKAGE -> {
+                var dropdownExpanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(dropdownExpanded, { dropdownExpanded = it }) {
                     OutlinedTextField(
                         formState.values.packageName,
@@ -237,6 +234,32 @@ private fun Form(viewModel: FiltersViewModel) {
             }
 
             FormPage.PATTERN -> {
+                var dropdownExpanded by remember { mutableStateOf(false) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.regex_target))
+                    Box {
+                        TextButton({ dropdownExpanded = true }) {
+                            Text(
+                                stringResource(formState.values.regexTarget.description),
+                                textDecoration = TextDecoration.Underline,
+                            )
+                        }
+                        DropdownMenu(dropdownExpanded, { dropdownExpanded = false }) {
+                            RegexTarget.entries.forEach {
+                                DropdownMenuItem(
+                                    { Text(stringResource(it.description)) },
+                                    {
+                                        viewModel.updateForm(
+                                            formState.page,
+                                            formState.values.copy(regexTarget = it),
+                                        )
+                                        dropdownExpanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
                 OutlinedTextField(
                     formState.values.queryPattern,
                     {
@@ -246,12 +269,38 @@ private fun Form(viewModel: FiltersViewModel) {
                         )
                     },
                     Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.notification_pattern)) },
+                    label = {
+                        Text(
+                            stringResource(
+                                if (formState.values.regexTarget == RegexTarget.AND) R.string.title_pattern
+                                else R.string.notification_pattern,
+                            ),
+                        )
+                    },
                     placeholder = {
                         Text(
-                            formState.values.queryPatternPlaceholder ?: stringResource(
-                                R.string.query_pattern_placeholder_simple,
-                            ),
+                            if (formState.values.notification != null)
+                                stringResource(
+                                    R.string.query_pattern_placeholder_complex,
+                                    buildString {
+                                        if (formState.values.regexTarget == RegexTarget.CONTENT) {
+                                            append(formState.values.notification.content.getFirst(20))
+                                        } else {
+                                            append(formState.values.notification.title.getFirst(20))
+                                            if (formState.values.regexTarget == RegexTarget.OR) {
+                                                append("' ")
+                                                append(stringResource(R.string.or))
+                                                append(" '")
+                                                append(
+                                                    formState.values.notification.content.getFirst(
+                                                        20,
+                                                    ),
+                                                )
+                                            }
+                                        }
+                                    },
+                                )
+                            else stringResource(R.string.query_pattern_placeholder_simple),
                         )
                     },
                     supportingText = {
@@ -274,6 +323,47 @@ private fun Form(viewModel: FiltersViewModel) {
                     ),
                     singleLine = true,
                 )
+                if (formState.values.regexTarget == RegexTarget.AND) {
+                    OutlinedTextField(
+                        formState.values.secondaryQueryPattern,
+                        {
+                            viewModel.updateForm(
+                                formState.page,
+                                formState.values.copy(secondaryQueryPattern = it),
+                            )
+                        },
+                        Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.content_pattern)) },
+                        placeholder = {
+                            Text(
+                                if (formState.values.notification != null) stringResource(
+                                    R.string.query_pattern_placeholder_complex,
+                                    formState.values.notification.content.getFirst(20),
+                                )
+                                else stringResource(R.string.query_pattern_placeholder_simple),
+                            )
+                        },
+                        supportingText = {
+                            Text(
+                                AnnotatedString.fromHtml(
+                                    stringResource(R.string.regexr_link),
+                                    TextLinkStyles(
+                                        SpanStyle(
+                                            MaterialTheme.colorScheme.primary,
+                                            textDecoration = TextDecoration.Underline,
+                                        ),
+                                    ),
+                                ),
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        ),
+                        singleLine = true,
+                    )
+                }
                 Text(
                     stringResource(R.string.pattern_advice),
                     Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
