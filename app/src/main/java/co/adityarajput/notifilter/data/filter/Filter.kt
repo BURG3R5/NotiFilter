@@ -7,6 +7,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.notification.Notification
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
@@ -15,6 +16,10 @@ import java.util.Locale
 data class Filter(
     val packageName: String,
     val queryPattern: String,
+    @ColumnInfo(defaultValue = "null")
+    val secondaryQueryPattern: String?,
+    @ColumnInfo(defaultValue = "OR")
+    val regexTarget: RegexTarget = RegexTarget.OR,
     @ColumnInfo(defaultValue = "DISMISS")
     val action: Action,
     @ColumnInfo(defaultValue = "null")
@@ -33,7 +38,76 @@ data class Filter(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-)
+) {
+    fun matchesTextOf(notification: Notification): Boolean {
+        return when (regexTarget) {
+            RegexTarget.TITLE ->
+                Regex(queryPattern).containsMatchIn(notification.title)
+
+            RegexTarget.CONTENT ->
+                Regex(queryPattern).containsMatchIn(notification.content)
+
+            RegexTarget.OR ->
+                Regex(queryPattern).containsMatchIn(notification.title) ||
+                        Regex(queryPattern).containsMatchIn(notification.content)
+
+            RegexTarget.AND ->
+                Regex(queryPattern).containsMatchIn(notification.title) &&
+                        Regex(secondaryQueryPattern!!).containsMatchIn(notification.content)
+        }
+    }
+
+    @Composable
+    fun getActionString(): String {
+        return when (action) {
+            Action.DISMISS -> stringResource(R.string.dismiss_short)
+            Action.TAP -> stringResource(R.string.tap_short, buttonPattern!!)
+            Action.BATCH -> stringResource(
+                R.string.batch_short,
+                pluralStringResource(R.plurals.hour, batchLengthInHours!!, batchLengthInHours),
+            )
+
+            Action.DELAY -> stringResource(R.string.delay_short)
+        }
+    }
+
+    fun getScheduleString(): String {
+        return buildString {
+            when (activeDays) {
+                setOf(1, 2, 3, 4, 5, 6, 7) -> append("")
+                setOf(2, 3, 4, 5, 6) -> append("on weekdays ")
+                setOf(1, 7) -> append("on weekends ")
+                else -> {
+                    val daysList = activeDays.sorted().map {
+                        when (it) {
+                            1 -> "sun"
+                            2 -> "mon"
+                            3 -> "tue"
+                            4 -> "wed"
+                            5 -> "thu"
+                            6 -> "fri"
+                            else -> "sat"
+                        }
+                    }
+                    append("on " + daysList.joinToString(", ") + " ")
+                }
+            }
+
+            if (activeTime != (0 to 1439)) {
+                append(
+                    String.format(
+                        Locale.getDefault(),
+                        "from %02d:%02d to %02d:%02d",
+                        activeTime.first / 60,
+                        activeTime.first % 60,
+                        activeTime.second / 60,
+                        activeTime.second % 60,
+                    ),
+                )
+            }
+        }
+    }
+}
 
 @Serializable
 enum class Action(val description: Int) {
@@ -43,53 +117,10 @@ enum class Action(val description: Int) {
     DELAY(R.string.delay_long),
 }
 
-@Composable
-fun Filter.getActionString(): String {
-    return when (action) {
-        Action.DISMISS -> stringResource(R.string.dismiss_short)
-        Action.TAP -> stringResource(R.string.tap_short, buttonPattern!!)
-        Action.BATCH -> stringResource(
-            R.string.batch_short,
-            pluralStringResource(R.plurals.hour, batchLengthInHours!!, batchLengthInHours),
-        )
-
-        Action.DELAY -> stringResource(R.string.delay_short)
-    }
-}
-
-fun Filter.getScheduleString(): String {
-    return buildString {
-        when (activeDays) {
-            setOf(1, 2, 3, 4, 5, 6, 7) -> append("")
-            setOf(2, 3, 4, 5, 6) -> append("on weekdays ")
-            setOf(1, 7) -> append("on weekends ")
-            else -> {
-                val daysList = activeDays.sorted().map {
-                    when (it) {
-                        1 -> "sun"
-                        2 -> "mon"
-                        3 -> "tue"
-                        4 -> "wed"
-                        5 -> "thu"
-                        6 -> "fri"
-                        else -> "sat"
-                    }
-                }
-                append("on " + daysList.joinToString(", ") + " ")
-            }
-        }
-
-        if (activeTime != (0 to 1439)) {
-            append(
-                String.format(
-                    Locale.getDefault(),
-                    "from %02d:%02d to %02d:%02d",
-                    activeTime.first / 60,
-                    activeTime.first % 60,
-                    activeTime.second / 60,
-                    activeTime.second % 60,
-                ),
-            )
-        }
-    }
+@Serializable
+enum class RegexTarget(val description: Int) {
+    TITLE(R.string.title),
+    CONTENT(R.string.content),
+    OR(R.string.title_or_content),
+    AND(R.string.title_and_content),
 }

@@ -28,9 +28,17 @@
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>
     <string name="package_name_placeholder">Search installed apps</string>
+    <string name="regex_target">Target:</string>
+    <string name="title">title only</string>
+    <string name="content">content only</string>
+    <string name="title_or_content">title or content</string>
+    <string name="title_and_content">title and content</string>
     <string name="notification_pattern">Notification pattern</string>
+    <string name="title_pattern">Title pattern</string>
+    <string name="content_pattern">Content pattern</string>
     <string name="query_pattern_placeholder_simple">Enter a regex pattern</string>
-    <string name="query_pattern_placeholder_complex">Enter a pattern targeting \'%1$s\' or \'%2$s\'</string>
+    <string name="query_pattern_placeholder_complex">Enter a pattern targeting \'%1$s\'</string>
+    <string name="or">or</string>
     <string name="regexr_link"><![CDATA[Enter valid <a href=\"https://regexr.com/\">regex↗</a>]]></string>
     <string name="pattern_advice">Tip: Include keywords but exclude non-essentials</string>
     <string name="invalid_regex">Regex pattern contains errors</string>

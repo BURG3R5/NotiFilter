@@ -11,6 +11,8 @@ import androidx.lifecycle.viewModelScope
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
+import co.adityarajput.notifilter.data.filter.RegexTarget
+import co.adityarajput.notifilter.data.notification.Notification
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -93,6 +95,10 @@ class FiltersViewModel : ViewModel {
                 if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
                 try {
                     Regex(values.queryPattern).pattern == values.queryPattern
+                    if (values.regexTarget == RegexTarget.AND) {
+                        if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
+                        Regex(values.secondaryQueryPattern).pattern == values.secondaryQueryPattern
+                    }
                 } catch (_: Exception) {
                     return FormError.INVALID_NOTIFICATION_REGEX
                 }
@@ -166,9 +172,11 @@ enum class FormPage {
 }
 
 data class FormValues(
+    val notification: Notification? = null,
     val packageName: String = "",
     val queryPattern: String = "",
-    val queryPatternPlaceholder: String? = null,
+    val secondaryQueryPattern: String = "",
+    val regexTarget: RegexTarget = RegexTarget.OR,
     val action: Action = Action.DISMISS,
     val buttonPattern: String = "",
     val batchLengthInHours: Int = 3,
@@ -180,6 +188,8 @@ fun FormValues.toFilter() =
     Filter(
         packageName,
         queryPattern,
+        if (regexTarget == RegexTarget.AND) secondaryQueryPattern else null,
+        regexTarget,
         action,
         if (action == Action.TAP) buttonPattern else null,
         if (action == Action.BATCH) batchLengthInHours else null,

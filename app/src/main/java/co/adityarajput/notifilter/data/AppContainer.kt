@@ -4,6 +4,7 @@ import android.content.Context
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
 import co.adityarajput.notifilter.data.filter.FiltersRepository
+import co.adityarajput.notifilter.data.filter.RegexTarget
 import co.adityarajput.notifilter.data.notification.Notification
 import co.adityarajput.notifilter.data.notification.NotificationsRepository
 import kotlinx.coroutines.flow.first
@@ -34,6 +35,8 @@ class AppContainer(private val context: Context) {
                     Filter(
                         "com.google.android.deskclock",
                         "Upcoming alarm",
+                        null,
+                        RegexTarget.TITLE,
                         Action.DISMISS,
                         hits = 87,
                         enabled = false,
@@ -41,6 +44,8 @@ class AppContainer(private val context: Context) {
                     Filter(
                         "com.wssyncmldm",
                         "software update",
+                        null,
+                        RegexTarget.CONTENT,
                         Action.TAP,
                         "Remind me",
                         activeDays = setOf(2, 3, 4, 5, 6),
@@ -49,6 +54,8 @@ class AppContainer(private val context: Context) {
                     Filter(
                         "com.google.android.gm",
                         "[Nn]ewsletter",
+                        null,
+                        RegexTarget.OR,
                         Action.BATCH,
                         batchLengthInHours = 3,
                         historyEnabled = false,
@@ -56,6 +63,8 @@ class AppContainer(private val context: Context) {
                     Filter(
                         "com.whatsapp",
                         "Book Club",
+                        "^Bob",
+                        RegexTarget.AND,
                         Action.DELAY,
                         activeTime = 9 * 60 to 17 * 60,
                         hits = 15,
@@ -85,12 +94,6 @@ class AppContainer(private val context: Context) {
                         "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
                         "com.google.android.gm",
                         System.currentTimeMillis() - 3 * 60 * 60 * 1000,
-                    ),
-                    Notification(
-                        "Book Club",
-                        "Alice: @BURG3R5 Don't forget, it's your turn to pick this week",
-                        "com.whatsapp",
-                        System.currentTimeMillis() - 42 * 60 * 1000,
                     ),
                     Notification(
                         "Book Club",
