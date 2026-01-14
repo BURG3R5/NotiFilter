@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
@@ -19,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
-import co.adityarajput.notifilter.views.icons.NotificationsOff
 
 @Composable
 fun AboutScreen(goBack: () -> Unit) {
@@ -50,7 +50,7 @@ fun AboutScreen(goBack: () -> Unit) {
                             Alignment.Center,
                         ) {
                             Icon(
-                                NotificationsOff,
+                                painterResource(R.drawable.notifications_off),
                                 stringResource(R.string.alttext_app_logo),
                                 Modifier.size(50.dp),
                             )

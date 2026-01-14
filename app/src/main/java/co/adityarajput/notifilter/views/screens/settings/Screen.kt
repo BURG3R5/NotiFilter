@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
@@ -26,7 +27,6 @@ import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
-import co.adityarajput.notifilter.views.icons.Info
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
@@ -201,7 +201,10 @@ fun SettingsScreen(
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
                     ) {
-                        Icon(Info, stringResource(R.string.alttext_info))
+                        Icon(
+                            painterResource(R.drawable.info),
+                            stringResource(R.string.alttext_info),
+                        )
                         Text(stringResource(R.string.about))
                     }
                 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +25,6 @@ import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.Tile
-import co.adityarajput.notifilter.views.icons.*
 
 @Composable
 fun FiltersScreen(
@@ -39,14 +39,14 @@ fun FiltersScreen(
             AppBar(stringResource(R.string.app_name), false) {
                 IconButton(goToSettingsScreen) {
                     Icon(
-                        Settings,
+                        painterResource(R.drawable.settings),
                         stringResource(R.string.settings),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
                 IconButton(goToNotificationsScreen) {
                     Icon(
-                        History,
+                        painterResource(R.drawable.history),
                         stringResource(R.string.history),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
@@ -58,7 +58,7 @@ fun FiltersScreen(
                 { viewModel.showAddDialog = true },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            ) { Icon(Add, stringResource(R.string.add_filter)) }
+            ) { Icon(painterResource(R.drawable.add), stringResource(R.string.add_filter)) }
         },
     ) { paddingValues ->
         if (filtersState.value.filters == null) {
@@ -104,7 +104,7 @@ fun FiltersScreen(
                         {
                             IconButton({ viewModel.dialogState = DialogState.TOGGLE_HISTORY }) {
                                 Icon(
-                                    ToggleHistory,
+                                    painterResource(R.drawable.manage_history),
                                     stringResource(
                                         R.string.toggle_history,
                                         it.historyEnabled.getToggleString(),
@@ -113,7 +113,8 @@ fun FiltersScreen(
                             }
                             IconButton({ viewModel.dialogState = DialogState.TOGGLE_FILTER }) {
                                 Icon(
-                                    if (it.enabled) Archive else Unarchive,
+                                    if (it.enabled) painterResource(R.drawable.archive)
+                                    else painterResource(R.drawable.unarchive),
                                     stringResource(
                                         R.string.toggle_filter,
                                         it.enabled.getToggleString(),
@@ -125,7 +126,12 @@ fun FiltersScreen(
                                 colors = IconButtonDefaults.iconButtonColors(
                                     contentColor = MaterialTheme.colorScheme.tertiary,
                                 ),
-                            ) { Icon(Delete, stringResource(R.string.delete)) }
+                            ) {
+                                Icon(
+                                    painterResource(R.drawable.delete),
+                                    stringResource(R.string.delete),
+                                )
+                            }
                         },
                         viewModel.selectedFilter == it,
                         true,
