@@ -306,7 +306,7 @@ private fun Form(viewModel: FiltersViewModel) {
                     supportingText = {
                         Text(
                             AnnotatedString.fromHtml(
-                                stringResource(R.string.regexr_link),
+                                stringResource(R.string.regex_supporting_text),
                                 TextLinkStyles(
                                     SpanStyle(
                                         MaterialTheme.colorScheme.primary,
@@ -346,7 +346,7 @@ private fun Form(viewModel: FiltersViewModel) {
                         supportingText = {
                             Text(
                                 AnnotatedString.fromHtml(
-                                    stringResource(R.string.regexr_link),
+                                    stringResource(R.string.regex_supporting_text),
                                     TextLinkStyles(
                                         SpanStyle(
                                             MaterialTheme.colorScheme.primary,
@@ -419,7 +419,7 @@ private fun Form(viewModel: FiltersViewModel) {
                                     supportingText = {
                                         Text(
                                             AnnotatedString.fromHtml(
-                                                stringResource(R.string.regexr_link),
+                                                stringResource(R.string.regex_supporting_text),
                                                 TextLinkStyles(
                                                     SpanStyle(
                                                         MaterialTheme.colorScheme.primary,

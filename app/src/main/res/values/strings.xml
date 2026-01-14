@@ -39,7 +39,7 @@
     <string name="query_pattern_placeholder_simple">Enter a regex pattern</string>
     <string name="query_pattern_placeholder_complex">Enter a pattern targeting \'%1$s\'</string>
     <string name="or">or</string>
-    <string name="regexr_link"><![CDATA[Enter valid <a href=\"https://regexr.com/\">regex↗</a>]]></string>
+    <string name="regex_supporting_text"><![CDATA[Enter valid <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">regex↗</a>]]></string>
     <string name="pattern_advice">Tip: Include keywords but exclude non-essentials</string>
     <string name="invalid_regex">Regex pattern contains errors</string>
     <string name="action">Action:</string>

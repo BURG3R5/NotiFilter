@@ -14,7 +14,8 @@ NotiFilter listens to all device notifications and quietly manages those that ma
 
 ## Features
 
-- **Filters** - Use [regex](https://regexr.com/) to precisely target annoying notifications from
+- **Filters** - Use [regex](https://github.com/BURG3R5/NotiFilter/wiki/Examples) to precisely target
+  annoying notifications from
   each app 🎯
 - **Actions** - Choose what to do with the filtered notifications ⚙
     1. Dismiss it 🚫
