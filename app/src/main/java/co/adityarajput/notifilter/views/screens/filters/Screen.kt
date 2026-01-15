@@ -100,7 +100,10 @@ fun FiltersScreen(
                         else if (!it.historyEnabled) stringResource(R.string.history_disabled)
                         else pluralStringResource(R.plurals.hit, it.hits, it.hits),
                         it.getScheduleString(),
-                        { viewModel.selectedFilter = it },
+                        {
+                            if (viewModel.selectedFilter == it) viewModel.selectedFilter = null
+                            else viewModel.selectedFilter = it
+                        },
                         {
                             IconButton({ viewModel.dialogState = DialogState.TOGGLE_HISTORY }) {
                                 Icon(

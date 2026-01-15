@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.RegexTarget
@@ -41,7 +42,6 @@ import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.FormState
 import co.adityarajput.notifilter.views.components.Tile
 import kotlinx.coroutines.launch
-import java.lang.Integer.min
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,6 +179,11 @@ private fun Form(viewModel: FiltersViewModel) {
                                 formState.page,
                                 formState.values.copy(packageName = input),
                             )
+                            if (input.isBlank()) {
+                                suggestions = listOf()
+                                dropdownExpanded = false
+                                return@OutlinedTextField
+                            }
                             suggestions =
                                 (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps).filter {
                                     it.toString().contains(input, ignoreCase = true)
@@ -197,8 +202,12 @@ private fun Form(viewModel: FiltersViewModel) {
                         ),
                         singleLine = true,
                     )
-                    ExposedDropdownMenu(dropdownExpanded, { dropdownExpanded = false }) {
-                        suggestions.subList(0, min(5, suggestions.size)).forEach {
+                    ExposedDropdownMenu(
+                        dropdownExpanded,
+                        { dropdownExpanded = false },
+                        Modifier.heightIn(max = 200.dp),
+                    ) {
+                        suggestions.forEach {
                             DropdownMenuItem(
                                 { Text(it.second) },
                                 {
@@ -306,7 +315,7 @@ private fun Form(viewModel: FiltersViewModel) {
                     supportingText = {
                         Text(
                             AnnotatedString.fromHtml(
-                                stringResource(R.string.regexr_link),
+                                stringResource(R.string.regex_supporting_text),
                                 TextLinkStyles(
                                     SpanStyle(
                                         MaterialTheme.colorScheme.primary,
@@ -346,7 +355,7 @@ private fun Form(viewModel: FiltersViewModel) {
                         supportingText = {
                             Text(
                                 AnnotatedString.fromHtml(
-                                    stringResource(R.string.regexr_link),
+                                    stringResource(R.string.regex_supporting_text),
                                     TextLinkStyles(
                                         SpanStyle(
                                             MaterialTheme.colorScheme.primary,
@@ -419,7 +428,7 @@ private fun Form(viewModel: FiltersViewModel) {
                                     supportingText = {
                                         Text(
                                             AnnotatedString.fromHtml(
-                                                stringResource(R.string.regexr_link),
+                                                stringResource(R.string.regex_supporting_text),
                                                 TextLinkStyles(
                                                     SpanStyle(
                                                         MaterialTheme.colorScheme.primary,
