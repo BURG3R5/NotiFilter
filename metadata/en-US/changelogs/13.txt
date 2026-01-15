@@ -1,0 +1,6 @@
+• feat: Add choice of target for regex pattern(s)
+• feat: Add monochrome layer to launcher icon
+• fix: Use drawables instead of ImageVectors
+• feat: Show all search results in apps dropdown
+
+Users can now choose which part of the notifications the regex patterns should target (title, content, any, or both).
