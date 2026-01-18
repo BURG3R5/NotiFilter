@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.views.screens.settings
 
 import android.annotation.SuppressLint
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -20,10 +21,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.edit
 import androidx.core.net.toUri
+import co.adityarajput.notifilter.Constants.RUN_IN_FOREGROUND
+import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
+import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
@@ -40,10 +46,16 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val handler = remember { Handler(Looper.getMainLooper()) }
     val appContainer = remember { AppContainer(context) }
+    val handler = remember { Handler(Looper.getMainLooper()) }
+    val sharedPreferences = remember { context.getSharedPreferences(SETTINGS, MODE_PRIVATE) }
 
-    var isInvincible by remember { mutableStateOf(true) }
+    var isInvincible by remember {
+        mutableStateOf(context.hasUnrestrictedBackgroundUsagePermission())
+    }
+    var isRunningInForeground by remember {
+        mutableStateOf(sharedPreferences.getBoolean(RUN_IN_FOREGROUND, false))
+    }
 
     val watcher = object : Runnable {
         override fun run() {
@@ -57,13 +69,7 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        topBar = {
-            AppBar(
-                stringResource(R.string.settings),
-                true,
-                goBack,
-            )
-        },
+        topBar = { AppBar(stringResource(R.string.settings), true, goBack) },
     ) { paddingValues ->
         Box(
             Modifier
@@ -82,19 +88,27 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
+                    Text(
+                        stringResource(R.string.settings_section_1),
+                        Modifier.padding(
+                            dimensionResource(R.dimen.padding_large),
+                            dimensionResource(R.dimen.padding_medium),
+                        ),
+                        fontWeight = FontWeight.Medium,
+                    )
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(
-                                dimensionResource(R.dimen.padding_large),
-                                dimensionResource(R.dimen.padding_medium),
-                            ),
+                            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text(stringResource(R.string.disable_battery_optimization))
                             Text(
-                                stringResource(R.string.justify_disabling_battery_optimization),
+                                stringResource(R.string.disable_battery_optimization),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                stringResource(R.string.explain_disabling_battery_optimization),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
@@ -115,14 +129,45 @@ fun SettingsScreen(
                             },
                         )
                     }
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_medium),
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.run_in_foreground),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                stringResource(R.string.explain_running_in_foreground),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        Switch(
+                            isRunningInForeground,
+                            {
+                                isRunningInForeground = it
+                                sharedPreferences.edit { putBoolean(RUN_IN_FOREGROUND, it) }
+                                NotificationListener.updateForegroundStatus(it)
+                            },
+                        )
+                    }
                 }
                 Card(
                     Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
                     val importSuccess = stringResource(R.string.import_success)
+                    val exportSuccess = stringResource(R.string.export_success)
+                    val appNameAndVersion =
+                        "${stringResource(R.string.app_name)}_${stringResource(R.string.app_version)}"
+
                     val importLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.OpenDocument(),
                     ) { uri ->
@@ -138,22 +183,6 @@ fun SettingsScreen(
                                 }
                         }
                     }
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(R.dimen.padding_large))
-                            .clickable { importLauncher.launch(arrayOf("application/json")) },
-                    ) {
-                        Text(stringResource(R.string.import_filters))
-                        Text(
-                            stringResource(R.string.import_warning),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
-                    val appNameAndVersion =
-                        "${stringResource(R.string.app_name)}_${stringResource(R.string.app_version)}"
-                    val exportSuccess = stringResource(R.string.export_success)
                     val exportLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.CreateDocument("application/json"),
                     ) { uri ->
@@ -168,10 +197,37 @@ fun SettingsScreen(
                                 }
                         }
                     }
+
+                    Text(
+                        stringResource(R.string.settings_section_2),
+                        Modifier.padding(
+                            dimensionResource(R.dimen.padding_large),
+                            dimensionResource(R.dimen.padding_medium),
+                        ),
+                        fontWeight = FontWeight.Medium,
+                    )
                     Column(
                         Modifier
                             .fillMaxWidth()
                             .padding(horizontal = dimensionResource(R.dimen.padding_large))
+                            .clickable { importLauncher.launch(arrayOf("application/json")) },
+                    ) {
+                        Text(
+                            stringResource(R.string.import_filters),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        Text(
+                            stringResource(R.string.import_warning),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_medium),
+                            )
                             .clickable {
                                 exportLauncher.launch(
                                     appNameAndVersion + "_${
@@ -183,13 +239,15 @@ fun SettingsScreen(
                                 )
                             },
                     ) {
-                        Text(stringResource(R.string.export_filters))
+                        Text(
+                            stringResource(R.string.export_filters),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
                         Text(
                             stringResource(R.string.export_explanation),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
-                    Box(Modifier.height(dimensionResource(R.dimen.padding_medium)))
                 }
                 Card(
                     Modifier
@@ -205,7 +263,10 @@ fun SettingsScreen(
                             painterResource(R.drawable.info),
                             stringResource(R.string.alttext_info),
                         )
-                        Text(stringResource(R.string.about))
+                        Text(
+                            stringResource(R.string.about),
+                            fontWeight = FontWeight.Medium,
+                        )
                     }
                 }
             }

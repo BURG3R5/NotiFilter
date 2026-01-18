@@ -72,13 +72,6 @@ fun AboutScreen(goBack: () -> Unit) {
                 }
                 AboutCard {
                     Text(
-                        AnnotatedString.fromHtml(stringResource(R.string.app_permissions)),
-                        Modifier.padding(dimensionResource(R.dimen.padding_large)),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-                AboutCard {
-                    Text(
                         AnnotatedString.fromHtml(
                             stringResource(R.string.app_links),
                             TextLinkStyles(
@@ -88,6 +81,13 @@ fun AboutScreen(goBack: () -> Unit) {
                                 ),
                             ),
                         ),
+                        Modifier.padding(dimensionResource(R.dimen.padding_large)),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                AboutCard {
+                    Text(
+                        AnnotatedString.fromHtml(stringResource(R.string.app_permissions)),
                         Modifier.padding(dimensionResource(R.dimen.padding_large)),
                         style = MaterialTheme.typography.bodyMedium,
                     )

@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.permissions
+package co.adityarajput.notifilter.views.screens.onboarding
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -23,7 +23,7 @@ import co.adityarajput.notifilter.views.components.AppBar
 
 @SuppressLint("BatteryLife")
 @Composable
-fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
+fun OnboardingScreen(goToFiltersScreen: () -> Unit = {}) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
 
@@ -92,4 +92,4 @@ fun PermissionScreen(goToFiltersScreen: () -> Unit = {}) {
 
 @Preview
 @Composable
-private fun PermissionScreenPreview() = Theme { PermissionScreen() }
+private fun OnboardingScreenPreview() = Theme { OnboardingScreen() }
