@@ -10,7 +10,7 @@ import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
 import co.adityarajput.notifilter.views.screens.about.AboutScreen
 import co.adityarajput.notifilter.views.screens.filters.FiltersScreen
 import co.adityarajput.notifilter.views.screens.notifications.NotificationsScreen
-import co.adityarajput.notifilter.views.screens.permissions.PermissionScreen
+import co.adityarajput.notifilter.views.screens.onboarding.OnboardingScreen
 import co.adityarajput.notifilter.views.screens.settings.SettingsScreen
 
 @Composable
@@ -21,14 +21,14 @@ fun Navigator(controller: NavHostController) {
         controller,
         when {
             hasPermission -> Routes.FILTERS.name
-            else -> Routes.PERMISSION.name
+            else -> Routes.ONBOARDING.name
         },
     ) {
-        composable(Routes.PERMISSION.name) {
-            PermissionScreen {
+        composable(Routes.ONBOARDING.name) {
+            OnboardingScreen {
                 controller.navigate(
                     Routes.FILTERS.name,
-                    NavOptions.Builder().setPopUpTo(Routes.PERMISSION.name, true).build(),
+                    NavOptions.Builder().setPopUpTo(Routes.ONBOARDING.name, true).build(),
                 )
             }
         }
@@ -50,7 +50,7 @@ fun Navigator(controller: NavHostController) {
 }
 
 enum class Routes {
-    PERMISSION,
+    ONBOARDING,
     FILTERS,
     NOTIFICATIONS,
     SETTINGS,
