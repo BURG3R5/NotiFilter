@@ -11,6 +11,9 @@ interface NotificationDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun create(notification: Notification)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createAll(notifications: List<Notification>)
+
     @Query("SELECT * FROM notifications ORDER BY id DESC")
     fun list(): Flow<List<Notification>>
 

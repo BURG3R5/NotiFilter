@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.FiltersRepository
 import co.adityarajput.notifilter.data.filter.RegexTarget
 import co.adityarajput.notifilter.data.notification.Notification
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,55 +19,47 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class FiltersState(val filters: List<Filter>? = null)
+class FiltersViewModel(
+    private val repository: Repository,
+    packageManager: PackageManager,
+) : ViewModel() {
+    data class State(val filters: List<Filter>? = null)
 
-class FiltersViewModel : ViewModel {
-    private val filtersRepository: FiltersRepository
+    val state: StateFlow<State> = repository.filters()
+        .map { State(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 
-    val filtersState: StateFlow<FiltersState>
+    val visibleApps: List<Pair<String, String>> by lazy {
+        packageManager
+            .queryIntentActivities(
+                Intent(
+                    Intent.ACTION_MAIN,
+                    null,
+                ).addCategory(Intent.CATEGORY_LAUNCHER),
+                0,
+            )
+            .map {
+                Pair(
+                    it.activityInfo.packageName,
+                    it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
+                )
+            }
+            .sortedBy { it.second }
+    }
+
+    val allPackages: List<Pair<String, String>> by lazy {
+        packageManager.getInstalledApplications(0)
+            .map { Pair(it.packageName, it.loadLabel(packageManager).toString()) }
+            .sortedBy { it.second }
+    }
 
     var showAddDialog by mutableStateOf(false)
-
-    var visibleApps: List<Pair<String, String>> = emptyList()
-        private set
-
-    var allPackages: List<Pair<String, String>> = emptyList()
-        private set
 
     var formState by mutableStateOf(FormState())
 
     var dialogState by mutableStateOf<DialogState?>(null)
 
     var selectedFilter by mutableStateOf<Filter?>(null)
-
-    constructor(
-        filtersRepository: FiltersRepository,
-        packageManager: PackageManager,
-    ) : super() {
-        this.filtersRepository = filtersRepository
-
-        filtersState = filtersRepository.list()
-            .map { FiltersState(it) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersState())
-
-        viewModelScope.launch {
-            visibleApps = packageManager.queryIntentActivities(
-                Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER),
-                0,
-            ).map {
-                Pair(
-                    it.activityInfo.packageName,
-                    it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
-                )
-            }.sortedBy { it.second }
-            allPackages = packageManager.getInstalledApplications(0).map {
-                Pair(
-                    it.packageName,
-                    it.loadLabel(packageManager).toString(),
-                )
-            }.sortedBy { it.second }
-        }
-    }
 
     fun updateForm(page: FormPage, values: FormValues) {
         formState = FormState(page, values, getError(page, values))
@@ -77,7 +69,7 @@ class FiltersViewModel : ViewModel {
         if (getError() == null) {
             val filter = formState.values.toFilter()
             Log.d("FiltersViewModel", "Adding $filter")
-            filtersRepository.create(filter)
+            repository.create(filter)
             formState = FormState()
         }
     }
@@ -132,21 +124,21 @@ class FiltersViewModel : ViewModel {
     fun toggleHistory() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Toggling history for $selectedFilter")
-            filtersRepository.toggleHistory(selectedFilter!!)
+            repository.toggleHistory(selectedFilter!!)
         }
     }
 
     fun toggleFilter() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Toggling enabled state of $selectedFilter")
-            filtersRepository.toggleEnabled(selectedFilter!!)
+            repository.toggleEnabled(selectedFilter!!)
         }
     }
 
     fun deleteFilter() {
         viewModelScope.launch {
             Log.d("FiltersViewModel", "Deleting $selectedFilter")
-            filtersRepository.delete(selectedFilter!!)
+            repository.delete(selectedFilter!!)
         }
     }
 }

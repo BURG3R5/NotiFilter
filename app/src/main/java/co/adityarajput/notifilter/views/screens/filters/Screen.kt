@@ -32,7 +32,7 @@ fun FiltersScreen(
     goToSettingsScreen: () -> Unit,
     viewModel: FiltersViewModel = viewModel(factory = Provider.Factory),
 ) {
-    val filtersState = viewModel.filtersState.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -61,9 +61,9 @@ fun FiltersScreen(
             ) { Icon(painterResource(R.drawable.add), stringResource(R.string.add_filter)) }
         },
     ) { paddingValues ->
-        if (filtersState.value.filters == null) {
+        if (state.value.filters == null) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
-        } else if (filtersState.value.filters!!.isEmpty()) {
+        } else if (state.value.filters!!.isEmpty()) {
             Box(
                 Modifier.fillMaxSize(),
                 Alignment.Center,
@@ -81,7 +81,7 @@ fun FiltersScreen(
                     .fillMaxSize(),
                 contentPadding = paddingValues,
             ) {
-                items(filtersState.value.filters!!, { it.id }) {
+                items(state.value.filters!!, { it.id }) {
                     Tile(
                         buildString {
                             append("/")

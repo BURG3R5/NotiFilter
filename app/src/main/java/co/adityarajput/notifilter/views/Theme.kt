@@ -10,40 +10,38 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import co.adityarajput.notifilter.R
 
-@Composable
-fun Theme(content: @Composable () -> Unit) {
+private val ColorScheme = darkColorScheme(
+    primary = Color(0xFF7C70FF), // Purple
+    secondary = Color(0xFF70FFA4), // Green
+    tertiary = Color(0xFFFF7070), // Red
+)
+
+private val Typography = Typography().run {
     val firaMono = FontFamily(
         Font(R.font.firamono_regular, FontWeight.Normal),
         Font(R.font.firamono_medium, FontWeight.Medium),
         Font(R.font.firamono_bold, FontWeight.Bold),
     )
 
-    val defaultTypography = Typography()
-
-    MaterialTheme(
-        darkColorScheme(
-            primary = Color(0xFF7C70FF), // Purple
-            secondary = Color(0xFF70FFA4), // Green
-            tertiary = Color(0xFFFF7070), // Red
-        ),
-        MaterialTheme.shapes,
-        Typography(
-            defaultTypography.displayLarge.copy(fontFamily = firaMono),
-            defaultTypography.displayMedium.copy(fontFamily = firaMono),
-            defaultTypography.displaySmall.copy(fontFamily = firaMono),
-            defaultTypography.headlineLarge.copy(fontFamily = firaMono),
-            defaultTypography.headlineMedium.copy(fontFamily = firaMono),
-            defaultTypography.headlineSmall.copy(fontFamily = firaMono),
-            defaultTypography.titleLarge.copy(fontFamily = firaMono),
-            defaultTypography.titleMedium.copy(fontFamily = firaMono),
-            defaultTypography.titleSmall.copy(fontFamily = firaMono),
-            defaultTypography.bodyLarge.copy(fontFamily = firaMono),
-            defaultTypography.bodyMedium.copy(fontFamily = firaMono),
-            defaultTypography.bodySmall.copy(fontFamily = firaMono),
-            defaultTypography.labelLarge.copy(fontFamily = firaMono),
-            defaultTypography.labelMedium.copy(fontFamily = firaMono),
-            defaultTypography.labelSmall.copy(fontFamily = firaMono),
-        ),
-        content,
+    Typography(
+        displayLarge.copy(fontFamily = firaMono),
+        displayMedium.copy(fontFamily = firaMono),
+        displaySmall.copy(fontFamily = firaMono),
+        headlineLarge.copy(fontFamily = firaMono),
+        headlineMedium.copy(fontFamily = firaMono),
+        headlineSmall.copy(fontFamily = firaMono),
+        titleLarge.copy(fontFamily = firaMono),
+        titleMedium.copy(fontFamily = firaMono),
+        titleSmall.copy(fontFamily = firaMono),
+        bodyLarge.copy(fontFamily = firaMono),
+        bodyMedium.copy(fontFamily = firaMono),
+        bodySmall.copy(fontFamily = firaMono),
+        labelLarge.copy(fontFamily = firaMono),
+        labelMedium.copy(fontFamily = firaMono),
+        labelSmall.copy(fontFamily = firaMono),
     )
 }
+
+@Composable
+fun Theme(content: @Composable () -> Unit) =
+    MaterialTheme(ColorScheme, MaterialTheme.shapes, Typography, content)

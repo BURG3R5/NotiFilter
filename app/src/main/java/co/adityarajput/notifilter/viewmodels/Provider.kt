@@ -10,12 +10,12 @@ object Provider {
     val Factory = viewModelFactory {
         initializer {
             FiltersViewModel(
-                notifilterApplication().container.filtersRepository,
+                notifilterApplication().container.repository,
                 notifilterApplication().packageManager,
             )
         }
         initializer {
-            NotificationsViewModel(notifilterApplication().container.notificationsRepository)
+            NotificationsViewModel(notifilterApplication().container.repository)
         }
     }
 }
