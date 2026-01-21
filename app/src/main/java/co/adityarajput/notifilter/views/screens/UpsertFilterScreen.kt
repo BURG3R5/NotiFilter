@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.upsert_filter
+package co.adityarajput.notifilter.views.screens
 
 import android.app.TimePickerDialog
 import androidx.compose.animation.*

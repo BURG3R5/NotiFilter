@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.onboarding
+package co.adityarajput.notifilter.views.screens
 
 import android.annotation.SuppressLint
 import android.content.Intent
