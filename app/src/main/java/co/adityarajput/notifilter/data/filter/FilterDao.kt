@@ -1,15 +1,15 @@
 package co.adityarajput.notifilter.data.filter
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FilterDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun create(filter: Filter)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createAll(filters: List<Filter>)
+    @Upsert
+    suspend fun upsert(vararg filters: Filter)
 
     @Query("SELECT * from filters ORDER BY packageName ASC")
     fun list(): Flow<List<Filter>>

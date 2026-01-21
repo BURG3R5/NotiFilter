@@ -10,12 +10,9 @@ class Repository(
     private val filterDao: FilterDao,
     private val notificationDao: NotificationDao,
 ) {
-    suspend fun create(filter: Filter) = filterDao.create(filter)
+    suspend fun upsert(vararg filters: Filter) = filterDao.upsert(*filters)
 
-    suspend fun createFilters(filters: List<Filter>) = filterDao.createAll(filters)
-
-    suspend fun createNotifications(notifications: List<Notification>) =
-        notificationDao.createAll(notifications)
+    suspend fun upsert(vararg notifications: Notification) = notificationDao.upsert(*notifications)
 
     fun filters() = filterDao.list()
 
@@ -23,7 +20,7 @@ class Repository(
 
     suspend fun registerHit(filter: Filter, notification: Notification) {
         filterDao.registerHit(filter.id)
-        notificationDao.create(notification)
+        notificationDao.upsert(notification)
 
         val count = notificationDao.count()
         if (count > 50) {

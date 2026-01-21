@@ -1,18 +1,14 @@
 package co.adityarajput.notifilter.data.notification
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotificationDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun create(notification: Notification)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createAll(notifications: List<Notification>)
+    @Upsert
+    suspend fun upsert(vararg notification: Notification)
 
     @Query("SELECT * FROM notifications ORDER BY id DESC")
     fun list(): Flow<List<Notification>>
