@@ -17,7 +17,7 @@ data class Notification(
     constructor(sbn: StatusBarNotification, id: Int = 0) : this(
         sbn.notification.extras.getString("android.title") ?: "",
         sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-        sbn.packageName, sbn.postTime, id = id,
+        sbn.packageName, sbn.postTime, id,
     )
 
     fun isSimilar(other: Notification): Boolean {

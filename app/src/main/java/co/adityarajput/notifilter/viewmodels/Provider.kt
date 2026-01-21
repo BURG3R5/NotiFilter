@@ -5,17 +5,22 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import co.adityarajput.notifilter.NotiFilterApplication
+import co.adityarajput.notifilter.data.filter.Filter
+import kotlinx.serialization.json.Json
 
 object Provider {
     val Factory = viewModelFactory {
+        initializer { FiltersViewModel(notifilterApplication().container.repository) }
+        initializer { NotificationsViewModel(notifilterApplication().container.repository) }
+    }
+
+    fun createUFVM(filterString: String) = viewModelFactory {
         initializer {
-            FiltersViewModel(
-                notifilterApplication().container.filtersRepository,
+            UpsertFilterViewModel(
+                Json.decodeFromString<Filter?>(filterString),
+                notifilterApplication().container.repository,
                 notifilterApplication().packageManager,
             )
-        }
-        initializer {
-            NotificationsViewModel(notifilterApplication().container.notificationsRepository)
         }
     }
 }

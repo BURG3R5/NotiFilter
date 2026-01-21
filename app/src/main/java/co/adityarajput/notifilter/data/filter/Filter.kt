@@ -1,15 +1,17 @@
 package co.adityarajput.notifilter.data.filter
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.notification.Notification
+import co.adityarajput.notifilter.utils.toHourMinuteString
 import kotlinx.serialization.Serializable
-import java.util.Locale
 
 @Serializable
 @Entity(tableName = "filters")
@@ -71,37 +73,32 @@ data class Filter(
         }
     }
 
+    @SuppressLint("DefaultLocale")
+    @Composable
     fun getScheduleString(): String {
         return buildString {
             when (activeDays) {
                 setOf(1, 2, 3, 4, 5, 6, 7) -> append("")
-                setOf(2, 3, 4, 5, 6) -> append("on weekdays ")
-                setOf(1, 7) -> append("on weekends ")
+                setOf(2, 3, 4, 5, 6) -> append(stringResource(R.string.on_weekdays))
+                setOf(1, 7) -> append(stringResource(R.string.on_weekends))
                 else -> {
-                    val daysList = activeDays.sorted().map {
-                        when (it) {
-                            1 -> "sun"
-                            2 -> "mon"
-                            3 -> "tue"
-                            4 -> "wed"
-                            5 -> "thu"
-                            6 -> "fri"
-                            else -> "sat"
-                        }
-                    }
-                    append("on " + daysList.joinToString(", ") + " ")
+                    append(
+                        stringResource(
+                            R.string.on_days,
+                            stringArrayResource(R.array.days_short)
+                                .filterIndexed { i, _ -> activeDays.contains(i + 1) }
+                                .joinToString(", "),
+                        ),
+                    )
                 }
             }
 
             if (activeTime != (0 to 1439)) {
                 append(
-                    String.format(
-                        Locale.getDefault(),
-                        "from %02d:%02d to %02d:%02d",
-                        activeTime.first / 60,
-                        activeTime.first % 60,
-                        activeTime.second / 60,
-                        activeTime.second % 60,
+                    stringResource(
+                        R.string.from_to,
+                        activeTime.first.toHourMinuteString(),
+                        activeTime.second.toHourMinuteString(),
                     ),
                 )
             }

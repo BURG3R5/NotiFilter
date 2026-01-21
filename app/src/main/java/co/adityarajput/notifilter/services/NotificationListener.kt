@@ -45,8 +45,7 @@ class NotificationListener : NotificationListenerService() {
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
-    private val filtersRepository by lazy { AppContainer(this).filtersRepository }
-    private val notificationsRepository by lazy { AppContainer(this).notificationsRepository }
+    private val repository by lazy { AppContainer(this).repository }
     private val sharedPreferences by lazy { getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
 
     @Volatile
@@ -64,11 +63,11 @@ class NotificationListener : NotificationListenerService() {
             startForeground()
 
         serviceScope.launch {
-            filtersRepository.list().collectLatest { newFilters ->
+            repository.filters().collectLatest { newFilters ->
                 filters = newFilters
                 Log.d("NotificationListener", "Filters updated: $filters")
             }
-            notifications = notificationsRepository.list().first()
+            notifications = repository.notifications().first()
         }
     }
 
@@ -193,9 +192,8 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
-            notificationsRepository.save(notification)
-            filtersRepository.registerHit(filter)
-            notifications = notificationsRepository.list().first()
+            repository.registerHit(filter, notification)
+            notifications = repository.notifications().first()
             Log.d("NotificationListener", "Notifications updated: $notifications")
         }
     }

@@ -30,7 +30,7 @@ fun NotificationsScreen(
     goBack: () -> Unit,
     viewModel: NotificationsViewModel = viewModel(factory = Provider.Factory),
 ) {
-    val notificationsState = viewModel.notificationsState.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -41,9 +41,9 @@ fun NotificationsScreen(
             )
         },
     ) { paddingValues ->
-        if (notificationsState.value.notifications == null) {
+        if (state.value.notifications == null) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
-        } else if (notificationsState.value.notifications!!.isEmpty()) {
+        } else if (state.value.notifications!!.isEmpty()) {
             Box(
                 Modifier.fillMaxSize(),
                 Alignment.Center,
@@ -61,7 +61,7 @@ fun NotificationsScreen(
                     .fillMaxSize(),
                 contentPadding = paddingValues,
             ) {
-                items(notificationsState.value.notifications!!, { it.id }) {
+                items(state.value.notifications!!, { it.id }) {
                     Tile(
                         it.title,
                         it.content,

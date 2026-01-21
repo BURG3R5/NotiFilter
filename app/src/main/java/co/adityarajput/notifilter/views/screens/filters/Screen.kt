@@ -25,14 +25,16 @@ import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.Tile
+import kotlinx.serialization.json.Json
 
 @Composable
 fun FiltersScreen(
+    goToUpsertFilterScreen: (String) -> Unit,
     goToNotificationsScreen: () -> Unit,
     goToSettingsScreen: () -> Unit,
     viewModel: FiltersViewModel = viewModel(factory = Provider.Factory),
 ) {
-    val filtersState = viewModel.filtersState.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -55,15 +57,15 @@ fun FiltersScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                { viewModel.showAddDialog = true },
+                { goToUpsertFilterScreen("null") },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             ) { Icon(painterResource(R.drawable.add), stringResource(R.string.add_filter)) }
         },
     ) { paddingValues ->
-        if (filtersState.value.filters == null) {
+        if (state.value.filters == null) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
-        } else if (filtersState.value.filters!!.isEmpty()) {
+        } else if (state.value.filters!!.isEmpty()) {
             Box(
                 Modifier.fillMaxSize(),
                 Alignment.Center,
@@ -81,7 +83,7 @@ fun FiltersScreen(
                     .fillMaxSize(),
                 contentPadding = paddingValues,
             ) {
-                items(filtersState.value.filters!!, { it.id }) {
+                items(state.value.filters!!, { it.id }) {
                     Tile(
                         buildString {
                             append("/")
@@ -124,6 +126,12 @@ fun FiltersScreen(
                                     ),
                                 )
                             }
+                            IconButton({ goToUpsertFilterScreen(Json.encodeToString(it)) }) {
+                                Icon(
+                                    painterResource(R.drawable.edit),
+                                    stringResource(R.string.edit_filter),
+                                )
+                            }
                             IconButton(
                                 { viewModel.dialogState = DialogState.DELETE },
                                 colors = IconButtonDefaults.iconButtonColors(
@@ -142,8 +150,6 @@ fun FiltersScreen(
                 }
             }
         }
-        if (viewModel.showAddDialog)
-            AddFilterDialog(viewModel)
         if (viewModel.selectedFilter != null && viewModel.dialogState != null)
             EditFilterDialog(viewModel)
     }

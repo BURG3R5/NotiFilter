@@ -6,12 +6,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
 import co.adityarajput.notifilter.views.screens.about.AboutScreen
 import co.adityarajput.notifilter.views.screens.filters.FiltersScreen
 import co.adityarajput.notifilter.views.screens.notifications.NotificationsScreen
 import co.adityarajput.notifilter.views.screens.onboarding.OnboardingScreen
 import co.adityarajput.notifilter.views.screens.settings.SettingsScreen
+import co.adityarajput.notifilter.views.screens.upsert_filter.UpsertFilterScreen
+import kotlinx.serialization.Serializable
 
 @Composable
 fun Navigator(controller: NavHostController) {
@@ -34,8 +37,15 @@ fun Navigator(controller: NavHostController) {
         }
         composable(Routes.FILTERS.name) {
             FiltersScreen(
+                { controller.navigate(UpsertFilterRoute(it)) },
                 { controller.navigate(Routes.NOTIFICATIONS.name) },
                 { controller.navigate(Routes.SETTINGS.name) },
+            )
+        }
+        composable<UpsertFilterRoute> {
+            UpsertFilterScreen(
+                it.toRoute<UpsertFilterRoute>().filterString,
+                controller::popBackStack,
             )
         }
         composable(Routes.NOTIFICATIONS.name) { NotificationsScreen(controller::popBackStack) }
@@ -56,3 +66,6 @@ enum class Routes {
     SETTINGS,
     ABOUT,
 }
+
+@Serializable
+data class UpsertFilterRoute(val filterString: String = "null")

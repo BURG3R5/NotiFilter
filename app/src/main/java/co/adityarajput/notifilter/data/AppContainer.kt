@@ -3,35 +3,35 @@ package co.adityarajput.notifilter.data
 import android.content.Context
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.FiltersRepository
 import co.adityarajput.notifilter.data.filter.RegexTarget
 import co.adityarajput.notifilter.data.notification.Notification
-import co.adityarajput.notifilter.data.notification.NotificationsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 class AppContainer(private val context: Context) {
-    val filtersRepository: FiltersRepository by lazy {
-        FiltersRepository(NotiFilterDatabase.getDatabase(context).filterDao())
-    }
-    val notificationsRepository: NotificationsRepository by lazy {
-        NotificationsRepository(NotiFilterDatabase.getDatabase(context).notificationDao())
+    val repository: Repository by lazy {
+        Repository(
+            NotiFilterDatabase.getDatabase(context).filterDao(),
+            NotiFilterDatabase.getDatabase(context).notificationDao(),
+        )
     }
 
     suspend fun export() =
-        Json.encodeToString<List<Filter>>(filtersRepository.list().first())
+        Json.encodeToString<List<Filter>>(repository.filters().first())
 
-    suspend fun import(json: String) =
-        filtersRepository.replaceAll(Json.decodeFromString<List<Filter>>(json))
+    suspend fun import(json: String) {
+        repository.deleteFilters()
+        repository.upsert(*Json.decodeFromString<Array<Filter>>(json))
+    }
 
     fun seedDemoData() {
         runBlocking {
             if (
-                filtersRepository.list().first().isEmpty() &&
-                notificationsRepository.list().first().isEmpty()
+                repository.filters().first().isEmpty() &&
+                repository.notifications().first().isEmpty()
             ) {
-                listOf(
+                repository.upsert(
                     Filter(
                         "com.google.android.deskclock",
                         "Upcoming alarm",
@@ -69,8 +69,8 @@ class AppContainer(private val context: Context) {
                         activeTime = 9 * 60 to 17 * 60,
                         hits = 15,
                     ),
-                ).forEach { filtersRepository.create(it) }
-                listOf(
+                )
+                repository.upsert(
                     Notification(
                         "Download paused",
                         "A software update is available.",
@@ -101,7 +101,7 @@ class AppContainer(private val context: Context) {
                         "com.whatsapp",
                         System.currentTimeMillis() - 37 * 60 * 1000,
                     ),
-                ).forEach { notificationsRepository.save(it) }
+                )
             }
         }
     }

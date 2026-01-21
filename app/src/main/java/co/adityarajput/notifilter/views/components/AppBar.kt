@@ -23,9 +23,9 @@ fun AppBar(
                 title,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = when {
-                        canNavigateBack -> MaterialTheme.typography.headlineSmall.fontSize
+                        canNavigateBack -> MaterialTheme.typography.headlineMedium.fontSize
                         else -> MaterialTheme.typography.headlineLarge.fontSize
-                    }
+                    },
                 ),
             )
         },
