@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.filter.Action
 import co.adityarajput.notifilter.data.filter.Filter
@@ -27,6 +28,7 @@ class UpsertFilterViewModel(
         val page: FormPage = FormPage.ZAPPER,
         val values: Values = Values(),
         val error: FormError? = null,
+        val warnings: List<FormWarning> = listOf(),
     )
 
     data class Values(
@@ -101,7 +103,7 @@ class UpsertFilterViewModel(
     }
 
     fun updateForm(page: FormPage, values: Values) {
-        state = State(page, values, getError(page, values))
+        state = State(page, values, getError(page, values), getWarnings(page, values))
     }
 
     private fun getError(
@@ -152,6 +154,36 @@ class UpsertFilterViewModel(
         return null
     }
 
+    private fun getWarnings(
+        page: FormPage = state.page,
+        values: Values = state.values,
+    ): List<FormWarning> {
+        if (page != FormPage.PATTERN || values.notification == null) return listOf()
+
+        try {
+            val regexTarget = values.regexTarget
+            val notification = values.notification
+            val warnings = mutableListOf<FormWarning>()
+
+            if (
+                regexTarget != RegexTarget.CONTENT
+                && !Regex(values.queryPattern).containsMatchIn(notification.title)
+            ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_TITLE)
+            if (
+                (regexTarget == RegexTarget.CONTENT || regexTarget == RegexTarget.OR)
+                && !Regex(values.queryPattern).containsMatchIn(notification.content)
+            ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
+            if (
+                regexTarget == RegexTarget.AND &&
+                !Regex(values.secondaryQueryPattern).containsMatchIn(notification.content)
+            ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
+
+            return warnings
+        } catch (_: Exception) {
+            return listOf()
+        }
+    }
+
     suspend fun submitForm() {
         if (getError() == null) {
             val filter = state.values.toFilter()
@@ -177,3 +209,8 @@ enum class FormPage {
 }
 
 enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX, INVALID_TIME_RANGE }
+
+enum class FormWarning(val description: Int) {
+    REGEX_DOESNT_MATCH_TITLE(R.string.pattern_doesnt_match_title),
+    REGEX_DOESNT_MATCH_CONTENT(R.string.pattern_doesnt_match_content)
+}

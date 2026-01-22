@@ -41,6 +41,7 @@ import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.ErrorText
 import co.adityarajput.notifilter.views.components.Tile
+import co.adityarajput.notifilter.views.components.WarningText
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -424,6 +425,7 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
         fontWeight = FontWeight.Normal,
     )
     if (viewModel.state.error == FormError.INVALID_NOTIFICATION_REGEX) ErrorText(R.string.invalid_regex)
+    viewModel.state.warnings.forEach { WarningText(it.description) }
 }
 
 @Composable
