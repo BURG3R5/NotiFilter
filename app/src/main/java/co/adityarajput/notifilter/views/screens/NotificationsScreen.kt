@@ -57,9 +57,9 @@ fun NotificationsScreen(
         } else {
             LazyColumn(
                 Modifier
+                    .padding(paddingValues)
                     .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxSize(),
-                contentPadding = paddingValues,
             ) {
                 items(state.value.notifications!!, { it.id }) {
                     Tile(
