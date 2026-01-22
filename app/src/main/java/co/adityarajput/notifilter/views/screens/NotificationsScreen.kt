@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.notifications
+package co.adityarajput.notifilter.views.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,9 +57,9 @@ fun NotificationsScreen(
         } else {
             LazyColumn(
                 Modifier
+                    .padding(paddingValues)
                     .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxSize(),
-                contentPadding = paddingValues,
             ) {
                 items(state.value.notifications!!, { it.id }) {
                     Tile(

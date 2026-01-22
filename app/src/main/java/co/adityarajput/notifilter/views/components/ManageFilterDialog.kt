@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.filters
+package co.adityarajput.notifilter.views.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
@@ -12,7 +12,7 @@ import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 
 @Composable
-fun EditFilterDialog(viewModel: FiltersViewModel) {
+fun ManageFilterDialog(viewModel: FiltersViewModel) {
     val hideDialog = { viewModel.dialogState = null }
     val dialogState = viewModel.dialogState!!
     val filter = viewModel.selectedFilter!!

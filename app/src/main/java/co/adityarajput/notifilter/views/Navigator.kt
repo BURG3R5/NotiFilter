@@ -8,12 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
-import co.adityarajput.notifilter.views.screens.about.AboutScreen
-import co.adityarajput.notifilter.views.screens.filters.FiltersScreen
-import co.adityarajput.notifilter.views.screens.notifications.NotificationsScreen
-import co.adityarajput.notifilter.views.screens.onboarding.OnboardingScreen
-import co.adityarajput.notifilter.views.screens.settings.SettingsScreen
-import co.adityarajput.notifilter.views.screens.upsert_filter.UpsertFilterScreen
+import co.adityarajput.notifilter.views.screens.*
 import kotlinx.serialization.Serializable
 
 @Composable

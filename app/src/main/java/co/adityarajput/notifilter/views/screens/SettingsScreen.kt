@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.settings
+package co.adityarajput.notifilter.views.screens
 
 import android.annotation.SuppressLint
 import android.content.Context.MODE_PRIVATE

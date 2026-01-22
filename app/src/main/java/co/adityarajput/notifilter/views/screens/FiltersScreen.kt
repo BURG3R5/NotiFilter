@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens.filters
+package co.adityarajput.notifilter.views.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +24,7 @@ import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
+import co.adityarajput.notifilter.views.components.ManageFilterDialog
 import co.adityarajput.notifilter.views.components.Tile
 import kotlinx.serialization.json.Json
 
@@ -79,9 +80,9 @@ fun FiltersScreen(
         } else {
             LazyColumn(
                 Modifier
+                    .padding(paddingValues)
                     .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxSize(),
-                contentPadding = paddingValues,
             ) {
                 items(state.value.filters!!, { it.id }) {
                     Tile(
@@ -151,6 +152,6 @@ fun FiltersScreen(
             }
         }
         if (viewModel.selectedFilter != null && viewModel.dialogState != null)
-            EditFilterDialog(viewModel)
+            ManageFilterDialog(viewModel)
     }
 }

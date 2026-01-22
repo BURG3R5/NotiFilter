@@ -1,0 +1,10 @@
+• feat: Optionally promote NotificationListener to foreground
+• feat: Let user edit filters
+• fix: Use paddingValues correctly
+• feat: Warn if pattern doesn't match notification
+
+Users can now choose to run the NotificationListener service in the foreground. Check out the app settings to enable this.
+
+Filters can now be edited. The "add/edit filter" form is a dedicated screen with clean and stable UI.
+
+During filter creation, regex pattern(s) will now be checked against the zapped notification, displaying a warning if no match is found.

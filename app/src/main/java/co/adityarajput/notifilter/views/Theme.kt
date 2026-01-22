@@ -16,6 +16,8 @@ private val ColorScheme = darkColorScheme(
     tertiary = Color(0xFFFF7070), // Red
 )
 
+val Orange = Color(0xFFffad7d)
+
 private val Typography = Typography().run {
     val firaMono = FontFamily(
         Font(R.font.firamono_regular, FontWeight.Normal),
