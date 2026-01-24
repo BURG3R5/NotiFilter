@@ -61,7 +61,7 @@ class UpsertFilterViewModel(
         else State(FormPage.PACKAGE, Values(filter), null),
     )
 
-    val visibleApps: List<Pair<String, String>> by lazy {
+    val visibleApps: List<App> by lazy {
         packageManager
             .queryIntentActivities(
                 Intent(
@@ -69,20 +69,18 @@ class UpsertFilterViewModel(
                     null,
                 ).addCategory(Intent.CATEGORY_LAUNCHER),
                 0,
-            )
-            .map {
-                Pair(
-                    it.activityInfo.packageName,
+            ).map {
+                App(
                     it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
+                    it.activityInfo.packageName,
                 )
-            }
-            .sortedBy { it.second }
+            }.sortedBy { it.name }
     }
 
-    val allPackages: List<Pair<String, String>> by lazy {
+    val allPackages: List<App> by lazy {
         packageManager.getInstalledApplications(0)
-            .map { Pair(it.packageName, it.loadLabel(packageManager).toString()) }
-            .sortedBy { it.second }
+            .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
+            .sortedBy { it.name }
     }
 
     var activeNotifications by mutableStateOf(listOf<Notification>())

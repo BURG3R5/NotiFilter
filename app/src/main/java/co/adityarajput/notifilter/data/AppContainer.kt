@@ -65,31 +65,31 @@ class AppContainer(private val context: Context) {
                     Notification(
                         "Download paused",
                         "A software update is available.",
-                        "com.wssyncmldm",
+                        "Software update",
                         System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
                     ),
                     Notification(
                         "Upcoming alarm",
                         "Wed 8:30 AM - Wake up",
-                        "com.wssyncmldm",
+                        "Clock",
                         System.currentTimeMillis() - 28 * 60 * 60 * 1000,
                     ),
                     Notification(
                         "Upcoming alarm",
                         "Wed 11:30 AM - Exercise",
-                        "com.wssyncmldm",
+                        "Clock",
                         System.currentTimeMillis() - 25 * 60 * 60 * 1000,
                     ),
                     Notification(
                         "tom@newsletter.tomscott.com",
                         "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
-                        "com.google.android.gm",
+                        "Gmail",
                         System.currentTimeMillis() - 3 * 60 * 60 * 1000,
                     ),
                     Notification(
                         "Book Club",
                         "Bob: Please go for something lighter this time. I'm tired of tomes!",
-                        "com.whatsapp",
+                        "WhatsApp",
                         System.currentTimeMillis() - 37 * 60 * 1000,
                     ),
                 )

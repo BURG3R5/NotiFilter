@@ -188,8 +188,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
-            notification = notification.copy(origin = filter.app.name)
-            repository.registerHit(filter, notification)
+            repository.registerHit(filter, notification.copy(origin = filter.app.name))
             notifications = repository.notifications().first()
             Log.d("NotificationListener", "Notifications updated: $notifications")
         }

@@ -165,7 +165,7 @@ private fun NotificationTile() {
     val notification = Notification(
         "Notification Title",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-        "com.example.app",
+        "App Name",
         System.currentTimeMillis() - 12345600,
     )
 

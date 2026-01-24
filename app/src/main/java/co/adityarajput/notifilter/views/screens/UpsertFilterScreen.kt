@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,12 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.Action
 import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.RegexTarget
+import co.adityarajput.notifilter.utils.filterFirst
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
@@ -186,15 +188,19 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
                 .padding(horizontal = dimensionResource(R.dimen.padding_small)),
         ) {
             items(viewModel.activeNotifications, { it.id }) {
+                val appName =
+                    viewModel.allPackages.find { app -> app.packageName == it.origin }?.name
+                        ?: it.origin
+
                 Tile(
                     it.title,
                     it.content,
-                    it.origin.getFirst(30),
+                    appName.getFirst(30),
                     onClick = {
                         viewModel.updateForm(
                             FormPage.PATTERN,
                             viewModel.state.values.copy(
-                                app = App(it.origin, it.origin),
+                                app = App(appName, it.origin),
                                 notification = it,
                             ),
                         )
@@ -208,68 +214,31 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PackagePage(viewModel: UpsertFilterViewModel) {
-    var dropdownExpanded by remember { mutableStateOf(false) }
+    var searchString by remember { mutableStateOf("") }
+    var visibleItemsCount by remember { mutableIntStateOf(10) }
     var showSystemPackages by remember { mutableStateOf(false) }
-    var suggestions by remember { mutableStateOf(listOf<Pair<String, String>>()) }
+
+    val (apps, searchFinished) = (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps)
+        .filterFirst(visibleItemsCount) { it.toString().contains(searchString, true) }
 
     Text(
         stringResource(R.string.package_page_title),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Normal,
     )
-    ExposedDropdownMenuBox(
-        dropdownExpanded, { dropdownExpanded = it },
+    OutlinedTextField(
+        searchString,
+        { searchString = it },
         Modifier.fillMaxWidth(),
-    ) {
-        OutlinedTextField(
-            viewModel.state.values.app.name,
-            { input ->
-                viewModel.updateForm(
-                    viewModel.state.page,
-                    viewModel.state.values.copy(app = App(input, input)),
-                )
-                if (input.isBlank()) {
-                    suggestions = listOf()
-                    dropdownExpanded = false
-                    return@OutlinedTextField
-                }
-                suggestions =
-                    (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps).filter {
-                        it.toString().contains(input, ignoreCase = true)
-                    }
-                dropdownExpanded = suggestions.isNotEmpty()
-            },
-            Modifier
-                .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-            label = { Text(stringResource(R.string.package_name)) },
-            placeholder = { Text(stringResource(R.string.package_name_placeholder)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            singleLine = true,
-        )
-        ExposedDropdownMenu(
-            dropdownExpanded,
-            { dropdownExpanded = false },
-            Modifier.heightIn(max = 200.dp),
-        ) {
-            suggestions.forEach {
-                DropdownMenuItem(
-                    { Text(it.second) },
-                    {
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(app = App(it.second, it.first)),
-                        )
-                        dropdownExpanded = false
-                    },
-                )
-            }
-        }
-    }
+        label = { Text(stringResource(R.string.package_name)) },
+        placeholder = { Text(stringResource(R.string.package_name_placeholder)) },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ),
+        singleLine = true,
+    )
     Row(
         Modifier
             .padding(vertical = dimensionResource(R.dimen.padding_medium))
@@ -291,6 +260,38 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
                 fontWeight = FontWeight.Normal,
             )
         }
+    }
+    FlowRow(
+        Modifier.verticalScroll(rememberScrollState()),
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+    ) {
+        apps.forEach {
+            FilterChip(
+                it == viewModel.state.values.app,
+                {
+                    viewModel.updateForm(
+                        FormPage.PATTERN,
+                        viewModel.state.values.copy(app = it),
+                    )
+                },
+                { Text(it.name) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+            )
+        }
+        if (!searchFinished)
+            FilterChip(
+                false,
+                { visibleItemsCount += 10 },
+                { Text("...") },
+                colors = FilterChipDefaults.filterChipColors(
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+            )
     }
 }
 
