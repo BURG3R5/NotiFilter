@@ -1,8 +1,8 @@
 package co.adityarajput.notifilter.data
 
-import android.util.Log
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
+import co.adityarajput.notifilter.utils.Logger
 
 class Repository(
     private val filterDao: FilterDao,
@@ -22,7 +22,7 @@ class Repository(
 
         val count = notificationDao.count()
         if (count > 50) {
-            Log.d("Repository", "Deleting oldest ${count - 50} notification(s)")
+            Logger.d("Repository.registerHit", "Deleting oldest ${count - 50} notification(s)")
             notificationDao.trim(count - 50)
         }
     }

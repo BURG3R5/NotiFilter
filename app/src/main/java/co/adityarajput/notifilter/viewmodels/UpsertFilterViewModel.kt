@@ -3,7 +3,6 @@ package co.adityarajput.notifilter.viewmodels
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +12,7 @@ import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.services.NotificationListener
+import co.adityarajput.notifilter.utils.Logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -129,7 +129,7 @@ class UpsertFilterViewModel(
                     if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
                     Regex(values.action.buttonRegex).pattern == values.action.buttonRegex
                 } catch (_: Exception) {
-                    Log.d("FiltersViewModel", "Button pattern regex invalid")
+                    Logger.d("FiltersViewModel.getError", "Button pattern regex invalid")
                     return FormError.INVALID_BUTTON_REGEX
                 }
 
@@ -174,8 +174,8 @@ class UpsertFilterViewModel(
     suspend fun submitForm() {
         if (getError() == null) {
             val filter = state.values.toFilter()
-            Log.d(
-                "FiltersViewModel",
+            Logger.d(
+                "FiltersViewModel.submitForm",
                 "${if (state.values.filterId == 0) "Adding" else "Updating"} $filter",
             )
             repository.upsert(filter)

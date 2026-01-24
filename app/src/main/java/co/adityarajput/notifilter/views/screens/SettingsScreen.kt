@@ -1,8 +1,10 @@
 package co.adityarajput.notifilter.views.screens
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -17,7 +19,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,6 +34,7 @@ import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.services.NotificationListener
+import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
@@ -46,6 +51,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val clipboard = LocalClipboard.current
     val appContainer = remember { AppContainer(context) }
     val handler = remember { Handler(Looper.getMainLooper()) }
     val sharedPreferences = remember { context.getSharedPreferences(SETTINGS, MODE_PRIVATE) }
@@ -252,11 +258,53 @@ fun SettingsScreen(
                 Card(
                     Modifier
                         .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.padding_small))
-                        .clickable { goToAboutScreen() },
+                        .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
+                    val copySuccess = stringResource(R.string.copy_success)
                     Row(
-                        Modifier.padding(dimensionResource(R.dimen.padding_large)),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_medium),
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_small),
+                            )
+                            .clickable {
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText(
+                                            "logs",
+                                            Logger.logs.joinToString("\n"),
+                                        ).toClipEntry(),
+                                    )
+                                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
+                                        Toast
+                                            .makeText(context, copySuccess, Toast.LENGTH_SHORT)
+                                            .show()
+                                }
+                            },
+                        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.list_alt),
+                            stringResource(R.string.alttext_logs),
+                        )
+                        Text(
+                            stringResource(R.string.copy_logs),
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_small),
+                                dimensionResource(R.dimen.padding_large),
+                                dimensionResource(R.dimen.padding_medium),
+                            )
+                            .clickable { goToAboutScreen() },
                         Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
                     ) {
                         Icon(
@@ -264,7 +312,7 @@ fun SettingsScreen(
                             stringResource(R.string.alttext_info),
                         )
                         Text(
-                            stringResource(R.string.about),
+                            stringResource(R.string.about_app),
                             fontWeight = FontWeight.Medium,
                         )
                     }

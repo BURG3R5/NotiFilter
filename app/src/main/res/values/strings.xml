@@ -28,6 +28,9 @@
     <string name="export_filters">Export filters</string>
     <string name="export_explanation">Generates a JSON file</string>
     <string name="export_success">Filters exported successfully</string>
+    <string name="copy_logs">Copy logs</string>
+    <string name="copy_success">Logs copied to clipboard</string>
+    <string name="about_app">About NotiFilter</string>
 
     <string name="add_filter">Add filter</string>
     <string name="edit_filter">Edit filter</string>
@@ -102,6 +105,7 @@
 
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
+    <string name="alttext_logs">Logs</string>
     <string name="alttext_info">Info</string>
 
     <string name="foreground_notification_content">NotiFilter is running</string>

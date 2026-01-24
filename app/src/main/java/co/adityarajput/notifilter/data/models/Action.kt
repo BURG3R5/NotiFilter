@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.utils.Logger
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -59,7 +60,10 @@ sealed class Action {
                 value.removePrefix("BATCH(batchLength=").removeSuffix(")").toInt(),
             )
 
-            else -> throw IllegalArgumentException("Unknown Action: $value")
+            else -> {
+                Logger.e("Action.fromString", value)
+                throw IllegalArgumentException("Can't convert value to Action, unknown value: $value")
+            }
         }
     }
 }
