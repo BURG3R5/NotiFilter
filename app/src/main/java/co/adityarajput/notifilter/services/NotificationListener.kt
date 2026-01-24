@@ -9,7 +9,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
@@ -17,6 +16,7 @@ import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.models.Action
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
+import co.adityarajput.notifilter.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,7 +56,7 @@ class NotificationListener : NotificationListenerService() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        Log.d("NotificationListener", "Service created")
+        Logger.i("NotificationListener.onCreate", "Service created")
 
         if (sharedPreferences.getBoolean(Constants.RUN_IN_FOREGROUND, false))
             startForeground()
@@ -64,7 +64,7 @@ class NotificationListener : NotificationListenerService() {
         serviceScope.launch {
             repository.filters().collectLatest { newFilters ->
                 filters = newFilters
-                Log.d("NotificationListener", "Filters updated: $filters")
+                Logger.d("NotificationListener.onCreate", "Filters updated: $filters")
             }
             notifications = repository.notifications().first()
         }
@@ -92,22 +92,25 @@ class NotificationListener : NotificationListenerService() {
                 .setOngoing(true).setSilent(true).build(),
             if (SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
-        Log.d("NotificationListener", "Promoted to foreground")
+        Logger.i("NotificationListener.startForeground", "Promoted to foreground")
     }
 
     override fun onListenerConnected() {
         super.onListenerConnected()
-        Log.d("NotificationListener", "Listener connected")
+        Logger.i("NotificationListener.onListenerConnected", "Listener connected")
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         if (sbn.notification.flags and FLAG_GROUP_SUMMARY != 0) {
-            Log.d("NotificationListener", "Ignoring group summary notification")
+            Logger.d(
+                "NotificationListener.onNotificationPosted",
+                "Ignoring group summary notification",
+            )
             return
         }
 
-        var notification = Notification(sbn)
-        Log.d("NotificationListener", "Received $notification")
+        val notification = Notification(sbn)
+        Logger.d("NotificationListener.onNotificationPosted", "Received $notification")
 
         val filter = filters.filter {
             notification.origin == it.app.packageName
@@ -116,14 +119,14 @@ class NotificationListener : NotificationListenerService() {
                     && it.matchesTextOf(notification)
         }.minByOrNull { it.id } ?: return
 
-        Log.d("NotificationListener", "Matched $filter")
+        Logger.i("NotificationListener.onNotificationPosted", "Matched $filter")
 
         when (filter.action) {
             is Action.DISMISS ->
                 if (sbn.isClearable) {
                     cancelNotification(sbn.key)
                 } else {
-                    Log.d("NotificationListener", "Is unclearable")
+                    Logger.d("NotificationListener.onNotificationPosted", "Is unclearable")
                     snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
@@ -133,7 +136,7 @@ class NotificationListener : NotificationListenerService() {
                         Regex(filter.action.buttonRegex).containsMatchIn(it.title)
                     }?.actionIntent?.send()
                 } catch (e: Exception) {
-                    Log.e("NotificationListener", "Failed to tap button", e)
+                    Logger.e("NotificationListener.onNotificationPosted", "Failed to tap button", e)
                     return
                 }
 
@@ -150,11 +153,14 @@ class NotificationListener : NotificationListenerService() {
                 val untilNextBatch = batchLength - today.until(now, MILLIS) % batchLength
 
                 if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
-                    Log.d("NotificationListener", "Less than 1 second to batch boundary")
+                    Logger.d(
+                        "NotificationListener.onNotificationPosted",
+                        "Less than 1 second to batch boundary",
+                    )
                     return
                 }
                 if (notifications.any(notification::isSimilar)) {
-                    Log.d("NotificationListener", "Already snoozed")
+                    Logger.d("NotificationListener.onNotificationPosted", "Already snoozed")
                     return
                 }
 
@@ -174,7 +180,10 @@ class NotificationListener : NotificationListenerService() {
                 )
 
                 if (delay < 1000L) {
-                    Log.d("NotificationListener", "Less than 1 second until filter deactivation")
+                    Logger.d(
+                        "NotificationListener.onNotificationPosted",
+                        "Less than 1 second until filter deactivation",
+                    )
                     return
                 }
 
@@ -183,21 +192,24 @@ class NotificationListener : NotificationListenerService() {
         }
 
         if (!filter.historyEnabled) {
-            Log.d("NotificationListener", "History is disabled for filter")
+            Logger.d("NotificationListener.onNotificationPosted", "History is disabled for filter")
             return
         }
 
         serviceScope.launch {
             repository.registerHit(filter, notification.copy(origin = filter.app.name))
             notifications = repository.notifications().first()
-            Log.d("NotificationListener", "Notifications updated: $notifications")
+            Logger.d(
+                "NotificationListener.onNotificationPosted",
+                "Notifications updated: $notifications",
+            )
         }
     }
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         if (instance == this) instance = null
-        Log.d("NotificationListener", "Listener disconnected")
+        Logger.i("NotificationListener.onListenerDisconnected", "Listener disconnected")
     }
 
     override fun onDestroy() {
