@@ -1,0 +1,46 @@
+name: build nightly
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-nightly:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "temurin"
+
+      - name: Set version
+        run: |
+          git fetch origin master
+          sed -i "s/versionCode = [0-9]\+/versionCode = $(date +'%y%j%H%M')/" app/build.gradle.kts
+          sed -i "s/versionName = \"\(.*\)\"/versionName = \"\1-nightly.$(git log --oneline origin/master..HEAD | wc -l)\"/" app/build.gradle.kts
+
+      - name: Build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleNightly
+          mv app/build/outputs/apk/nightly/app-nightly-unsigned.apk app/NotiFilter_nightly.apk
+
+      - name: Sign APK
+        env:
+          KEYSTORE: ${{ secrets.SIGNING_KEY }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        run: |
+          echo "${KEYSTORE}" | base64 -d > apksign.keystore
+          ${ANDROID_HOME}/build-tools/34.0.0/apksigner sign --ks apksign.keystore --ks-pass env:SIGNING_STORE_PASSWORD "app/NotiFilter_nightly.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NotiFilter_nightly
+          path: app/NotiFilter_nightly.apk
