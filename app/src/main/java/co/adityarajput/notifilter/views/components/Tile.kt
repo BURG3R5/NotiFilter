@@ -17,11 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.data.filter.Action
-import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.RegexTarget
-import co.adityarajput.notifilter.data.notification.Notification
-import co.adityarajput.notifilter.utils.getLast
+import co.adityarajput.notifilter.data.models.*
+import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
 import co.adityarajput.notifilter.views.Theme
 
@@ -101,39 +98,35 @@ fun Tile(
 private fun FilterTiles() {
     val filters = listOf(
         Filter(
-            "com.wssyncmldm",
-            "software update",
-            null,
-            RegexTarget.CONTENT,
-            Action.TAP,
-            "Remind me",
-            activeTime = 9 * 60 to 17 * 60,
-            activeDays = setOf(1, 2, 3, 4, 5),
-            hits = 69,
-        ),
-        Filter(
-            "com.sec.android.app.clockpackage",
-            "upcoming",
-            null,
-            RegexTarget.TITLE,
+            App("Clock", "com.google.android.deskclock"),
+            "Upcoming alarm",
             Action.DISMISS,
+            RegexTarget.TITLE,
             enabled = false,
         ),
         Filter(
-            "android",
-            "is displaying over other apps",
-            null,
-            RegexTarget.OR,
-            Action.BATCH,
-            batchLengthInHours = 6,
-            hits = 420,
+            App("Software update", "com.wssyncmldm"),
+            "software update",
+            Action.TAP("Remind me"),
+            RegexTarget.CONTENT,
+            schedule = Schedule(days = setOf(2, 3, 4, 5, 6)),
+            hits = 23,
         ),
         Filter(
-            "com.sec.android.app.samsungapps",
-            "Galaxy",
-            "update available",
+            App("Gmail", "com.google.android.gm"),
+            "[Nn]ewsletter",
+            Action.BATCH(3),
+            RegexTarget.OR,
+            historyEnabled = false,
+        ),
+        Filter(
+            App("WhatsApp", "com.whatsapp"),
+            "Book Club",
+            Action.DELAY,
             RegexTarget.AND,
-            Action.DISMISS,
+            "^Bob",
+            schedule = Schedule(start = 9 * 60, end = 17 * 60),
+            hits = 15,
         ),
     )
 
@@ -143,21 +136,21 @@ private fun FilterTiles() {
                 Tile(
                     buildString {
                         append("/")
-                        append(filter.queryPattern)
+                        append(filter.regexPattern)
                         append("/")
 
                         if (filter.regexTarget == RegexTarget.AND) {
                             append(" && /")
-                            append(filter.secondaryQueryPattern)
+                            append(filter.secondaryRegexPattern)
                             append("/")
                         }
                     },
-                    filter.getActionString(),
-                    filter.packageName.getLast(30),
+                    filter.action.verb(),
+                    filter.app.name.getFirst(30),
                     if (!filter.enabled) stringResource(R.string.filter_disabled)
                     else if (!filter.historyEnabled) stringResource(R.string.history_disabled)
                     else pluralStringResource(R.plurals.hit, filter.hits, filter.hits),
-                    filter.getScheduleString(),
+                    filter.schedule.description,
                     { },
                     { Text("BUTTONS") },
                     filter.enabled,
@@ -172,7 +165,7 @@ private fun NotificationTile() {
     val notification = Notification(
         "Notification Title",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-        "com.example.app",
+        "App Name",
         System.currentTimeMillis() - 12345600,
     )
 
@@ -180,7 +173,7 @@ private fun NotificationTile() {
         Tile(
             notification.title,
             notification.content,
-            notification.packageName.getLast(30),
+            notification.origin.getFirst(30),
             notification.timestamp.toShortHumanReadableTime(),
         )
     }

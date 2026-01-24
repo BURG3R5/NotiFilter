@@ -1,8 +1,9 @@
-package co.adityarajput.notifilter.data.notification
+package co.adityarajput.notifilter.data
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import co.adityarajput.notifilter.data.models.Notification
 import kotlinx.coroutines.flow.Flow
 
 @Dao

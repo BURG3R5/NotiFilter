@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -21,9 +23,8 @@ jobs:
 
       - name: Set version
         run: |
-          git fetch origin master
           sed -i "s/versionCode = [0-9]\+/versionCode = $(date +'%y%j%H%M')/" app/build.gradle.kts
-          sed -i "s/versionName = \"\(.*\)\"/versionName = \"\1-nightly.$(git log --oneline origin/master..HEAD | wc -l)\"/" app/build.gradle.kts
+          sed -i "s/versionName = \"\(.*\)\"/versionName = \"\1-nightly.$(git rev-list --count HEAD)\"/" app/build.gradle.kts
 
       - name: Build APK
         run: |

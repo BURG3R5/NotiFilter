@@ -3,7 +3,7 @@ package co.adityarajput.notifilter.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.adityarajput.notifilter.data.Repository
-import co.adityarajput.notifilter.data.notification.Notification
+import co.adityarajput.notifilter.data.models.Notification
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

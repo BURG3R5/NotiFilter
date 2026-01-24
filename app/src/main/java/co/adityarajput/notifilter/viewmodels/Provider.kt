@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import co.adityarajput.notifilter.NotiFilterApplication
-import co.adityarajput.notifilter.data.filter.Filter
+import co.adityarajput.notifilter.data.models.Filter
 import kotlinx.serialization.json.Json
 
 object Provider {

@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,13 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.data.filter.Action
-import co.adityarajput.notifilter.data.filter.RegexTarget
+import co.adityarajput.notifilter.data.models.Action
+import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.RegexTarget
+import co.adityarajput.notifilter.utils.filterFirst
 import co.adityarajput.notifilter.utils.getFirst
-import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -186,15 +188,19 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
                 .padding(horizontal = dimensionResource(R.dimen.padding_small)),
         ) {
             items(viewModel.activeNotifications, { it.id }) {
+                val appName =
+                    viewModel.allPackages.find { app -> app.packageName == it.origin }?.name
+                        ?: it.origin
+
                 Tile(
                     it.title,
                     it.content,
-                    it.packageName.getLast(30),
+                    appName.getFirst(30),
                     onClick = {
                         viewModel.updateForm(
                             FormPage.PATTERN,
                             viewModel.state.values.copy(
-                                packageName = it.packageName,
+                                app = App(appName, it.origin),
                                 notification = it,
                             ),
                         )
@@ -208,68 +214,31 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PackagePage(viewModel: UpsertFilterViewModel) {
-    var dropdownExpanded by remember { mutableStateOf(false) }
+    var searchString by remember { mutableStateOf("") }
+    var visibleItemsCount by remember { mutableIntStateOf(10) }
     var showSystemPackages by remember { mutableStateOf(false) }
-    var suggestions by remember { mutableStateOf(listOf<Pair<String, String>>()) }
+
+    val (apps, searchFinished) = (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps)
+        .filterFirst(visibleItemsCount) { it.toString().contains(searchString, true) }
 
     Text(
         stringResource(R.string.package_page_title),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Normal,
     )
-    ExposedDropdownMenuBox(
-        dropdownExpanded, { dropdownExpanded = it },
+    OutlinedTextField(
+        searchString,
+        { searchString = it },
         Modifier.fillMaxWidth(),
-    ) {
-        OutlinedTextField(
-            viewModel.state.values.packageName,
-            { input ->
-                viewModel.updateForm(
-                    viewModel.state.page,
-                    viewModel.state.values.copy(packageName = input),
-                )
-                if (input.isBlank()) {
-                    suggestions = listOf()
-                    dropdownExpanded = false
-                    return@OutlinedTextField
-                }
-                suggestions =
-                    (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps).filter {
-                        it.toString().contains(input, ignoreCase = true)
-                    }
-                dropdownExpanded = suggestions.isNotEmpty()
-            },
-            Modifier
-                .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-            label = { Text(stringResource(R.string.package_name)) },
-            placeholder = { Text(stringResource(R.string.package_name_placeholder)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            singleLine = true,
-        )
-        ExposedDropdownMenu(
-            dropdownExpanded,
-            { dropdownExpanded = false },
-            Modifier.heightIn(max = 200.dp),
-        ) {
-            suggestions.forEach {
-                DropdownMenuItem(
-                    { Text(it.second) },
-                    {
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(packageName = it.first),
-                        )
-                        dropdownExpanded = false
-                    },
-                )
-            }
-        }
-    }
+        label = { Text(stringResource(R.string.package_name)) },
+        placeholder = { Text(stringResource(R.string.package_name_placeholder)) },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ),
+        singleLine = true,
+    )
     Row(
         Modifier
             .padding(vertical = dimensionResource(R.dimen.padding_medium))
@@ -291,6 +260,38 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
                 fontWeight = FontWeight.Normal,
             )
         }
+    }
+    FlowRow(
+        Modifier.verticalScroll(rememberScrollState()),
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+    ) {
+        apps.forEach {
+            FilterChip(
+                it == viewModel.state.values.app,
+                {
+                    viewModel.updateForm(
+                        FormPage.PATTERN,
+                        viewModel.state.values.copy(app = it),
+                    )
+                },
+                { Text(it.name) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+            )
+        }
+        if (!searchFinished)
+            FilterChip(
+                false,
+                { visibleItemsCount += 10 },
+                { Text("...") },
+                colors = FilterChipDefaults.filterChipColors(
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+            )
     }
 }
 
@@ -448,27 +449,27 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RadioButton(
-                (it == viewModel.state.values.action),
+                viewModel.state.values.action.isOfType(it),
                 null,
                 Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
             )
             Text(
-                stringResource(it.description),
+                it.description(),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Normal,
             )
         }
-        AnimatedVisibility(it == Action.TAP && viewModel.state.values.action == Action.TAP) {
+        AnimatedVisibility(it is Action.TAP && viewModel.state.values.action is Action.TAP) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 OutlinedTextField(
-                    viewModel.state.values.buttonPattern,
+                    (viewModel.state.values.action as? Action.TAP)?.buttonRegex ?: "",
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(buttonPattern = value),
+                            viewModel.state.values.copy(action = Action.TAP(value)),
                         )
                     },
                     Modifier.fillMaxWidth(),
@@ -483,17 +484,17 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 if (viewModel.state.error == FormError.INVALID_BUTTON_REGEX) ErrorText(R.string.invalid_regex)
             }
         }
-        AnimatedVisibility(it == Action.BATCH && viewModel.state.values.action == Action.BATCH) {
+        AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 Slider(
-                    viewModel.state.values.batchLengthInHours.toFloat(),
+                    (viewModel.state.values.action as? Action.BATCH)?.batchLength?.toFloat() ?: 3F,
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(batchLengthInHours = value.toInt()),
+                            viewModel.state.values.copy(action = Action.BATCH(value.toInt())),
                         )
                     },
                     Modifier.fillMaxWidth(),
@@ -505,8 +506,8 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                         R.string.batch_frequency,
                         pluralStringResource(
                             R.plurals.hour,
-                            viewModel.state.values.batchLengthInHours,
-                            viewModel.state.values.batchLengthInHours,
+                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
+                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
                         ),
                     ),
                     Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
@@ -522,27 +523,25 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
     val startTimePicker = TimePickerDialog(
         context,
         { _, hour: Int, minute: Int ->
-            val newStart = hour * 60 + minute
             viewModel.updateForm(
                 viewModel.state.page,
-                viewModel.state.values.copy(activeTime = newStart to viewModel.state.values.activeTime.second),
+                viewModel.state.values.copy(schedule = viewModel.state.values.schedule.copy(start = hour * 60 + minute)),
             )
         },
-        viewModel.state.values.activeTime.first / 60,
-        viewModel.state.values.activeTime.first % 60,
+        viewModel.state.values.schedule.start / 60,
+        viewModel.state.values.schedule.start % 60,
         false,
     )
     val endTimePicker = TimePickerDialog(
         context,
         { _, hour: Int, minute: Int ->
-            val newEnd = hour * 60 + minute
             viewModel.updateForm(
                 viewModel.state.page,
-                viewModel.state.values.copy(activeTime = viewModel.state.values.activeTime.first to newEnd),
+                viewModel.state.values.copy(schedule = viewModel.state.values.schedule.copy(end = hour * 60 + minute)),
             )
         },
-        viewModel.state.values.activeTime.second / 60,
-        viewModel.state.values.activeTime.second % 60,
+        viewModel.state.values.schedule.end / 60,
+        viewModel.state.values.schedule.end % 60,
         false,
     )
 
@@ -565,8 +564,8 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
             String.format(
                 Locale.getDefault(),
                 "%02d:%02d",
-                viewModel.state.values.activeTime.first / 60,
-                viewModel.state.values.activeTime.first % 60,
+                viewModel.state.values.schedule.start / 60,
+                viewModel.state.values.schedule.start % 60,
             ),
             Modifier.clickable { startTimePicker.show() },
             style = MaterialTheme.typography.labelLarge,
@@ -582,8 +581,8 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
             String.format(
                 Locale.getDefault(),
                 "%02d:%02d",
-                viewModel.state.values.activeTime.second / 60,
-                viewModel.state.values.activeTime.second % 60,
+                viewModel.state.values.schedule.end / 60,
+                viewModel.state.values.schedule.end % 60,
             ),
             Modifier.clickable { endTimePicker.show() },
             style = MaterialTheme.typography.labelLarge,
@@ -605,7 +604,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
     ) {
         stringArrayResource(R.array.days_initials).forEachIndexed { i, day ->
             val index = i + 1
-            val selected = viewModel.state.values.activeDays.contains(index)
+            val selected = viewModel.state.values.schedule.days.contains(index)
 
             Box(
                 Modifier
@@ -617,12 +616,14 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
                     .padding(dimensionResource(R.dimen.padding_small))
                     .selectable(selected) {
                         val newDays =
-                            viewModel.state.values.activeDays.toMutableSet()
+                            viewModel.state.values.schedule.days.toMutableSet()
                         if (newDays.contains(index)) newDays.remove(index)
                         else newDays.add(index)
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(activeDays = newDays),
+                            viewModel.state.values.copy(
+                                schedule = viewModel.state.values.schedule.copy(days = newDays),
+                            ),
                         )
                     },
             ) {
