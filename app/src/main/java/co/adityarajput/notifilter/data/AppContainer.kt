@@ -1,10 +1,7 @@
 package co.adityarajput.notifilter.data
 
 import android.content.Context
-import co.adityarajput.notifilter.data.filter.Action
-import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.RegexTarget
-import co.adityarajput.notifilter.data.notification.Notification
+import co.adityarajput.notifilter.data.models.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -33,40 +30,34 @@ class AppContainer(private val context: Context) {
             ) {
                 repository.upsert(
                     Filter(
-                        "com.google.android.deskclock",
+                        App("Clock", "com.google.android.deskclock"),
                         "Upcoming alarm",
-                        null,
-                        RegexTarget.TITLE,
                         Action.DISMISS,
-                        hits = 87,
+                        RegexTarget.TITLE,
                         enabled = false,
                     ),
                     Filter(
-                        "com.wssyncmldm",
+                        App("Software update", "com.wssyncmldm"),
                         "software update",
-                        null,
+                        Action.TAP("Remind me"),
                         RegexTarget.CONTENT,
-                        Action.TAP,
-                        "Remind me",
-                        activeDays = setOf(2, 3, 4, 5, 6),
+                        schedule = Schedule(days = setOf(2, 3, 4, 5, 6)),
                         hits = 23,
                     ),
                     Filter(
-                        "com.google.android.gm",
+                        App("Gmail", "com.google.android.gm"),
                         "[Nn]ewsletter",
-                        null,
+                        Action.BATCH(3),
                         RegexTarget.OR,
-                        Action.BATCH,
-                        batchLengthInHours = 3,
                         historyEnabled = false,
                     ),
                     Filter(
-                        "com.whatsapp",
+                        App("WhatsApp", "com.whatsapp"),
                         "Book Club",
-                        "^Bob",
-                        RegexTarget.AND,
                         Action.DELAY,
-                        activeTime = 9 * 60 to 17 * 60,
+                        RegexTarget.AND,
+                        "^Bob",
+                        schedule = Schedule(start = 9 * 60, end = 17 * 60),
                         hits = 15,
                     ),
                 )

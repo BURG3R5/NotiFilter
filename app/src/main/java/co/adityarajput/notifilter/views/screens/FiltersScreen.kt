@@ -17,8 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.data.filter.RegexTarget
-import co.adityarajput.notifilter.utils.getLast
+import co.adityarajput.notifilter.data.models.RegexTarget
+import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
 import co.adityarajput.notifilter.viewmodels.DialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
@@ -88,21 +88,21 @@ fun FiltersScreen(
                     Tile(
                         buildString {
                             append("/")
-                            append(it.queryPattern)
+                            append(it.regexPattern)
                             append("/")
 
                             if (it.regexTarget == RegexTarget.AND) {
                                 append(" && /")
-                                append(it.secondaryQueryPattern)
+                                append(it.secondaryRegexPattern)
                                 append("/")
                             }
                         },
-                        it.getActionString(),
-                        it.packageName.getLast(30),
+                        it.action.verb(),
+                        it.app.name.getFirst(30),
                         if (!it.enabled) stringResource(R.string.filter_disabled)
                         else if (!it.historyEnabled) stringResource(R.string.history_disabled)
                         else pluralStringResource(R.plurals.hit, it.hits, it.hits),
-                        it.getScheduleString(),
+                        it.schedule.description,
                         {
                             if (viewModel.selectedFilter == it) viewModel.selectedFilter = null
                             else viewModel.selectedFilter = it

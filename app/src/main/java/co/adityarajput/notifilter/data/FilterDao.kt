@@ -1,9 +1,10 @@
-package co.adityarajput.notifilter.data.filter
+package co.adityarajput.notifilter.data
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import co.adityarajput.notifilter.data.models.Filter
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -11,7 +12,7 @@ interface FilterDao {
     @Upsert
     suspend fun upsert(vararg filters: Filter)
 
-    @Query("SELECT * from filters ORDER BY packageName ASC")
+    @Query("SELECT * from filters ORDER BY app_packageName ASC")
     fun list(): Flow<List<Filter>>
 
     @Query("UPDATE filters SET hits = hits + 1 WHERE id = :id")

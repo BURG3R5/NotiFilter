@@ -30,10 +30,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.data.filter.Action
-import co.adityarajput.notifilter.data.filter.RegexTarget
+import co.adityarajput.notifilter.data.models.Action
+import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.utils.getFirst
-import co.adityarajput.notifilter.utils.getLast
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -189,12 +189,12 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
                 Tile(
                     it.title,
                     it.content,
-                    it.packageName.getLast(30),
+                    it.origin.getFirst(30),
                     onClick = {
                         viewModel.updateForm(
                             FormPage.PATTERN,
                             viewModel.state.values.copy(
-                                packageName = it.packageName,
+                                app = App(it.origin, it.origin),
                                 notification = it,
                             ),
                         )
@@ -222,11 +222,11 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
         Modifier.fillMaxWidth(),
     ) {
         OutlinedTextField(
-            viewModel.state.values.packageName,
+            viewModel.state.values.app.name,
             { input ->
                 viewModel.updateForm(
                     viewModel.state.page,
-                    viewModel.state.values.copy(packageName = input),
+                    viewModel.state.values.copy(app = App(input, input)),
                 )
                 if (input.isBlank()) {
                     suggestions = listOf()
@@ -262,7 +262,7 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
                     {
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(packageName = it.first),
+                            viewModel.state.values.copy(app = App(it.second, it.first)),
                         )
                         dropdownExpanded = false
                     },
@@ -448,27 +448,27 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RadioButton(
-                (it == viewModel.state.values.action),
+                viewModel.state.values.action.isOfType(it),
                 null,
                 Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
             )
             Text(
-                stringResource(it.description),
+                it.description(),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Normal,
             )
         }
-        AnimatedVisibility(it == Action.TAP && viewModel.state.values.action == Action.TAP) {
+        AnimatedVisibility(it is Action.TAP && viewModel.state.values.action is Action.TAP) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 OutlinedTextField(
-                    viewModel.state.values.buttonPattern,
+                    (viewModel.state.values.action as? Action.TAP)?.buttonRegex ?: "",
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(buttonPattern = value),
+                            viewModel.state.values.copy(action = Action.TAP(value)),
                         )
                     },
                     Modifier.fillMaxWidth(),
@@ -483,17 +483,17 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 if (viewModel.state.error == FormError.INVALID_BUTTON_REGEX) ErrorText(R.string.invalid_regex)
             }
         }
-        AnimatedVisibility(it == Action.BATCH && viewModel.state.values.action == Action.BATCH) {
+        AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 Slider(
-                    viewModel.state.values.batchLengthInHours.toFloat(),
+                    (viewModel.state.values.action as? Action.BATCH)?.batchLength?.toFloat() ?: 3F,
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(batchLengthInHours = value.toInt()),
+                            viewModel.state.values.copy(action = Action.BATCH(value.toInt())),
                         )
                     },
                     Modifier.fillMaxWidth(),
@@ -505,8 +505,8 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                         R.string.batch_frequency,
                         pluralStringResource(
                             R.plurals.hour,
-                            viewModel.state.values.batchLengthInHours,
-                            viewModel.state.values.batchLengthInHours,
+                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
+                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
                         ),
                     ),
                     Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
@@ -522,27 +522,25 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
     val startTimePicker = TimePickerDialog(
         context,
         { _, hour: Int, minute: Int ->
-            val newStart = hour * 60 + minute
             viewModel.updateForm(
                 viewModel.state.page,
-                viewModel.state.values.copy(activeTime = newStart to viewModel.state.values.activeTime.second),
+                viewModel.state.values.copy(schedule = viewModel.state.values.schedule.copy(start = hour * 60 + minute)),
             )
         },
-        viewModel.state.values.activeTime.first / 60,
-        viewModel.state.values.activeTime.first % 60,
+        viewModel.state.values.schedule.start / 60,
+        viewModel.state.values.schedule.start % 60,
         false,
     )
     val endTimePicker = TimePickerDialog(
         context,
         { _, hour: Int, minute: Int ->
-            val newEnd = hour * 60 + minute
             viewModel.updateForm(
                 viewModel.state.page,
-                viewModel.state.values.copy(activeTime = viewModel.state.values.activeTime.first to newEnd),
+                viewModel.state.values.copy(schedule = viewModel.state.values.schedule.copy(end = hour * 60 + minute)),
             )
         },
-        viewModel.state.values.activeTime.second / 60,
-        viewModel.state.values.activeTime.second % 60,
+        viewModel.state.values.schedule.end / 60,
+        viewModel.state.values.schedule.end % 60,
         false,
     )
 
@@ -565,8 +563,8 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
             String.format(
                 Locale.getDefault(),
                 "%02d:%02d",
-                viewModel.state.values.activeTime.first / 60,
-                viewModel.state.values.activeTime.first % 60,
+                viewModel.state.values.schedule.start / 60,
+                viewModel.state.values.schedule.start % 60,
             ),
             Modifier.clickable { startTimePicker.show() },
             style = MaterialTheme.typography.labelLarge,
@@ -582,8 +580,8 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
             String.format(
                 Locale.getDefault(),
                 "%02d:%02d",
-                viewModel.state.values.activeTime.second / 60,
-                viewModel.state.values.activeTime.second % 60,
+                viewModel.state.values.schedule.end / 60,
+                viewModel.state.values.schedule.end % 60,
             ),
             Modifier.clickable { endTimePicker.show() },
             style = MaterialTheme.typography.labelLarge,
@@ -605,7 +603,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
     ) {
         stringArrayResource(R.array.days_initials).forEachIndexed { i, day ->
             val index = i + 1
-            val selected = viewModel.state.values.activeDays.contains(index)
+            val selected = viewModel.state.values.schedule.days.contains(index)
 
             Box(
                 Modifier
@@ -617,12 +615,14 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
                     .padding(dimensionResource(R.dimen.padding_small))
                     .selectable(selected) {
                         val newDays =
-                            viewModel.state.values.activeDays.toMutableSet()
+                            viewModel.state.values.schedule.days.toMutableSet()
                         if (newDays.contains(index)) newDays.remove(index)
                         else newDays.add(index)
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(activeDays = newDays),
+                            viewModel.state.values.copy(
+                                schedule = viewModel.state.values.schedule.copy(days = newDays),
+                            ),
                         )
                     },
             ) {

@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.utils.getLast
+import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.toShortHumanReadableTime
 import co.adityarajput.notifilter.viewmodels.NotificationsViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -65,7 +65,7 @@ fun NotificationsScreen(
                     Tile(
                         it.title,
                         it.content,
-                        it.packageName.getLast(30),
+                        it.origin.getFirst(30),
                         it.timestamp.toShortHumanReadableTime(),
                     )
                 }

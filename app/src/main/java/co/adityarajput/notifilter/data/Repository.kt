@@ -1,10 +1,8 @@
 package co.adityarajput.notifilter.data
 
 import android.util.Log
-import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.filter.FilterDao
-import co.adityarajput.notifilter.data.notification.Notification
-import co.adityarajput.notifilter.data.notification.NotificationDao
+import co.adityarajput.notifilter.data.models.Filter
+import co.adityarajput.notifilter.data.models.Notification
 
 class Repository(
     private val filterDao: FilterDao,

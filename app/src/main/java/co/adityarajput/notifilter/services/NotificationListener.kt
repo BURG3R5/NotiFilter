@@ -14,9 +14,9 @@ import androidx.core.app.NotificationCompat
 import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
-import co.adityarajput.notifilter.data.filter.Action
-import co.adityarajput.notifilter.data.filter.Filter
-import co.adityarajput.notifilter.data.notification.Notification
+import co.adityarajput.notifilter.data.models.Action
+import co.adityarajput.notifilter.data.models.Filter
+import co.adityarajput.notifilter.data.models.Notification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
-import java.util.Calendar
 import kotlin.math.min
 
 class NotificationListener : NotificationListenerService() {
@@ -107,23 +106,20 @@ class NotificationListener : NotificationListenerService() {
             return
         }
 
-        val notification = Notification(sbn)
+        var notification = Notification(sbn)
         Log.d("NotificationListener", "Received $notification")
 
-        val calendar = Calendar.getInstance()
-        val minutesOfDay = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
         val filter = filters.filter {
-            notification.packageName == it.packageName &&
-                    it.enabled &&
-                    it.activeDays.contains(calendar.get(Calendar.DAY_OF_WEEK)) &&
-                    it.activeTime.first <= minutesOfDay && minutesOfDay <= it.activeTime.second &&
-                    it.matchesTextOf(notification)
+            notification.origin == it.app.packageName
+                    && it.enabled
+                    && it.schedule.includesNow()
+                    && it.matchesTextOf(notification)
         }.minByOrNull { it.id } ?: return
 
         Log.d("NotificationListener", "Matched $filter")
 
         when (filter.action) {
-            Action.DISMISS ->
+            is Action.DISMISS ->
                 if (sbn.isClearable) {
                     cancelNotification(sbn.key)
                 } else {
@@ -131,21 +127,21 @@ class NotificationListener : NotificationListenerService() {
                     snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
-            Action.TAP ->
+            is Action.TAP ->
                 try {
                     sbn.notification.actions.find {
-                        Regex(filter.buttonPattern!!).containsMatchIn(it.title)
+                        Regex(filter.action.buttonRegex).containsMatchIn(it.title)
                     }?.actionIntent?.send()
                 } catch (e: Exception) {
                     Log.e("NotificationListener", "Failed to tap button", e)
                     return
                 }
 
-            Action.BATCH -> {
+            is Action.BATCH -> {
                 val zone = ZoneId.systemDefault()
                 val now = ZonedDateTime.now(zone)
                 val today = now.toLocalDate().atStartOfDay(zone)
-                var batchLength = filter.batchLengthInHours!! * 60 * 60 * 1000L
+                var batchLength = filter.action.batchLength * 60 * 60 * 1000L
                 if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
                     // INFO: While debugging, batch for minutes instead of hours
                     batchLength /= 60
@@ -168,12 +164,12 @@ class NotificationListener : NotificationListenerService() {
                 )
             }
 
-            Action.DELAY -> {
+            is Action.DELAY -> {
                 val zone = ZoneId.systemDefault()
                 val now = ZonedDateTime.now(zone)
                 val delay = now.until(
                     now.toLocalDate().atStartOfDay(zone)
-                        .plusMinutes(filter.activeTime.second.toLong()),
+                        .plusMinutes(filter.schedule.end.toLong()),
                     MILLIS,
                 )
 
@@ -192,6 +188,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
+            notification = notification.copy(origin = filter.app.name)
             repository.registerHit(filter, notification)
             notifications = repository.notifications().first()
             Log.d("NotificationListener", "Notifications updated: $notifications")

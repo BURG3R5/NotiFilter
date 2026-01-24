@@ -26,9 +26,6 @@ fun Long.toShortHumanReadableTime(): String {
 fun String.getFirst(length: Int): String =
     if (this.length <= length) this else this.take(length - 3) + "..."
 
-fun String.getLast(length: Int): String =
-    if (this.length <= length) this else "..." + this.takeLast(length - 3)
-
 fun Int.toHourMinuteString() =
     "${(this / 60).toString().padStart(2, '0')}:${(this % 60).toString().padStart(2, '0')}"
 
