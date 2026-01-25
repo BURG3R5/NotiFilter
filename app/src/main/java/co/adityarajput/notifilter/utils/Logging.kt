@@ -6,7 +6,12 @@ import co.adityarajput.notifilter.Constants
 object Logger {
     val logs = ArrayDeque<String>(Constants.LOG_SIZE)
 
-    fun d(tag: String, msg: String) = Log.d(tag, msg)
+    fun d(tag: String, msg: String) {
+        Log.d(tag, msg)
+
+        if (logs.size >= Constants.LOG_SIZE) logs.removeFirst()
+        logs.addLast("[${System.currentTimeMillis()}][$tag][DEBUG] $msg")
+    }
 
     fun i(tag: String, msg: String) {
         Log.i(tag, msg)
