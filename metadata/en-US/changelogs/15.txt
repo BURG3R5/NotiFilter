@@ -1,0 +1,8 @@
+• feat: Display app names instead of package strings
+• feat: Store INFO and ERROR logs
+• feat: Add "TAP_NOTIFICATION" action (requires an Accessibility Service)
+• fix: Sort filters by id
+
+Users can now copy recent info and error logs from the settings screen, making it easier to diagnose issues.
+
+IMPORTANT: The database schema has changed significantly. Updating the app will migrate existing filters & notifications automatically, but v3 exports cannot be imported into v4. Please re-export your filters after updating.
