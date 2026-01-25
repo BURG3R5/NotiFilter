@@ -12,7 +12,7 @@ interface FilterDao {
     @Upsert
     suspend fun upsert(vararg filters: Filter)
 
-    @Query("SELECT * from filters ORDER BY app_packageName ASC")
+    @Query("SELECT * from filters ORDER BY id ASC")
     fun list(): Flow<List<Filter>>
 
     @Query("UPDATE filters SET hits = hits + 1 WHERE id = :id")
