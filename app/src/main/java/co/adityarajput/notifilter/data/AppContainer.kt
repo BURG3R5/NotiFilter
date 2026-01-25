@@ -34,6 +34,13 @@ class AppContainer(private val context: Context) {
                         "Upcoming alarm",
                         Action.DISMISS,
                         RegexTarget.TITLE,
+                        hits = 87,
+                    ),
+                    Filter(
+                        App("Gmail", "com.google.android.gm"),
+                        "Verify your identity",
+                        Action.TAP_NOTIFICATION,
+                        RegexTarget.CONTENT,
                         enabled = false,
                     ),
                     Filter(
