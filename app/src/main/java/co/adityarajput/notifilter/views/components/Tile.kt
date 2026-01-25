@@ -107,7 +107,7 @@ private fun FilterTiles() {
         Filter(
             App("Software update", "com.wssyncmldm"),
             "software update",
-            Action.TAP("Remind me"),
+            Action.TAP_BUTTON("Remind me"),
             RegexTarget.CONTENT,
             schedule = Schedule(days = setOf(2, 3, 4, 5, 6)),
             hits = 23,

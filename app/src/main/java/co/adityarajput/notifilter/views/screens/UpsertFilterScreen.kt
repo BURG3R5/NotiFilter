@@ -1,6 +1,10 @@
 package co.adityarajput.notifilter.views.screens
 
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +40,7 @@ import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.utils.filterFirst
 import co.adityarajput.notifilter.utils.getFirst
+import co.adityarajput.notifilter.utils.hasAccessibilityServicePermission
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -431,6 +436,21 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
 
 @Composable
 private fun ActionPage(viewModel: UpsertFilterViewModel) {
+    val context = LocalContext.current
+    val handler = remember { Handler(Looper.getMainLooper()) }
+    var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
+
+    val watcher = object : Runnable {
+        override fun run() {
+            hasAccessibilityPermission = context.hasAccessibilityServicePermission()
+            if (!hasAccessibilityPermission) handler.postDelayed(this, 500)
+        }
+    }
+    DisposableEffect(Unit) {
+        handler.post(watcher)
+        onDispose { handler.removeCallbacksAndMessages(null) }
+    }
+
     Text(
         stringResource(R.string.action_page_title),
         style = MaterialTheme.typography.titleMedium,
@@ -459,17 +479,42 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 fontWeight = FontWeight.Normal,
             )
         }
-        AnimatedVisibility(it is Action.TAP && viewModel.state.values.action is Action.TAP) {
+        AnimatedVisibility(
+            it is Action.TAP_NOTIFICATION
+                    && viewModel.state.values.action is Action.TAP_NOTIFICATION
+                    && !hasAccessibilityPermission,
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = dimensionResource(R.dimen.padding_medium)),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                ErrorText(R.string.accessibility_service_description)
+                Button(
+                    { context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+                    Modifier.align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Text(
+                        stringResource(R.string.enable_service),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+            }
+        }
+        AnimatedVisibility(it is Action.TAP_BUTTON && viewModel.state.values.action is Action.TAP_BUTTON) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 OutlinedTextField(
-                    (viewModel.state.values.action as? Action.TAP)?.buttonRegex ?: "",
+                    (viewModel.state.values.action as? Action.TAP_BUTTON)?.buttonRegex ?: "",
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.TAP(value)),
+                            viewModel.state.values.copy(action = Action.TAP_BUTTON(value)),
                         )
                     },
                     Modifier.fillMaxWidth(),

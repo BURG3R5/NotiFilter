@@ -1,12 +1,12 @@
 package co.adityarajput.notifilter.services
 
+import android.app.ActivityOptions
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -90,7 +90,7 @@ class NotificationListener : NotificationListenerService() {
                 .setContentTitle(getString(R.string.app_name_launcher))
                 .setContentText(getString(R.string.foreground_notification_content))
                 .setOngoing(true).setSilent(true).build(),
-            if (SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
         Logger.i("NotificationListener.startForeground", "Promoted to foreground")
     }
@@ -130,7 +130,28 @@ class NotificationListener : NotificationListenerService() {
                     snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
-            is Action.TAP ->
+            is Action.TAP_NOTIFICATION ->
+                try {
+                    sbn.notification.contentIntent?.run {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) send() else
+                            send(
+                                ActivityOptions.makeBasic()
+                                    .setPendingIntentBackgroundActivityStartMode(
+                                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS,
+                                    )
+                                    .toBundle(),
+                            )
+                    }
+                } catch (e: Exception) {
+                    Logger.e(
+                        "NotificationListener.onNotificationPosted",
+                        "Failed to tap notification",
+                        e,
+                    )
+                    return
+                }
+
+            is Action.TAP_BUTTON ->
                 try {
                     sbn.notification.actions.find {
                         Regex(filter.action.buttonRegex).containsMatchIn(it.title)

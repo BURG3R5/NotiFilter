@@ -7,13 +7,17 @@ import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.Logger
 import kotlinx.serialization.Serializable
 
+@Suppress("ClassName")
 @Serializable
 sealed class Action {
     @Serializable
     data object DISMISS : Action()
 
     @Serializable
-    data class TAP(val buttonRegex: String) : Action()
+    data object TAP_NOTIFICATION : Action()
+
+    @Serializable
+    data class TAP_BUTTON(val buttonRegex: String) : Action()
 
     @Serializable
     data class BATCH(val batchLength: Int) : Action()
@@ -24,7 +28,8 @@ sealed class Action {
     @Composable
     fun verb() = when (this) {
         is DISMISS -> stringResource(R.string.dismiss_short)
-        is TAP -> stringResource(R.string.tap_short, buttonRegex)
+        is TAP_NOTIFICATION -> stringResource(R.string.tap_notification_short)
+        is TAP_BUTTON -> stringResource(R.string.tap_button_short, buttonRegex)
         is DELAY -> stringResource(R.string.delay_short)
         is BATCH -> stringResource(
             R.string.batch_short,
@@ -36,7 +41,8 @@ sealed class Action {
     fun description() = stringResource(
         when (this) {
             is DISMISS -> R.string.dismiss_long
-            is TAP -> R.string.tap_long
+            is TAP_NOTIFICATION -> R.string.tap_notification_long
+            is TAP_BUTTON -> R.string.tap_button_long
             is BATCH -> R.string.batch_long
             is DELAY -> R.string.delay_long
         },
@@ -45,15 +51,17 @@ sealed class Action {
     fun isOfType(it: Action) = this::class == it::class
 
     companion object {
-        val entries = listOf(DISMISS, TAP(""), BATCH(3), DELAY)
+        val entries = listOf(DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3), DELAY)
 
         fun fromString(value: String) = when {
             value == "DISMISS" -> DISMISS
 
+            value == "TAP_NOTIFICATION" -> TAP_NOTIFICATION
+
             value == "DELAY" -> DELAY
 
-            value.startsWith("TAP") -> TAP(
-                value.removePrefix("TAP(buttonRegex=").removeSuffix(")"),
+            value.startsWith("TAP_BUTTON") -> TAP_BUTTON(
+                value.removePrefix("TAP_BUTTON(buttonRegex=").removeSuffix(")"),
             )
 
             value.startsWith("BATCH") -> BATCH(

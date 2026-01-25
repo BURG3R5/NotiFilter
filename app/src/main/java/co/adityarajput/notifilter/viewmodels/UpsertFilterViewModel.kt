@@ -124,7 +124,7 @@ class UpsertFilterViewModel(
                 }
             }
 
-            FormPage.ACTION -> if (values.action is Action.TAP)
+            FormPage.ACTION -> if (values.action is Action.TAP_BUTTON)
                 try {
                     if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
                     Regex(values.action.buttonRegex).pattern == values.action.buttonRegex
