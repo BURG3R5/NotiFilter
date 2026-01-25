@@ -68,8 +68,8 @@ abstract class NotiFilterDatabase : RoomDatabase() {
                             WHEN 'DELAY' THEN 'DELAY'
                             WHEN 'TAP' THEN 
                                 CASE 
-                                    WHEN buttonPattern IS NOT NULL THEN 'TAP(buttonRegex=' || buttonPattern || ')'
-                                    ELSE 'TAP(buttonRegex=)'
+                                    WHEN buttonPattern IS NOT NULL THEN 'TAP_BUTTON(buttonRegex=' || buttonPattern || ')'
+                                    ELSE 'TAP_BUTTON(buttonRegex=)'
                                 END
                             WHEN 'BATCH' THEN 
                                 CASE 

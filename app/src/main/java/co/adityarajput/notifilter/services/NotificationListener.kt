@@ -130,7 +130,7 @@ class NotificationListener : NotificationListenerService() {
                     snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
                 }
 
-            is Action.TAP ->
+            is Action.TAP_BUTTON ->
                 try {
                     sbn.notification.actions.find {
                         Regex(filter.action.buttonRegex).containsMatchIn(it.title)

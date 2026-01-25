@@ -459,17 +459,17 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 fontWeight = FontWeight.Normal,
             )
         }
-        AnimatedVisibility(it is Action.TAP && viewModel.state.values.action is Action.TAP) {
+        AnimatedVisibility(it is Action.TAP_BUTTON && viewModel.state.values.action is Action.TAP_BUTTON) {
             Column(
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
                 OutlinedTextField(
-                    (viewModel.state.values.action as? Action.TAP)?.buttonRegex ?: "",
+                    (viewModel.state.values.action as? Action.TAP_BUTTON)?.buttonRegex ?: "",
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.TAP(value)),
+                            viewModel.state.values.copy(action = Action.TAP_BUTTON(value)),
                         )
                     },
                     Modifier.fillMaxWidth(),
