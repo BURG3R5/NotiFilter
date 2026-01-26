@@ -35,9 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
-import co.adityarajput.notifilter.data.models.Action
-import co.adityarajput.notifilter.data.models.App
-import co.adityarajput.notifilter.data.models.RegexTarget
+import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.filterFirst
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.hasAccessibilityServicePermission
@@ -221,6 +219,7 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
 private fun PackagePage(viewModel: UpsertFilterViewModel) {
     var searchString by remember { mutableStateOf("") }
     var visibleItemsCount by remember { mutableIntStateOf(10) }
+    var showAdvancedOptions by remember { mutableStateOf(viewModel.state.values.app == Any) }
     var showSystemPackages by remember { mutableStateOf(false) }
 
     val (apps, searchFinished) = (if (showSystemPackages) viewModel.allPackages else viewModel.visibleApps)
@@ -244,26 +243,72 @@ private fun PackagePage(viewModel: UpsertFilterViewModel) {
         ),
         singleLine = true,
     )
-    Row(
-        Modifier
-            .padding(vertical = dimensionResource(R.dimen.padding_medium))
-            .toggleable(showSystemPackages) { showSystemPackages = it },
-        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-        Alignment.CenterVertically,
+    Column(
+        Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
     ) {
-        Checkbox(showSystemPackages, null)
-        Column {
+        Row(
+            Modifier.toggleable(showAdvancedOptions) { showAdvancedOptions = it },
+            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+            Alignment.CenterVertically,
+        ) {
+            Checkbox(showAdvancedOptions, null)
             Text(
-                stringResource(R.string.show_system_packages),
+                stringResource(R.string.advanced_options),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Normal,
             )
-            Text(
-                stringResource(R.string.system_packages_warning),
-                Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Normal,
-            )
+        }
+        if (showAdvancedOptions) {
+            Row(
+                Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                    .toggleable(viewModel.state.values.app == Any) {
+                        viewModel.updateForm(
+                            FormPage.PACKAGE,
+                            viewModel.state.values.copy(app = if (it) Any else None),
+                        )
+                    },
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                Alignment.CenterVertically,
+            ) {
+                Checkbox(viewModel.state.values.app == Any, null)
+                Column {
+                    Text(
+                        stringResource(R.string.target_all_apps),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                    Text(
+                        stringResource(R.string.all_apps_warning),
+                        Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+            }
+            Row(
+                Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                    .toggleable(showSystemPackages) { showSystemPackages = it },
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                Alignment.CenterVertically,
+            ) {
+                Checkbox(showSystemPackages, null)
+                Column {
+                    Text(
+                        stringResource(R.string.show_system_packages),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                    Text(
+                        stringResource(R.string.system_packages_warning),
+                        Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+            }
         }
     }
     FlowRow(

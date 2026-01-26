@@ -31,7 +31,7 @@ class UpsertFilterViewModel(
     data class Values(
         val filterId: Int = 0,
         val notification: Notification? = null,
-        val app: App = App("", ""),
+        val app: App = None,
         val regexTarget: RegexTarget = RegexTarget.OR,
         val queryPattern: String = "",
         val secondaryQueryPattern: String = "",
@@ -109,7 +109,7 @@ class UpsertFilterViewModel(
         when (page) {
             FormPage.ZAPPER -> return null
 
-            FormPage.PACKAGE -> if (values.app.packageName.isBlank()) return FormError.BLANK_FIELDS
+            FormPage.PACKAGE -> if (values.app == None) return FormError.BLANK_FIELDS
 
             FormPage.PATTERN -> {
                 if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
