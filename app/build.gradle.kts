@@ -35,7 +35,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard/nightly.pro",
             )
             applicationIdSuffix = ".nightly"
             resValue("string", "app_name_launcher", "NotiFilter Nightly")
@@ -46,7 +46,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard/release.pro",
             )
         }
     }
