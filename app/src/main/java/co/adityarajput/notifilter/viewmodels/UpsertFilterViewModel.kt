@@ -87,7 +87,7 @@ class UpsertFilterViewModel(
 
     init {
         viewModelScope.launch {
-            while (state.page.isFirstPage()) {
+            while (true) {
                 activeNotifications = NotificationListener.instance
                     ?.activeNotifications
                     ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
