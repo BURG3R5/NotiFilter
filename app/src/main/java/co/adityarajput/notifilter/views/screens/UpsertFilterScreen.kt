@@ -217,7 +217,12 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PackagePage(viewModel: UpsertFilterViewModel) {
-    var searchString by remember { mutableStateOf("") }
+    var searchString by remember {
+        mutableStateOf(
+            if (viewModel.state.values.app == Any) ""
+            else viewModel.state.values.app.name,
+        )
+    }
     var visibleItemsCount by remember { mutableIntStateOf(10) }
     var showAdvancedOptions by remember { mutableStateOf(viewModel.state.values.app == Any) }
     var showSystemPackages by remember { mutableStateOf(false) }
