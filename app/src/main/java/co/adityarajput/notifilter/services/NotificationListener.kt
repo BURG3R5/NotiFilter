@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
+import android.os.Build.VERSION_CODES.BAKLAVA
+import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -90,7 +92,7 @@ class NotificationListener : NotificationListenerService() {
                 .setContentTitle(getString(R.string.app_name_launcher))
                 .setContentText(getString(R.string.foreground_notification_content))
                 .setOngoing(true).setSilent(true).build(),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
+            if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
         Logger.i("NotificationListener.startForeground", "Promoted to foreground")
     }
@@ -133,7 +135,7 @@ class NotificationListener : NotificationListenerService() {
             is Action.TAP_NOTIFICATION ->
                 try {
                     sbn.notification.contentIntent?.run {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) send() else
+                        if (Build.VERSION.SDK_INT >= BAKLAVA) {
                             send(
                                 ActivityOptions.makeBasic()
                                     .setPendingIntentBackgroundActivityStartMode(
@@ -141,6 +143,16 @@ class NotificationListener : NotificationListenerService() {
                                     )
                                     .toBundle(),
                             )
+                        } else if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) {
+                            @Suppress("DEPRECATION")
+                            send(
+                                ActivityOptions.makeBasic()
+                                    .setPendingIntentBackgroundActivityStartMode(
+                                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                                    )
+                                    .toBundle(),
+                            )
+                        } else send()
                     }
                 } catch (e: Exception) {
                     Logger.e(
