@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">4.0.0</string>
+    <string name="app_version">4.1.0</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
@@ -13,6 +13,7 @@
     <string name="tap_button_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
     <string name="delay_short">delay notifications</string>
+    <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
@@ -38,6 +39,9 @@
     <string name="no_active_notifications">Waiting for active notifications…</string>
     <string name="zapper_page_title">Choose a notification to target</string>
     <string name="package_page_title">Choose an app to target</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="target_all_apps">Target all apps?</string>
+    <string name="all_apps_warning">Targeting all apps is rarely necessary. This may cause unexpected issues.</string>
     <string name="show_system_packages">Show system packages?</string>
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>

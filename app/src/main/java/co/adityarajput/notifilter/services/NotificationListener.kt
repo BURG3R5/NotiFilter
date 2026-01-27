@@ -16,6 +16,7 @@ import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.models.Action
+import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
@@ -115,7 +116,7 @@ class NotificationListener : NotificationListenerService() {
         Logger.d("NotificationListener.onNotificationPosted", "Received $notification")
 
         val filter = filters.filter {
-            notification.origin == it.app.packageName
+            (notification.origin == it.app.packageName || it.app == Any)
                     && it.enabled
                     && it.schedule.includesNow()
                     && it.matchesTextOf(notification)
@@ -230,7 +231,11 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
-            repository.registerHit(filter, notification.copy(origin = filter.app.name))
+            repository.registerHit(
+                filter,
+                if (filter.app == Any) notification
+                else notification.copy(origin = filter.app.name),
+            )
             notifications = repository.notifications().first()
             Logger.d(
                 "NotificationListener.onNotificationPosted",

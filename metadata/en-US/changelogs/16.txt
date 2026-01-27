@@ -1,0 +1,3 @@
+• fix: Handle TAP_NOTIFICATION on Android 14 & 15
+• feat: Let filters target all apps
+• fix: Improve UI of "create/edit filter" screen

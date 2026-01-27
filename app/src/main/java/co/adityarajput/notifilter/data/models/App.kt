@@ -4,3 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class App(val name: String, val packageName: String)
+
+val None = App("", "")
+val Any = App("Any app", ".*")

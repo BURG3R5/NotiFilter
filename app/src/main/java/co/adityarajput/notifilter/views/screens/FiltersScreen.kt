@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
@@ -98,7 +99,8 @@ fun FiltersScreen(
                             }
                         },
                         it.action.verb(),
-                        it.app.name.getFirst(30),
+                        if (it.app == Any) stringResource(R.string.any_app)
+                        else it.app.name.getFirst(30),
                         if (!it.enabled) stringResource(R.string.filter_disabled)
                         else if (!it.historyEnabled) stringResource(R.string.history_disabled)
                         else pluralStringResource(R.plurals.hit, it.hits, it.hits),
