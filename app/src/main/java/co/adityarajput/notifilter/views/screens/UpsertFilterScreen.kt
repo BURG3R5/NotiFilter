@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.*
+import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.filterFirst
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.hasAccessibilityServicePermission
@@ -542,7 +543,17 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
             ) {
                 ErrorText(R.string.accessibility_service_description)
                 Button(
-                    { context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+                    {
+                        try {
+                            context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                        } catch (e: Exception) {
+                            Logger.e(
+                                "UpsertFilterScreen",
+                                "Error opening accessibility settings",
+                                e,
+                            )
+                        }
+                    },
                     Modifier.align(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 ) {
