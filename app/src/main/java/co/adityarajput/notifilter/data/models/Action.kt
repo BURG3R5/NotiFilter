@@ -51,7 +51,7 @@ sealed class Action {
     fun isOfType(it: Action) = this::class == it::class
 
     companion object {
-        val entries = listOf(DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3), DELAY)
+        val entries by lazy { listOf(DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3), DELAY) }
 
         fun fromString(value: String) = when {
             value == "DISMISS" -> DISMISS

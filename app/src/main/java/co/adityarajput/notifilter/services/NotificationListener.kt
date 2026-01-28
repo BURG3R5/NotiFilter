@@ -107,11 +107,15 @@ class NotificationListener : NotificationListenerService() {
         if (sbn.notification.flags and FLAG_GROUP_SUMMARY != 0) {
             Logger.d(
                 "NotificationListener.onNotificationPosted",
-                "Ignoring group summary notification",
+                "Ignoring group summary notification $sbn",
             )
             return
         }
 
+        Logger.d(
+            "NotificationListener.onNotificationPosted",
+            "Received $sbn with extras ${sbn.notification.extras}",
+        )
         val notification = Notification(sbn)
         Logger.d("NotificationListener.onNotificationPosted", "Received $notification")
 
@@ -127,7 +131,15 @@ class NotificationListener : NotificationListenerService() {
         when (filter.action) {
             is Action.DISMISS ->
                 if (sbn.isClearable) {
-                    cancelNotification(sbn.key)
+                    try {
+                        cancelNotification(sbn.key)
+                    } catch (e: Throwable) {
+                        Logger.e(
+                            "NotificationListener.onNotificationPosted",
+                            "Failed to dismiss notification",
+                            e,
+                        )
+                    }
                 } else {
                     Logger.d("NotificationListener.onNotificationPosted", "Is unclearable")
                     snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
