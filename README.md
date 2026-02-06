@@ -19,9 +19,10 @@ NotiFilter listens to all device notifications and quietly manages those that ma
   each app 🎯
 - **Actions** - Choose what to do with the filtered notifications ⚙
     1. Dismiss it 🚫
-    2. Tap a button ✅
-    3. Delay it ⏳
-    4. Collect into batches 📦
+  2. Tap it ✅
+  3. Tap a button 🔽️
+  4. Delay it ⏳
+  5. Collect into batches 📦
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
 - **Export/Import** - Backup or transfer your filters as JSON files 📂
