@@ -25,15 +25,24 @@ sealed class Action {
     @Serializable
     data object DELAY : Action()
 
+    @Serializable
+    data class DEBOUNCE(val cooldownLength: Int) : Action()
+
     @Composable
     fun verb() = when (this) {
         is DISMISS -> stringResource(R.string.dismiss_short)
         is TAP_NOTIFICATION -> stringResource(R.string.tap_notification_short)
         is TAP_BUTTON -> stringResource(R.string.tap_button_short, buttonRegex)
         is DELAY -> stringResource(R.string.delay_short)
+
         is BATCH -> stringResource(
             R.string.batch_short,
             pluralStringResource(R.plurals.hour, batchLength, batchLength),
+        )
+
+        is DEBOUNCE -> stringResource(
+            R.string.debounce_short,
+            pluralStringResource(R.plurals.minute, cooldownLength, cooldownLength),
         )
     }
 
@@ -45,13 +54,19 @@ sealed class Action {
             is TAP_BUTTON -> R.string.tap_button_long
             is BATCH -> R.string.batch_long
             is DELAY -> R.string.delay_long
+            is DEBOUNCE -> R.string.debounce_long
         },
     )
 
     fun isOfType(it: Action) = this::class == it::class
 
     companion object {
-        val entries by lazy { listOf(DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3), DELAY) }
+        val entries by lazy {
+            listOf(
+                DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
+                DELAY, DEBOUNCE(2),
+            )
+        }
 
         fun fromString(value: String) = when {
             value == "DISMISS" -> DISMISS
@@ -66,6 +81,10 @@ sealed class Action {
 
             value.startsWith("BATCH") -> BATCH(
                 value.removePrefix("BATCH(batchLength=").removeSuffix(")").toInt(),
+            )
+
+            value.startsWith("DEBOUNCE") -> DEBOUNCE(
+                value.removePrefix("DEBOUNCE(cooldownLength=").removeSuffix(")").toInt(),
             )
 
             else -> {

@@ -155,7 +155,10 @@ fun UpsertFilterScreen(
                 ) {
                     Text(
                         if (viewModel.state.page.isFirstPage()) stringResource(R.string.skip)
-                        else if (viewModel.state.page.isFinalPage()) stringResource(R.string.add)
+                        else if (viewModel.state.page.isFinalPage()) {
+                            if (viewModel.state.values.filterId == 0) stringResource(R.string.add)
+                            else stringResource(R.string.save)
+                        }
                         else stringResource(R.string.next),
                         style = MaterialTheme.typography.bodyLarge,
                     )
@@ -595,8 +598,9 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
+                val action = viewModel.state.values.action as? Action.BATCH
                 Slider(
-                    (viewModel.state.values.action as? Action.BATCH)?.batchLength?.toFloat() ?: 3F,
+                    action?.batchLength?.toFloat() ?: 3F,
                     { value ->
                         viewModel.updateForm(
                             viewModel.state.page,
@@ -612,12 +616,49 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                         R.string.batch_frequency,
                         pluralStringResource(
                             R.plurals.hour,
-                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
-                            (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
+                            action?.batchLength ?: 3,
+                            action?.batchLength ?: 3,
                         ),
                     ),
                     Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                 )
+            }
+        }
+        AnimatedVisibility(it is Action.DEBOUNCE && viewModel.state.values.action is Action.DEBOUNCE) {
+            Column(
+                Modifier.fillMaxWidth(),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                val action = viewModel.state.values.action as? Action.DEBOUNCE
+                Slider(
+                    action?.cooldownLength?.toFloat() ?: 2F,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.DEBOUNCE(value.toInt())),
+                        )
+                    },
+                    Modifier.fillMaxWidth(),
+                    valueRange = 1F..15F,
+                    steps = 13,
+                )
+                Text(
+                    stringResource(
+                        R.string.cooldown,
+                        pluralStringResource(
+                            R.plurals.minute,
+                            action?.cooldownLength ?: 2,
+                            action?.cooldownLength ?: 2,
+                        ),
+                    ),
+                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
+                )
+                Text(
+                    stringResource(R.string.explain_debounce),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Normal,
+                )
+                if (viewModel.state.error == FormError.CANT_DEBOUNCE_ANY) ErrorText(R.string.cant_debounce_any)
             }
         }
     }

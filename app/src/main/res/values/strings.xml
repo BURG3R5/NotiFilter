@@ -13,6 +13,7 @@
     <string name="tap_button_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
     <string name="delay_short">delay notifications</string>
+    <string name="debounce_short">debounce for %1$s</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -72,6 +73,10 @@
     <string name="batch_long">Batch notifications</string>
     <string name="batch_frequency">Every %1$s</string>
     <string name="delay_long">Delay notifications</string>
+    <string name="debounce_long">Debounce notifications</string>
+    <string name="cooldown">Cooldown for %1$s</string>
+    <string name="explain_debounce">If notifications are received in quick succession, they will be snoozed for the cooldown duration.\n\nNote: For conversation-type notifications, this may lead to this original notification being snoozed too.</string>
+    <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
     <string name="to">" to "</string>
@@ -84,6 +89,7 @@
     <string name="skip">Skip</string>
     <string name="next">Next</string>
     <string name="add">Add</string>
+    <string name="save">Save</string>
 
     <string name="toggle_history">%1$s history</string>
     <string name="disable_history_confirmation">Disable history for this filter? Dismissed notifications will not be saved.</string>
@@ -140,6 +146,10 @@
     <plurals name="hour">
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
     </plurals>
     <plurals name="hit">
         <item quantity="one">%1$d hit</item>
