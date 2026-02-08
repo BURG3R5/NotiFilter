@@ -235,6 +235,18 @@ class NotificationListener : NotificationListenerService() {
 
                 snoozeNotification(sbn.key, delay)
             }
+
+            is Action.DEBOUNCE ->
+                notifications
+                    .filter { it.origin == filter.app.name }
+                    .maxByOrNull { it.timestamp }
+                    ?.let { previousNotification ->
+                        val cooldownLength = filter.action.cooldownLength * 60 * 1000L
+                        if (System.currentTimeMillis() - previousNotification.timestamp < cooldownLength + 100) {
+                            Logger.i("NotificationListener", "Applying cooldown")
+                            snoozeNotification(sbn.key, cooldownLength)
+                        }
+                    }
         }
 
         if (!filter.historyEnabled) {

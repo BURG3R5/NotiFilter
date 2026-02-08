@@ -67,6 +67,13 @@ class AppContainer(private val context: Context) {
                         schedule = Schedule(start = 9 * 60, end = 17 * 60),
                         hits = 15,
                     ),
+                    Filter(
+                        App("WhatsApp", "com.whatsapp"),
+                        "Roommate",
+                        Action.DEBOUNCE(2),
+                        RegexTarget.TITLE,
+                        historyEnabled = false,
+                    ),
                 )
                 repository.upsert(
                     Notification(

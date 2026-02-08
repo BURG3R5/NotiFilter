@@ -124,14 +124,21 @@ class UpsertFilterViewModel(
                 }
             }
 
-            FormPage.ACTION -> if (values.action is Action.TAP_BUTTON)
-                try {
-                    if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
-                    Regex(values.action.buttonRegex).pattern == values.action.buttonRegex
-                } catch (_: Exception) {
-                    Logger.d("FiltersViewModel.getError", "Button pattern regex invalid")
-                    return FormError.INVALID_BUTTON_REGEX
+            FormPage.ACTION -> {
+                if (values.action is Action.TAP_BUTTON) {
+                    try {
+                        if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
+                        Regex(values.action.buttonRegex).pattern == values.action.buttonRegex
+                    } catch (_: Exception) {
+                        Logger.d("FiltersViewModel.getError", "Button pattern regex invalid")
+                        return FormError.INVALID_BUTTON_REGEX
+                    }
                 }
+
+                if (values.action is Action.DEBOUNCE && values.app == Any) {
+                    return FormError.CANT_DEBOUNCE_ANY
+                }
+            }
 
             FormPage.SCHEDULE -> {
                 if (!values.schedule.isRangeValid()) return FormError.INVALID_TIME_RANGE
@@ -195,7 +202,13 @@ enum class FormPage {
     fun previous() = entries[ordinal - 1]
 }
 
-enum class FormError { BLANK_FIELDS, INVALID_NOTIFICATION_REGEX, INVALID_BUTTON_REGEX, INVALID_TIME_RANGE }
+enum class FormError {
+    BLANK_FIELDS,
+    INVALID_NOTIFICATION_REGEX,
+    INVALID_BUTTON_REGEX,
+    CANT_DEBOUNCE_ANY,
+    INVALID_TIME_RANGE,
+}
 
 enum class FormWarning(val description: Int) {
     REGEX_DOESNT_MATCH_TITLE(R.string.pattern_doesnt_match_title),
