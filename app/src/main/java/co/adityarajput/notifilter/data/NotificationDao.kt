@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import co.adityarajput.notifilter.data.models.Notification
@@ -17,6 +18,12 @@ interface NotificationDao {
     @Query("SELECT COUNT(*) FROM notifications")
     suspend fun count(): Int
 
+    @Delete
+    suspend fun delete(notification: Notification)
+
     @Query("DELETE FROM notifications WHERE id IN (SELECT id FROM notifications ORDER BY timestamp ASC LIMIT :count)")
     suspend fun trim(count: Int)
+
+    @Query("DELETE FROM notifications")
+    suspend fun deleteAll()
 }

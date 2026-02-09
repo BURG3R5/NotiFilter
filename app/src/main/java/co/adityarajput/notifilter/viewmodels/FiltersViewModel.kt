@@ -21,7 +21,7 @@ class FiltersViewModel(private val repository: Repository) : ViewModel() {
         .map { State(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 
-    var dialogState by mutableStateOf<DialogState?>(null)
+    var dialogState by mutableStateOf<FilterDialogState?>(null)
 
     var selectedFilter by mutableStateOf<Filter?>(null)
 
@@ -47,4 +47,4 @@ class FiltersViewModel(private val repository: Repository) : ViewModel() {
     }
 }
 
-enum class DialogState { TOGGLE_HISTORY, TOGGLE_FILTER, DELETE }
+enum class FilterDialogState { TOGGLE_HISTORY, TOGGLE_FILTER, DELETE }

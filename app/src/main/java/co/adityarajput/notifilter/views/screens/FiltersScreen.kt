@@ -23,7 +23,7 @@ import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
-import co.adityarajput.notifilter.viewmodels.DialogState
+import co.adityarajput.notifilter.viewmodels.FilterDialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
@@ -112,7 +112,11 @@ fun FiltersScreen(
                             else viewModel.selectedFilter = it
                         },
                         {
-                            IconButton({ viewModel.dialogState = DialogState.TOGGLE_HISTORY }) {
+                            IconButton(
+                                {
+                                    viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
+                                },
+                            ) {
                                 Icon(
                                     painterResource(R.drawable.manage_history),
                                     stringResource(
@@ -121,7 +125,11 @@ fun FiltersScreen(
                                     ),
                                 )
                             }
-                            IconButton({ viewModel.dialogState = DialogState.TOGGLE_FILTER }) {
+                            IconButton(
+                                {
+                                    viewModel.dialogState = FilterDialogState.TOGGLE_FILTER
+                                },
+                            ) {
                                 Icon(
                                     if (it.enabled) painterResource(R.drawable.archive)
                                     else painterResource(R.drawable.unarchive),
@@ -138,7 +146,7 @@ fun FiltersScreen(
                                 )
                             }
                             IconButton(
-                                { viewModel.dialogState = DialogState.DELETE },
+                                { viewModel.dialogState = FilterDialogState.DELETE },
                                 colors = IconButtonDefaults.iconButtonColors(
                                     contentColor = MaterialTheme.colorScheme.tertiary,
                                 ),

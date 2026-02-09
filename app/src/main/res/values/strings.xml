@@ -106,6 +106,9 @@
     <string name="history">History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
 
+    <string name="clear_history">Clear history</string>
+    <string name="clear_history_confirmation">Delete all notifications?</string>
+
     <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
     <string name="grant_permission">Grant permission</string>
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.\n\nCertain manufacturers have even more aggressive optimizations, so you may need to enable \"Run in foreground\" from the app settings later.</string>

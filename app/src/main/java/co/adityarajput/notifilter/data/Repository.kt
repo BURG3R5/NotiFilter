@@ -33,5 +33,9 @@ class Repository(
 
     suspend fun delete(filter: Filter) = filterDao.delete(filter)
 
+    suspend fun delete(notification: Notification) = notificationDao.delete(notification)
+
     suspend fun deleteFilters() = filterDao.deleteAll()
+
+    suspend fun deleteNotifications() = notificationDao.deleteAll()
 }
