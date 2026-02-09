@@ -92,7 +92,7 @@
     <string name="save">Save</string>
 
     <string name="toggle_history">%1$s history</string>
-    <string name="disable_history_confirmation">Disable history for this filter? Dismissed notifications will not be saved.</string>
+    <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
     <string name="enable_history_confirmation">Enable history for this filter?</string>
     <string name="toggle_filter">%1$s filter</string>
     <string name="toggle_filter_confirmation">%1$s this filter?</string>
