@@ -1,0 +1,2 @@
+• feat: Let user delete notifications
+• fix: Reset filter's hits when disabling history

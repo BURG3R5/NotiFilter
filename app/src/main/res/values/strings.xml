@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">4.2.0</string>
+    <string name="app_version">4.3.0</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
@@ -92,7 +92,7 @@
     <string name="save">Save</string>
 
     <string name="toggle_history">%1$s history</string>
-    <string name="disable_history_confirmation">Disable history for this filter? Dismissed notifications will not be saved.</string>
+    <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
     <string name="enable_history_confirmation">Enable history for this filter?</string>
     <string name="toggle_filter">%1$s filter</string>
     <string name="toggle_filter_confirmation">%1$s this filter?</string>
@@ -105,6 +105,9 @@
 
     <string name="history">History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
+
+    <string name="clear_history">Clear history</string>
+    <string name="clear_history_confirmation">Delete all notifications?</string>
 
     <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
     <string name="grant_permission">Grant permission</string>
