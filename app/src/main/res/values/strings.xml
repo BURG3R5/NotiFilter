@@ -75,7 +75,7 @@
     <string name="delay_long">Delay notifications</string>
     <string name="debounce_long">Debounce notifications</string>
     <string name="cooldown">Cooldown for %1$s</string>
-    <string name="explain_debounce">If notifications are received in quick succession, they will be snoozed for the cooldown duration.\n\nNote: For conversation-type notifications, this may lead to this original notification being snoozed too.</string>
+    <string name="explain_debounce">After a notification is received, any others received during the cooldown will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>

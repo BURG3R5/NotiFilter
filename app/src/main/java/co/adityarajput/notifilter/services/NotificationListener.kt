@@ -20,12 +20,9 @@ import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
@@ -55,6 +52,9 @@ class NotificationListener : NotificationListenerService() {
 
     @Volatile
     private var notifications: List<Notification> = emptyList()
+
+    @Volatile
+    private var cooldowns: Map<Filter, Long> = emptyMap()
 
     override fun onCreate() {
         super.onCreate()
@@ -236,17 +236,17 @@ class NotificationListener : NotificationListenerService() {
                 snoozeNotification(sbn.key, delay)
             }
 
-            is Action.DEBOUNCE ->
-                notifications
-                    .filter { it.origin == filter.app.name }
-                    .maxByOrNull { it.timestamp }
-                    ?.let { previousNotification ->
-                        val cooldownLength = filter.action.cooldownLength * 60 * 1000L
-                        if (System.currentTimeMillis() - previousNotification.timestamp < cooldownLength + 100) {
-                            Logger.i("NotificationListener", "Applying cooldown")
-                            snoozeNotification(sbn.key, cooldownLength)
-                        }
-                    }
+            is Action.DEBOUNCE -> {
+                if (cooldowns.getOrDefault(filter, 0L) < System.currentTimeMillis()) {
+                    Logger.d("NotificationListener", "Setting cooldown")
+                    cooldowns += filter to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
+                    return
+                }
+
+                muteNotifications()
+            }
+
+//            is Action.MUTE -> muteNotifications()
         }
 
         if (!filter.historyEnabled) {
@@ -265,6 +265,18 @@ class NotificationListener : NotificationListenerService() {
                 "NotificationListener.onNotificationPosted",
                 "Notifications updated: $notifications",
             )
+        }
+    }
+
+    fun muteNotifications() {
+        serviceScope.launch {
+            val originalListenerHints = currentListenerHints
+            delay(300L)
+            Logger.i("NotificationListener", "Muting")
+            requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
+            delay(2000L)
+            Logger.d("NotificationListener", "Unmuting")
+            requestListenerHints(originalListenerHints)
         }
     }
 
