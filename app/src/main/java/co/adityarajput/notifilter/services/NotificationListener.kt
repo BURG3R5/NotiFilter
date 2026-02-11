@@ -246,7 +246,7 @@ class NotificationListener : NotificationListenerService() {
                 muteNotifications()
             }
 
-//            is Action.MUTE -> muteNotifications()
+            is Action.MUTE -> muteNotifications()
         }
 
         if (!filter.historyEnabled) {

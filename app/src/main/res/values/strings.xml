@@ -14,6 +14,7 @@
     <string name="batch_short">batch every %1$s</string>
     <string name="delay_short">delay notifications</string>
     <string name="debounce_short">debounce for %1$s</string>
+    <string name="mute_short">mute notification</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -74,6 +75,7 @@
     <string name="batch_frequency">Every %1$s</string>
     <string name="delay_long">Delay notifications</string>
     <string name="debounce_long">Debounce notifications</string>
+    <string name="mute_long">Mute notifications</string>
     <string name="cooldown">Cooldown for %1$s</string>
     <string name="explain_debounce">After a notification is received, any others received during the cooldown will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
