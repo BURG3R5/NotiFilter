@@ -77,7 +77,7 @@
     <string name="debounce_long">Debounce notifications</string>
     <string name="mute_long">Mute notifications</string>
     <string name="cooldown">Cooldown for %1$s</string>
-    <string name="explain_debounce">After a notification is received, any others received during the cooldown will be muted.</string>
+    <string name="explain_debounce">Notifications sent in quick succession will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
