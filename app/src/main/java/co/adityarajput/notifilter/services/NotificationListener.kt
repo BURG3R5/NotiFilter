@@ -33,6 +33,8 @@ class NotificationListener : NotificationListenerService() {
         @Volatile
         var instance: NotificationListener? = null
 
+        const val NOTIFICATION_SOUND_DURATION = 3000L
+
         fun updateForegroundStatus(runInForeground: Boolean) {
             if (runInForeground) {
                 instance!!.startForeground()
@@ -54,7 +56,7 @@ class NotificationListener : NotificationListenerService() {
     private var notifications: List<Notification> = emptyList()
 
     @Volatile
-    private var cooldowns: Map<Filter, Long> = emptyMap()
+    private var cooldowns: Map<Int, Long> = emptyMap()
 
     override fun onCreate() {
         super.onCreate()
@@ -100,7 +102,8 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         super.onListenerConnected()
-        Logger.i("NotificationListener.onListenerConnected", "Listener connected")
+        Logger.i("NotificationListener", "Listener connected")
+        requestListenerHints(0)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -237,16 +240,25 @@ class NotificationListener : NotificationListenerService() {
             }
 
             is Action.DEBOUNCE -> {
-                if (cooldowns.getOrDefault(filter, 0L) < System.currentTimeMillis()) {
+                if (!cooldowns.containsKey(filter.id)) {
                     Logger.d("NotificationListener", "Setting cooldown")
-                    cooldowns += filter to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
+                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
+                    muteNotificationsWhileCooldown(filter)
                     return
                 }
 
-                muteNotifications()
+                Logger.i("NotificationListener", "Updating cooldown")
+                cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
             }
 
-            is Action.MUTE -> muteNotifications()
+            is Action.MUTE -> serviceScope.launch {
+                delay(300L)
+                Logger.i("NotificationListener", "Muting")
+                requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
+                delay(NOTIFICATION_SOUND_DURATION)
+                Logger.d("NotificationListener", "Unmuting")
+                requestListenerHints(0)
+            }
         }
 
         if (!filter.historyEnabled) {
@@ -268,15 +280,22 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    fun muteNotifications() {
+    private fun muteNotificationsWhileCooldown(filter: Filter) {
         serviceScope.launch {
-            val originalListenerHints = currentListenerHints
-            delay(300L)
-            Logger.i("NotificationListener", "Muting")
+            delay(NOTIFICATION_SOUND_DURATION) // INFO: Wait for original notification sound
+            Logger.d("NotificationListener", "Applying cooldown")
             requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
-            delay(2000L)
-            Logger.d("NotificationListener", "Unmuting")
-            requestListenerHints(originalListenerHints)
+            try {
+                while (true) {
+                    val cooldownEnd = cooldowns[filter.id] ?: break
+                    if (System.currentTimeMillis() > cooldownEnd) break
+                    delay(500L)
+                }
+            } finally {
+                Logger.d("NotificationListener", "Cooldown ended")
+                cooldowns -= filter.id
+                requestListenerHints(0)
+            }
         }
     }
 
