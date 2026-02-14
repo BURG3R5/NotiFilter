@@ -74,6 +74,13 @@ class AppContainer(private val context: Context) {
                         RegexTarget.TITLE,
                         historyEnabled = false,
                     ),
+                    Filter(
+                        App("Instagram", "com.instagram.android"),
+                        "reels",
+                        Action.MUTE,
+                        RegexTarget.TITLE,
+                        historyEnabled = false,
+                    ),
                 )
                 repository.upsert(
                     Notification(

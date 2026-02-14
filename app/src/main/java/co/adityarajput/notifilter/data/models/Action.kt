@@ -28,12 +28,16 @@ sealed class Action {
     @Serializable
     data class DEBOUNCE(val cooldownLength: Int) : Action()
 
+    @Serializable
+    data object MUTE : Action()
+
     @Composable
     fun verb() = when (this) {
         is DISMISS -> stringResource(R.string.dismiss_short)
         is TAP_NOTIFICATION -> stringResource(R.string.tap_notification_short)
         is TAP_BUTTON -> stringResource(R.string.tap_button_short, buttonRegex)
         is DELAY -> stringResource(R.string.delay_short)
+        is MUTE -> stringResource(R.string.mute_short)
 
         is BATCH -> stringResource(
             R.string.batch_short,
@@ -55,6 +59,7 @@ sealed class Action {
             is BATCH -> R.string.batch_long
             is DELAY -> R.string.delay_long
             is DEBOUNCE -> R.string.debounce_long
+            is MUTE -> R.string.mute_long
         },
     )
 
@@ -64,7 +69,7 @@ sealed class Action {
         val entries by lazy {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
-                DELAY, DEBOUNCE(2),
+                DELAY, DEBOUNCE(2), MUTE,
             )
         }
 
@@ -74,6 +79,8 @@ sealed class Action {
             value == "TAP_NOTIFICATION" -> TAP_NOTIFICATION
 
             value == "DELAY" -> DELAY
+
+            value == "MUTE" -> MUTE
 
             value.startsWith("TAP_BUTTON") -> TAP_BUTTON(
                 value.removePrefix("TAP_BUTTON(buttonRegex=").removeSuffix(")"),
