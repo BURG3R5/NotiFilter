@@ -35,6 +35,21 @@ class NotificationListener : NotificationListenerService() {
 
         const val NOTIFICATION_SOUND_DURATION = 3000L
 
+        fun createAlertNotificationChannel() {
+            val notificationManager = instance?.notificationManager ?: return
+            if (notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) {
+                notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        Constants.ALERT_NOTIFICATION_CHANNEL_ID,
+                        "NotiFilter Alert Service",
+                        NotificationManager.IMPORTANCE_HIGH,
+                    ).apply {
+                        description = "Required for ALERT Actions"
+                    },
+                )
+            }
+        }
+
         fun updateForegroundStatus(runInForeground: Boolean) {
             if (runInForeground) {
                 instance!!.startForeground()
@@ -48,6 +63,7 @@ class NotificationListener : NotificationListenerService() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
     private val repository by lazy { AppContainer(this).repository }
     private val sharedPreferences by lazy { getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
+    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
     @Volatile
     private var filters: List<Filter> = emptyList()
@@ -76,7 +92,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     fun startForeground() {
-        getSystemService(NotificationManager::class.java).createNotificationChannel(
+        notificationManager.createNotificationChannel(
             NotificationChannel(
                 Constants.FOREGROUND_NOTIFICATION_CHANNEL_ID,
                 "NotiFilter Foreground Service",
@@ -248,6 +264,20 @@ class NotificationListener : NotificationListenerService() {
                 delay(NOTIFICATION_SOUND_DURATION)
                 Logger.d("NotificationListener", "Unmuting")
                 requestListenerHints(0)
+            }
+
+            is Action.ALERT -> {
+                notificationManager.notify(
+                    Constants.ALERT_NOTIFICATION_ID,
+                    NotificationCompat.Builder(this, Constants.ALERT_NOTIFICATION_CHANNEL_ID)
+                        .setContentTitle(getString(R.string.app_name_launcher))
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setAutoCancel(true).build(),
+                )
+                serviceScope.launch {
+                    delay(2000L)
+                    notificationManager.cancel(Constants.ALERT_NOTIFICATION_ID)
+                }
             }
         }
 

@@ -1,7 +1,10 @@
 package co.adityarajput.notifilter.views.screens
 
+import android.Manifest
+import android.app.Activity
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -33,13 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.*
-import co.adityarajput.notifilter.utils.Logger
-import co.adityarajput.notifilter.utils.filterFirst
-import co.adityarajput.notifilter.utils.getFirst
-import co.adityarajput.notifilter.utils.hasAccessibilityServicePermission
+import co.adityarajput.notifilter.services.NotificationListener
+import co.adityarajput.notifilter.utils.*
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -492,11 +494,18 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
     var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
+    var hasPostNotificationsPermission by remember { mutableStateOf(context.hasPostNotificationsPermission()) }
 
     val watcher = object : Runnable {
         override fun run() {
             hasAccessibilityPermission = context.hasAccessibilityServicePermission()
-            if (!hasAccessibilityPermission) handler.postDelayed(this, 500)
+            hasPostNotificationsPermission = context.hasPostNotificationsPermission()
+
+            if (hasPostNotificationsPermission)
+                NotificationListener.createAlertNotificationChannel()
+
+            if (!hasAccessibilityPermission || !hasPostNotificationsPermission)
+                handler.postDelayed(this, 500)
         }
     }
     DisposableEffect(Unit) {
@@ -688,6 +697,53 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                     fontWeight = FontWeight.Normal,
                 )
                 if (viewModel.state.error == FormError.CANT_DEBOUNCE_ANY) ErrorText(R.string.cant_debounce_any)
+            }
+        }
+        AnimatedVisibility(
+            it is Action.ALERT
+                    && viewModel.state.values.action is Action.ALERT
+                    && !hasPostNotificationsPermission,
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = dimensionResource(R.dimen.padding_medium)),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                ErrorText(R.string.alert_notifications_description)
+                Button(
+                    {
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                requestPermissions(
+                                    context as Activity,
+                                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                                    0,
+                                )
+                            } else {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                    },
+                                )
+                            }
+                        } catch (e: Exception) {
+                            Logger.e(
+                                "UpsertFilterScreen",
+                                "Error opening notification settings",
+                                e,
+                            )
+                        }
+                    },
+                    Modifier.align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Text(
+                        stringResource(R.string.grant_permission),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
             }
         }
     }

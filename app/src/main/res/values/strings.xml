@@ -15,6 +15,7 @@
     <string name="delay_short">delay notifications</string>
     <string name="debounce_short">debounce for %1$s</string>
     <string name="mute_short">mute notification</string>
+    <string name="alert_short">play an alert</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -76,6 +77,8 @@
     <string name="delay_long">Delay notifications</string>
     <string name="debounce_long">Debounce notifications</string>
     <string name="mute_long">Mute notifications</string>
+    <string name="alert_long">Play an alert</string>
+    <string name="alert_notifications_description">NotiFilter sends short-lived notifications to play alerts.</string>
     <string name="cooldown_length">Cooldown for %1$s minute(s)</string>
     <string name="explain_debounce">Notifications sent in quick succession will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>

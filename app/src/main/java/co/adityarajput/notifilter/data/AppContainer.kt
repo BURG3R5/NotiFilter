@@ -69,9 +69,9 @@ class AppContainer(private val context: Context) {
                     ),
                     Filter(
                         App("WhatsApp", "com.whatsapp"),
-                        "Roommate",
-                        Action.DEBOUNCE(2),
-                        RegexTarget.TITLE,
+                        "Photo",
+                        Action.DEBOUNCE(1),
+                        RegexTarget.CONTENT,
                         historyEnabled = false,
                     ),
                     Filter(
@@ -79,6 +79,14 @@ class AppContainer(private val context: Context) {
                         "reels",
                         Action.MUTE,
                         RegexTarget.TITLE,
+                        historyEnabled = false,
+                    ),
+                    Filter(
+                        App("F-Droid", "org.fdroid"),
+                        "Update available",
+                        Action.ALERT,
+                        RegexTarget.AND,
+                        "NotiFilter",
                         historyEnabled = false,
                     ),
                 )
