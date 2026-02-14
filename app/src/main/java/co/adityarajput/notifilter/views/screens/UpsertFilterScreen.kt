@@ -171,13 +171,10 @@ fun UpsertFilterScreen(
 
 @Composable
 private fun ZapperPage(viewModel: UpsertFilterViewModel) {
-    if (viewModel.activeNotifications.isEmpty()) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            Alignment.Center,
-        ) {
+    if (viewModel.allPackages.isEmpty()) {
+        Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
+    } else if (viewModel.activeNotifications.isEmpty()) {
+        Box(Modifier.fillMaxSize(), Alignment.Center) {
             Text(
                 stringResource(R.string.no_active_notifications),
                 textAlign = TextAlign.Center,
