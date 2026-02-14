@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -158,8 +158,7 @@ fun UpsertFilterScreen(
                         else if (viewModel.state.page.isFinalPage()) {
                             if (viewModel.state.values.filterId == 0) stringResource(R.string.add)
                             else stringResource(R.string.save)
-                        }
-                        else stringResource(R.string.next),
+                        } else stringResource(R.string.next),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
@@ -594,34 +593,46 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
             }
         }
         AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
-            Column(
+            Row(
                 Modifier.fillMaxWidth(),
-                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+                Arrangement.Center,
+                Alignment.CenterVertically,
             ) {
-                val action = viewModel.state.values.action as? Action.BATCH
-                Slider(
-                    action?.batchLength?.toFloat() ?: 3F,
-                    { value ->
+                val batchLength = (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3
+                IconButton(
+                    {
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.BATCH(value.toInt())),
+                            viewModel.state.values.copy(action = Action.BATCH((batchLength - 1))),
                         )
                     },
-                    Modifier.fillMaxWidth(),
-                    valueRange = 1F..12F,
-                    steps = 10,
-                )
+                    enabled = batchLength > 1,
+                ) {
+                    Icon(
+                        painterResource(R.drawable.remove),
+                        contentDescription = stringResource(R.string.alttext_subtract),
+                    )
+                }
                 Text(
                     stringResource(
                         R.string.batch_frequency,
-                        pluralStringResource(
-                            R.plurals.hour,
-                            action?.batchLength ?: 3,
-                            action?.batchLength ?: 3,
-                        ),
+                        batchLength.toString().padStart(2, '0'),
                     ),
-                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                 )
+                IconButton(
+                    {
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.BATCH((batchLength + 1))),
+                        )
+                    },
+                    enabled = batchLength < 12,
+                ) {
+                    Icon(
+                        painterResource(R.drawable.add),
+                        contentDescription = stringResource(R.string.alttext_add),
+                    )
+                }
             }
         }
         AnimatedVisibility(it is Action.DEBOUNCE && viewModel.state.values.action is Action.DEBOUNCE) {
@@ -629,30 +640,48 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                val action = viewModel.state.values.action as? Action.DEBOUNCE
-                Slider(
-                    action?.cooldownLength?.toFloat() ?: 2F,
-                    { value ->
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.DEBOUNCE(value.toInt())),
-                        )
-                    },
+                Row(
                     Modifier.fillMaxWidth(),
-                    valueRange = 1F..15F,
-                    steps = 13,
-                )
-                Text(
-                    stringResource(
-                        R.string.cooldown,
-                        pluralStringResource(
-                            R.plurals.minute,
-                            action?.cooldownLength ?: 2,
-                            action?.cooldownLength ?: 2,
+                    Arrangement.Center,
+                    Alignment.CenterVertically,
+                ) {
+                    val cooldownLength =
+                        (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength - 1))),
+                            )
+                        },
+                        enabled = cooldownLength > 1,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.remove),
+                            contentDescription = stringResource(R.string.alttext_subtract),
+                        )
+                    }
+                    Text(
+                        stringResource(
+                            R.string.cooldown_length,
+                            cooldownLength.toString().padStart(2, '0'),
                         ),
-                    ),
-                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
-                )
+                    )
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength + 1))),
+                            )
+                        },
+                        enabled = cooldownLength < 15,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.add),
+                            contentDescription = stringResource(R.string.alttext_add),
+                        )
+                    }
+                }
                 Text(
                     stringResource(R.string.explain_debounce),
                     style = MaterialTheme.typography.labelLarge,
