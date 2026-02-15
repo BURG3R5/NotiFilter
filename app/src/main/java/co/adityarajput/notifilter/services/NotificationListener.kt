@@ -110,6 +110,7 @@ class NotificationListener : NotificationListenerService() {
             NotificationCompat.Builder(this, Constants.FOREGROUND_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.app_name_launcher))
                 .setContentText(getString(R.string.foreground_notification_content))
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setOngoing(true).setSilent(true).build(),
             if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
