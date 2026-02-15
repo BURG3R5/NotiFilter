@@ -25,6 +25,7 @@ NotiFilter listens to all device notifications and quietly manages those that ma
   5. Collect into batches 📦
   6. Debounce it ❄
   7. Mute it 🔇
+  8. Play an alert 🔔
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
 - **Export/Import** - Backup or transfer your filters as JSON files 📂

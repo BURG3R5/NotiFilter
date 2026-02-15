@@ -1,0 +1,5 @@
+• fix: Debounce using mutes instead of snoozes
+• feat: Add "MUTE" action
+• fix: Replace faulty slider components
+• fix: Add "ALERT" action
+• perf: Reduce load time of UpsertFilterScreen

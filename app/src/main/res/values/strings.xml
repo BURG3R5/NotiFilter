@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotiFilter</string>
     <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">4.3.0</string>
+    <string name="app_version">4.4.0</string>
 
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
@@ -15,6 +15,7 @@
     <string name="delay_short">delay notifications</string>
     <string name="debounce_short">debounce for %1$s</string>
     <string name="mute_short">mute notification</string>
+    <string name="alert_short">play an alert</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -72,11 +73,13 @@
     <string name="tap_button_long">Tap a button</string>
     <string name="button_pattern">Button pattern</string>
     <string name="batch_long">Batch notifications</string>
-    <string name="batch_frequency">Every %1$s</string>
+    <string name="batch_frequency">Every %1$s hour(s)</string>
     <string name="delay_long">Delay notifications</string>
     <string name="debounce_long">Debounce notifications</string>
     <string name="mute_long">Mute notifications</string>
-    <string name="cooldown">Cooldown for %1$s</string>
+    <string name="alert_long">Play an alert</string>
+    <string name="alert_notifications_description">NotiFilter sends short-lived notifications to play alerts.</string>
+    <string name="cooldown_length">Cooldown for %1$s minute(s)</string>
     <string name="explain_debounce">Notifications sent in quick succession will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
     <string name="schedule_page_title">Configure a schedule</string>
@@ -119,11 +122,13 @@
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly manages those that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
-    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to accurately simulate taps on notifications</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
+    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
 
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
+    <string name="alttext_add">Add</string>
+    <string name="alttext_subtract">Subtract</string>
     <string name="alttext_logs">Logs</string>
     <string name="alttext_info">Info</string>
 

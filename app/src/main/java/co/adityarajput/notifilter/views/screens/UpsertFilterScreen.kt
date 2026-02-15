@@ -1,7 +1,10 @@
 package co.adityarajput.notifilter.views.screens
 
+import android.Manifest
+import android.app.Activity
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -23,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -33,13 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.*
-import co.adityarajput.notifilter.utils.Logger
-import co.adityarajput.notifilter.utils.filterFirst
-import co.adityarajput.notifilter.utils.getFirst
-import co.adityarajput.notifilter.utils.hasAccessibilityServicePermission
+import co.adityarajput.notifilter.services.NotificationListener
+import co.adityarajput.notifilter.utils.*
 import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -158,8 +160,7 @@ fun UpsertFilterScreen(
                         else if (viewModel.state.page.isFinalPage()) {
                             if (viewModel.state.values.filterId == 0) stringResource(R.string.add)
                             else stringResource(R.string.save)
-                        }
-                        else stringResource(R.string.next),
+                        } else stringResource(R.string.next),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
@@ -170,13 +171,10 @@ fun UpsertFilterScreen(
 
 @Composable
 private fun ZapperPage(viewModel: UpsertFilterViewModel) {
-    if (viewModel.activeNotifications.isEmpty()) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            Alignment.Center,
-        ) {
+    if (viewModel.allPackages.isEmpty()) {
+        Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
+    } else if (viewModel.activeNotifications.isEmpty()) {
+        Box(Modifier.fillMaxSize(), Alignment.Center) {
             Text(
                 stringResource(R.string.no_active_notifications),
                 textAlign = TextAlign.Center,
@@ -493,11 +491,18 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
     var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
+    var hasPostNotificationsPermission by remember { mutableStateOf(context.hasPostNotificationsPermission()) }
 
     val watcher = object : Runnable {
         override fun run() {
             hasAccessibilityPermission = context.hasAccessibilityServicePermission()
-            if (!hasAccessibilityPermission) handler.postDelayed(this, 500)
+            hasPostNotificationsPermission = context.hasPostNotificationsPermission()
+
+            if (hasPostNotificationsPermission)
+                NotificationListener.createAlertNotificationChannel()
+
+            if (!hasAccessibilityPermission || !hasPostNotificationsPermission)
+                handler.postDelayed(this, 500)
         }
     }
     DisposableEffect(Unit) {
@@ -594,34 +599,46 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
             }
         }
         AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
-            Column(
+            Row(
                 Modifier.fillMaxWidth(),
-                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+                Arrangement.Center,
+                Alignment.CenterVertically,
             ) {
-                val action = viewModel.state.values.action as? Action.BATCH
-                Slider(
-                    action?.batchLength?.toFloat() ?: 3F,
-                    { value ->
+                val batchLength = (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3
+                IconButton(
+                    {
                         viewModel.updateForm(
                             viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.BATCH(value.toInt())),
+                            viewModel.state.values.copy(action = Action.BATCH((batchLength - 1))),
                         )
                     },
-                    Modifier.fillMaxWidth(),
-                    valueRange = 1F..12F,
-                    steps = 10,
-                )
+                    enabled = batchLength > 1,
+                ) {
+                    Icon(
+                        painterResource(R.drawable.remove),
+                        contentDescription = stringResource(R.string.alttext_subtract),
+                    )
+                }
                 Text(
                     stringResource(
                         R.string.batch_frequency,
-                        pluralStringResource(
-                            R.plurals.hour,
-                            action?.batchLength ?: 3,
-                            action?.batchLength ?: 3,
-                        ),
+                        batchLength.toString().padStart(2, '0'),
                     ),
-                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
                 )
+                IconButton(
+                    {
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.BATCH((batchLength + 1))),
+                        )
+                    },
+                    enabled = batchLength < 12,
+                ) {
+                    Icon(
+                        painterResource(R.drawable.add),
+                        contentDescription = stringResource(R.string.alttext_add),
+                    )
+                }
             }
         }
         AnimatedVisibility(it is Action.DEBOUNCE && viewModel.state.values.action is Action.DEBOUNCE) {
@@ -629,36 +646,101 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                val action = viewModel.state.values.action as? Action.DEBOUNCE
-                Slider(
-                    action?.cooldownLength?.toFloat() ?: 2F,
-                    { value ->
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.DEBOUNCE(value.toInt())),
-                        )
-                    },
+                Row(
                     Modifier.fillMaxWidth(),
-                    valueRange = 1F..15F,
-                    steps = 13,
-                )
-                Text(
-                    stringResource(
-                        R.string.cooldown,
-                        pluralStringResource(
-                            R.plurals.minute,
-                            action?.cooldownLength ?: 2,
-                            action?.cooldownLength ?: 2,
+                    Arrangement.Center,
+                    Alignment.CenterVertically,
+                ) {
+                    val cooldownLength =
+                        (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength - 1))),
+                            )
+                        },
+                        enabled = cooldownLength > 1,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.remove),
+                            contentDescription = stringResource(R.string.alttext_subtract),
+                        )
+                    }
+                    Text(
+                        stringResource(
+                            R.string.cooldown_length,
+                            cooldownLength.toString().padStart(2, '0'),
                         ),
-                    ),
-                    Modifier.padding(start = dimensionResource(R.dimen.padding_medium)),
-                )
+                    )
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength + 1))),
+                            )
+                        },
+                        enabled = cooldownLength < 15,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.add),
+                            contentDescription = stringResource(R.string.alttext_add),
+                        )
+                    }
+                }
                 Text(
                     stringResource(R.string.explain_debounce),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Normal,
                 )
                 if (viewModel.state.error == FormError.CANT_DEBOUNCE_ANY) ErrorText(R.string.cant_debounce_any)
+            }
+        }
+        AnimatedVisibility(
+            it is Action.ALERT
+                    && viewModel.state.values.action is Action.ALERT
+                    && !hasPostNotificationsPermission,
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = dimensionResource(R.dimen.padding_medium)),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                ErrorText(R.string.alert_notifications_description)
+                Button(
+                    {
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                requestPermissions(
+                                    context as Activity,
+                                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                                    0,
+                                )
+                            } else {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                    },
+                                )
+                            }
+                        } catch (e: Exception) {
+                            Logger.e(
+                                "UpsertFilterScreen",
+                                "Error opening notification settings",
+                                e,
+                            )
+                        }
+                    },
+                    Modifier.align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Text(
+                        stringResource(R.string.grant_permission),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
             }
         }
     }

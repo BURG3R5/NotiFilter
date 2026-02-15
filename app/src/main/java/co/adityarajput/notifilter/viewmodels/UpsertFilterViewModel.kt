@@ -13,8 +13,10 @@ import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.Logger
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UpsertFilterViewModel(
     filter: Filter?,
@@ -61,32 +63,38 @@ class UpsertFilterViewModel(
         else State(FormPage.PACKAGE, Values(filter), null),
     )
 
-    val visibleApps: List<App> by lazy {
-        packageManager
-            .queryIntentActivities(
-                Intent(
-                    Intent.ACTION_MAIN,
-                    null,
-                ).addCategory(Intent.CATEGORY_LAUNCHER),
-                0,
-            ).map {
-                App(
-                    it.activityInfo.applicationInfo.loadLabel(packageManager).toString(),
-                    it.activityInfo.packageName,
-                )
-            }.sortedBy { it.name }
-    }
+    var visibleApps by mutableStateOf<List<App>>(emptyList())
 
-    val allPackages: List<App> by lazy {
-        packageManager.getInstalledApplications(0)
-            .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
-            .sortedBy { it.name }
-    }
+    var allPackages by mutableStateOf<List<App>>(emptyList())
 
-    var activeNotifications by mutableStateOf(listOf<Notification>())
+    var activeNotifications by mutableStateOf(
+        NotificationListener.instance
+            ?.activeNotifications
+            ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+            ?.mapIndexed { i, sbn -> Notification(sbn, sbn.packageName, i) }
+            ?: listOf(),
+    )
 
     init {
         viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                allPackages = packageManager.getInstalledApplications(0)
+                    .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
+                    .sortedBy { it.name }
+
+                visibleApps = packageManager.queryIntentActivities(
+                    Intent(Intent.ACTION_MAIN, null)
+                        .addCategory(Intent.CATEGORY_LAUNCHER),
+                    0,
+                ).map {
+                    App(
+                        it.activityInfo.applicationInfo.loadLabel(packageManager)
+                            .toString(),
+                        it.activityInfo.packageName,
+                    )
+                }.sortedBy { it.name }
+            }
+
             while (true) {
                 activeNotifications = NotificationListener.instance
                     ?.activeNotifications
@@ -102,6 +110,7 @@ class UpsertFilterViewModel(
         state = State(page, values, getError(page, values), getWarnings(page, values))
     }
 
+    @Suppress("UnusedEquals")
     private fun getError(
         page: FormPage = state.page,
         values: Values = state.values,
