@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ fun NotificationsScreen(
     viewModel: NotificationsViewModel = viewModel(factory = Provider.Factory),
 ) {
     val state = viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -78,6 +80,14 @@ fun NotificationsScreen(
                             else viewModel.selectedNotification = it
                         },
                         {
+                            TextButton(
+                                { viewModel.openNotification(context, it) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.primary,
+                                ),
+                            ) {
+                                Text(stringResource(R.string.open))
+                            }
                             IconButton(
                                 { viewModel.delete(it) },
                                 colors = IconButtonDefaults.iconButtonColors(

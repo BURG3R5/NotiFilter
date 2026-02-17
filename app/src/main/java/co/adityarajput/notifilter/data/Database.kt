@@ -10,7 +10,7 @@ import co.adityarajput.notifilter.data.models.Notification
 
 @Database(
     entities = [Filter::class, Notification::class],
-    version = 10,
+    version = 11,
     autoMigrations = [
         AutoMigration(1, 2), AutoMigration(2, 3), AutoMigration(3, 4),
         AutoMigration(4, 5), AutoMigration(5, 6),
@@ -91,10 +91,17 @@ abstract class NotiFilterDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notifications ADD COLUMN packageName TEXT NOT NULL DEFAULT ''")
+                db.execSQL("UPDATE notifications SET packageName = origin")
+            }
+        }
+
         fun getDatabase(context: Context): NotiFilterDatabase {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(context, NotiFilterDatabase::class.java, "notifilter_database")
-                    .addMigrations(MIGRATION_9_10)
+                    .addMigrations(MIGRATION_9_10, MIGRATION_10_11)
                     .build().also { instance = it }
             }
         }

@@ -107,6 +107,7 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="delete">Delete</string>
+    <string name="open">Open</string>
 
     <string name="history">History</string>
     <string name="no_notifications">No notifications blocked yet.</string>

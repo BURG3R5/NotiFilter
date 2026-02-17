@@ -20,6 +20,7 @@ import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
+import co.adityarajput.notifilter.utils.NotificationCache
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -137,6 +138,7 @@ class NotificationListener : NotificationListenerService() {
             "Received $sbn with extras ${sbn.notification.extras}",
         )
         val notification = Notification(sbn)
+        NotificationCache.put(notification, sbn.notification.contentIntent)
         Logger.d("NotificationListener", "Received $notification")
 
         val filter = filters.filter {

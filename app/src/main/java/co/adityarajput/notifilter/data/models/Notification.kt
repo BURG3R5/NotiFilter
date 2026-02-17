@@ -12,6 +12,8 @@ data class Notification(
 
     val origin: String,
 
+    val packageName: String,
+
     val timestamp: Long,
 
     @PrimaryKey(autoGenerate = true)
@@ -20,11 +22,14 @@ data class Notification(
     constructor(sbn: StatusBarNotification, appName: String? = null, id: Int = 0) : this(
         sbn.notification.extras.getString("android.title") ?: "",
         sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-        appName ?: sbn.packageName, sbn.postTime, id,
+        appName ?: sbn.packageName,
+        sbn.packageName,
+        sbn.postTime,
+        id,
     )
 
     fun isSimilar(other: Notification): Boolean {
-        return this.origin == other.origin &&
+        return this.packageName == other.packageName &&
                 this.title == other.title &&
                 this.content == other.content &&
                 this.timestamp == other.timestamp
