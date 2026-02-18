@@ -1,20 +1,27 @@
 package co.adityarajput.notifilter.viewmodels
 
+import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.adityarajput.notifilter.data.Repository
+import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class NotificationsViewModel(val repository: Repository) : ViewModel() {
+class NotificationsViewModel(
+    val repository: Repository,
+    packageManager: PackageManager,
+) : ViewModel() {
     data class State(val notifications: List<Notification>? = null)
 
     val state: StateFlow<State> =
@@ -22,9 +29,22 @@ class NotificationsViewModel(val repository: Repository) : ViewModel() {
             .map { State(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 
+    var allPackages by mutableStateOf<List<App>>(emptyList())
+
     var selectedNotification by mutableStateOf<Notification?>(null)
 
     var dialogState by mutableStateOf<NotificationDialogState?>(null)
+
+    init {
+        // TODO: Can these instead be a global cache?
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                allPackages = packageManager.getInstalledApplications(0)
+                    .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
+                    .sortedBy { it.name }
+            }
+        }
+    }
 
     fun delete(notification: Notification) {
         viewModelScope.launch {

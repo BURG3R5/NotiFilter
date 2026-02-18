@@ -71,7 +71,7 @@ class UpsertFilterViewModel(
         NotificationListener.instance
             ?.activeNotifications
             ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-            ?.mapIndexed { i, sbn -> Notification(sbn, sbn.packageName, i) }
+            ?.mapIndexed { i, sbn -> Notification(sbn, i) }
             ?: listOf(),
     )
 
@@ -99,7 +99,7 @@ class UpsertFilterViewModel(
                 activeNotifications = NotificationListener.instance
                     ?.activeNotifications
                     ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                    ?.mapIndexed { i, sbn -> Notification(sbn, sbn.packageName, i) }
+                    ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                     ?: listOf()
                 delay(500)
             }

@@ -69,7 +69,7 @@ fun NotificationsScreen(
                     Tile(
                         it.title,
                         it.content,
-                        it.origin.getFirst(30),
+                        it.appNameFrom(viewModel.allPackages).getFirst(30),
                         it.timestamp.toShortHumanReadableTime(),
                         null,
                         {

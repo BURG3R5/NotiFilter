@@ -193,9 +193,7 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
                 .padding(horizontal = dimensionResource(R.dimen.padding_small)),
         ) {
             items(viewModel.activeNotifications, { it.id }) {
-                val appName =
-                    viewModel.allPackages.find { app -> app.packageName == it.origin }?.name
-                        ?: it.origin
+                val appName = it.appNameFrom(viewModel.allPackages)
 
                 Tile(
                     it.title,

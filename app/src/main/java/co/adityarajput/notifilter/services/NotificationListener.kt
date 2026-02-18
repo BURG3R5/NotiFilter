@@ -288,11 +288,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
-            repository.registerHit(
-                filter,
-                if (filter.app == Any) notification
-                else notification.copy(origin = filter.app.name),
-            )
+            repository.registerHit(filter, notification)
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }
