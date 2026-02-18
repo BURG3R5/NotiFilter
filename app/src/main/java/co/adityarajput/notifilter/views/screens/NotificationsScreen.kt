@@ -45,7 +45,7 @@ fun NotificationsScreen(
             }
         },
     ) { paddingValues ->
-        if (state.value.notifications == null) {
+        if (state.value.notifications == null || viewModel.allPackages.isEmpty()) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
         } else if (state.value.notifications!!.isEmpty()) {
             Box(

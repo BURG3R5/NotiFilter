@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
@@ -36,12 +37,9 @@ class NotificationsViewModel(
     var dialogState by mutableStateOf<NotificationDialogState?>(null)
 
     init {
-        // TODO: Can these instead be a global cache?
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                allPackages = packageManager.getInstalledApplications(0)
-                    .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
-                    .sortedBy { it.name }
+                allPackages = Cache.getAllPackages(packageManager)
             }
         }
     }
