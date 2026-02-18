@@ -1,8 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NotiFilter</string>
-    <string name="app_name_launcher">NotiFilter</string>
-    <string name="app_version">4.4.0</string>
+    <string name="app_name" translatable="false">NotiFilter</string>
+    <string name="app_name_launcher" translatable="false">NotiFilter</string>
+    <string name="app_version" translatable="false">4.4.0</string>
 
+    <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
     <string name="on_weekends">"on weekends "</string>
@@ -20,6 +22,20 @@
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
+    <string name="toggle_history">%1$s history</string>
+    <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
+    <string name="enable_history_confirmation">Enable history for this filter?</string>
+    <string name="toggle_filter">%1$s filter</string>
+    <string name="toggle_filter_confirmation">%1$s this filter?</string>
+    <string name="delete_filter">Delete filter</string>
+    <string name="delete_confirmation">Deletion is permanent; your filter and its stats will be lost.%1$s</string>
+    <string name="disable_suggestion">" Consider disabling instead."</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="delete">Delete</string>
+    <!-- endregion -->
+
+    <!-- region SettingsScreen -->
     <string name="settings">Settings</string>
     <string name="settings_section_1">Optional Enhancements</string>
     <string name="disable_battery_optimization">Disable optimization</string>
@@ -36,7 +52,9 @@
     <string name="copy_logs">Copy logs</string>
     <string name="copy_success">Logs copied to clipboard</string>
     <string name="about_app">About NotiFilter</string>
+    <!-- endregion -->
 
+    <!-- region UpsertFilterScreen -->
     <string name="add_filter">Add filter</string>
     <string name="edit_filter">Edit filter</string>
     <string name="no_active_notifications">Waiting for active notifications…</string>
@@ -95,74 +113,40 @@
     <string name="next">Next</string>
     <string name="add">Add</string>
     <string name="save">Save</string>
+    <!-- endregion -->
 
-    <string name="toggle_history">%1$s history</string>
-    <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
-    <string name="enable_history_confirmation">Enable history for this filter?</string>
-    <string name="toggle_filter">%1$s filter</string>
-    <string name="toggle_filter_confirmation">%1$s this filter?</string>
-    <string name="delete_filter">Delete filter</string>
-    <string name="delete_confirmation">Deletion is permanent; your filter and its stats will be lost.%1$s</string>
-    <string name="disable_suggestion">" Consider disabling instead."</string>
-    <string name="enable">Enable</string>
-    <string name="disable">Disable</string>
-    <string name="delete">Delete</string>
-
+    <!-- region NotificationsScreen -->
     <string name="history">History</string>
     <string name="no_notifications">No notifications blocked yet.</string>
-
     <string name="clear_history">Clear history</string>
     <string name="clear_history_confirmation">Delete all notifications?</string>
+    <!-- endregion -->
 
+    <!-- region OnboardingScreen -->
     <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
     <string name="grant_permission">Grant permission</string>
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.\n\nCertain manufacturers have even more aggressive optimizations, so you may need to enable \"Run in foreground\" from the app settings later.</string>
     <string name="disable_optimization">Disable optimization</string>
+    <!-- endregion -->
 
+    <!-- region AboutScreen -->
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly manages those that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
     <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
+    <!-- endregion -->
 
+    <!-- region alttext -->
     <string name="alttext_app_logo">App logo</string>
     <string name="alttext_back_button">Back button</string>
     <string name="alttext_add">Add</string>
     <string name="alttext_subtract">Subtract</string>
     <string name="alttext_logs">Logs</string>
     <string name="alttext_info">Info</string>
+    <!-- endregion -->
 
+    <!-- region system -->
     <string name="foreground_notification_content">NotiFilter is running</string>
-
-    <string-array name="days_initials">
-        <item>S</item>
-        <item>M</item>
-        <item>T</item>
-        <item>W</item>
-        <item>T</item>
-        <item>F</item>
-        <item>S</item>
-    </string-array>
-    <string-array name="days_short">
-        <item>sun</item>
-        <item>mon</item>
-        <item>tue</item>
-        <item>wed</item>
-        <item>thu</item>
-        <item>fri</item>
-        <item>sat</item>
-    </string-array>
-
-    <plurals name="hour">
-        <item quantity="one">%1$d hour</item>
-        <item quantity="other">%1$d hours</item>
-    </plurals>
-    <plurals name="minute">
-        <item quantity="one">%1$d minute</item>
-        <item quantity="other">%1$d minutes</item>
-    </plurals>
-    <plurals name="hit">
-        <item quantity="one">%1$d hit</item>
-        <item quantity="other">%1$d hits</item>
-    </plurals>
+    <!-- endregion -->
 </resources>
