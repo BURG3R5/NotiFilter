@@ -89,6 +89,13 @@ class AppContainer(private val context: Context) {
                         "NotiFilter",
                         historyEnabled = false,
                     ),
+                    Filter(
+                        Any,
+                        "urgent",
+                        Action.DISTURB(5),
+                        RegexTarget.OR,
+                        historyEnabled = false,
+                    ),
                 )
                 repository.upsert(
                     Notification(

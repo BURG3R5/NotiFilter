@@ -18,6 +18,7 @@
     <string name="debounce_short">debounce for %1$s</string>
     <string name="mute_short">mute notification</string>
     <string name="alert_short">play an alert</string>
+    <string name="disturb_short">disable DND for %1$s</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -81,8 +82,8 @@
     <string name="or">or</string>
     <string name="pattern_advice"><![CDATA[Tip: Include keywords but exclude non-essentials. Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">here↗</a> for examples.]]></string>
     <string name="invalid_regex">Regex pattern contains errors</string>
-    <string name="pattern_doesnt_match_title">Regex pattern doesn\'t match selected notification\'s title</string>
-    <string name="pattern_doesnt_match_content">Regex pattern doesn\'t match selected notification\'s content</string>
+    <string name="pattern_doesnt_match_title">"Regex pattern doesn't match selected notification's title"</string>
+    <string name="pattern_doesnt_match_content">"Regex pattern doesn't match selected notification's content"</string>
     <string name="action_page_title">Choose the action to take</string>
     <string name="dismiss_long">Dismiss the notification</string>
     <string name="tap_notification_long">Tap the notification</string>
@@ -94,12 +95,15 @@
     <string name="batch_frequency">Every %1$s hour(s)</string>
     <string name="delay_long">Delay notifications</string>
     <string name="debounce_long">Debounce notifications</string>
-    <string name="mute_long">Mute notifications</string>
-    <string name="alert_long">Play an alert</string>
-    <string name="alert_notifications_description">NotiFilter sends short-lived notifications to play alerts.</string>
     <string name="cooldown_length">Cooldown for %1$s min(s)</string>
     <string name="explain_debounce">Notifications sent in quick succession will be muted.</string>
     <string name="cant_debounce_any">Debounce action can\'t be used when targeting all apps</string>
+    <string name="mute_long">Mute notifications</string>
+    <string name="alert_long">Play an alert</string>
+    <string name="alert_notifications_description">NotiFilter sends short-lived notifications to play alerts.</string>
+    <string name="disturb_long">Disable \"Do Not Disturb\"</string>
+    <string name="pause_length">Enable after %1$s min(s)</string>
+    <string name="notification_policy_permission_description">NotiFilter requires access to the Notification Policy to change DND status</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
     <string name="to">" to "</string>
@@ -133,7 +137,7 @@
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly manages those that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
-    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
+    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>ACCESS_NOTIFICATION_POLICY: to execute DISTURB actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
     <!-- endregion -->
 

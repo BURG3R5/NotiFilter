@@ -22,3 +22,7 @@ fun Context.hasUnrestrictedBackgroundUsagePermission() =
 fun Context.hasPostNotificationsPermission() =
     (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
         .areNotificationsEnabled()
+
+fun Context.hasNotificationPolicyPermission() =
+    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+        .isNotificationPolicyAccessGranted()
