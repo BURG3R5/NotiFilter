@@ -331,8 +331,12 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun disableDNDWhileCooldown(filter: Filter) {
+        val originalInterruptionFilter = notificationManager.currentInterruptionFilter
         val originalRingerMode = audioManager.ringerMode
-        audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+
         serviceScope.launch {
             try {
                 while (true) {
@@ -343,7 +347,9 @@ class NotificationListener : NotificationListenerService() {
             } finally {
                 Logger.d("NotificationListener", "Disturbance ended")
                 cooldowns -= filter.id
+
                 audioManager.ringerMode = originalRingerMode
+                notificationManager.setInterruptionFilter(originalInterruptionFilter)
             }
         }
     }
