@@ -11,7 +11,12 @@ import kotlinx.serialization.json.Json
 object Provider {
     val Factory = viewModelFactory {
         initializer { FiltersViewModel(notifilterApplication().container.repository) }
-        initializer { NotificationsViewModel(notifilterApplication().container.repository) }
+        initializer {
+            NotificationsViewModel(
+                notifilterApplication().container.repository,
+                notifilterApplication().packageManager,
+            )
+        }
     }
 
     fun createUFVM(filterString: String) = viewModelFactory {

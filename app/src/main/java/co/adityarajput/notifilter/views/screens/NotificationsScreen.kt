@@ -45,7 +45,7 @@ fun NotificationsScreen(
             }
         },
     ) { paddingValues ->
-        if (state.value.notifications == null) {
+        if (state.value.notifications == null || viewModel.allPackages.isEmpty()) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
         } else if (state.value.notifications!!.isEmpty()) {
             Box(
@@ -69,7 +69,7 @@ fun NotificationsScreen(
                     Tile(
                         it.title,
                         it.content,
-                        it.origin.getFirst(30),
+                        it.appNameFrom(viewModel.allPackages).getFirst(30),
                         it.timestamp.toShortHumanReadableTime(),
                         null,
                         {

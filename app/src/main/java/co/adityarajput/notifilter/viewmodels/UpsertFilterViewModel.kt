@@ -1,7 +1,6 @@
 package co.adityarajput.notifilter.viewmodels
 
 import android.app.Notification.FLAG_GROUP_SUMMARY
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.services.NotificationListener
@@ -71,35 +71,22 @@ class UpsertFilterViewModel(
         NotificationListener.instance
             ?.activeNotifications
             ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-            ?.mapIndexed { i, sbn -> Notification(sbn, sbn.packageName, i) }
+            ?.mapIndexed { i, sbn -> Notification(sbn, i) }
             ?: listOf(),
     )
 
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                allPackages = packageManager.getInstalledApplications(0)
-                    .map { App(it.loadLabel(packageManager).toString(), it.packageName) }
-                    .sortedBy { it.name }
-
-                visibleApps = packageManager.queryIntentActivities(
-                    Intent(Intent.ACTION_MAIN, null)
-                        .addCategory(Intent.CATEGORY_LAUNCHER),
-                    0,
-                ).map {
-                    App(
-                        it.activityInfo.applicationInfo.loadLabel(packageManager)
-                            .toString(),
-                        it.activityInfo.packageName,
-                    )
-                }.sortedBy { it.name }
+                allPackages = Cache.getAllPackages(packageManager)
+                visibleApps = Cache.getVisibleApps(packageManager)
             }
 
             while (true) {
                 activeNotifications = NotificationListener.instance
                     ?.activeNotifications
                     ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                    ?.mapIndexed { i, sbn -> Notification(sbn, sbn.packageName, i) }
+                    ?.mapIndexed { i, sbn -> Notification(sbn, i) }
                     ?: listOf()
                 delay(500)
             }

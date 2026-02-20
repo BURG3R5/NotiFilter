@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+import android.media.AudioManager
 import android.os.Build
 import android.os.Build.VERSION_CODES.BAKLAVA
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -61,8 +62,11 @@ class NotificationListener : NotificationListenerService() {
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+
     private val repository by lazy { AppContainer(this).repository }
     private val sharedPreferences by lazy { getSharedPreferences(Constants.SETTINGS, MODE_PRIVATE) }
+
+    private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
     @Volatile
@@ -280,6 +284,19 @@ class NotificationListener : NotificationListenerService() {
                     notificationManager.cancel(Constants.ALERT_NOTIFICATION_ID)
                 }
             }
+
+            is Action.DISTURB -> {
+                if (!cooldowns.containsKey(filter.id) && audioManager.ringerMode != AudioManager.RINGER_MODE_NORMAL) {
+                    Logger.d("NotificationListener", "Disabling DND")
+                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
+                    snoozeNotification(sbn.key, 100)
+                    disableDNDWhileCooldown(filter)
+                } else {
+                    Logger.i("NotificationListener", "Extending disturbance")
+                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
+                }
+                return
+            }
         }
 
         if (!filter.historyEnabled) {
@@ -288,11 +305,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         serviceScope.launch {
-            repository.registerHit(
-                filter,
-                if (filter.app == Any) notification
-                else notification.copy(origin = filter.app.name),
-            )
+            repository.registerHit(filter, notification)
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }
@@ -313,6 +326,30 @@ class NotificationListener : NotificationListenerService() {
                 Logger.d("NotificationListener", "Cooldown ended")
                 cooldowns -= filter.id
                 requestListenerHints(0)
+            }
+        }
+    }
+
+    private fun disableDNDWhileCooldown(filter: Filter) {
+        val originalInterruptionFilter = notificationManager.currentInterruptionFilter
+        val originalRingerMode = audioManager.ringerMode
+
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+
+        serviceScope.launch {
+            try {
+                while (true) {
+                    val cooldownEnd = cooldowns[filter.id] ?: break
+                    if (System.currentTimeMillis() > cooldownEnd) break
+                    delay(500L)
+                }
+            } finally {
+                Logger.d("NotificationListener", "Disturbance ended")
+                cooldowns -= filter.id
+
+                audioManager.ringerMode = originalRingerMode
+                notificationManager.setInterruptionFilter(originalInterruptionFilter)
             }
         }
     }

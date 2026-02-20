@@ -193,9 +193,7 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
                 .padding(horizontal = dimensionResource(R.dimen.padding_small)),
         ) {
             items(viewModel.activeNotifications, { it.id }) {
-                val appName =
-                    viewModel.allPackages.find { app -> app.packageName == it.origin }?.name
-                        ?: it.origin
+                val appName = it.appNameFrom(viewModel.allPackages)
 
                 Tile(
                     it.title,
@@ -492,16 +490,18 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
     val handler = remember { Handler(Looper.getMainLooper()) }
     var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
     var hasPostNotificationsPermission by remember { mutableStateOf(context.hasPostNotificationsPermission()) }
+    var hasNotificationPolicyPermission by remember { mutableStateOf(context.hasNotificationPolicyPermission()) }
 
     val watcher = object : Runnable {
         override fun run() {
             hasAccessibilityPermission = context.hasAccessibilityServicePermission()
             hasPostNotificationsPermission = context.hasPostNotificationsPermission()
+            hasNotificationPolicyPermission = context.hasNotificationPolicyPermission()
 
             if (hasPostNotificationsPermission)
                 NotificationListener.createAlertNotificationChannel()
 
-            if (!hasAccessibilityPermission || !hasPostNotificationsPermission)
+            if (!hasAccessibilityPermission || !hasPostNotificationsPermission || !hasNotificationPolicyPermission)
                 handler.postDelayed(this, 500)
         }
     }
@@ -740,6 +740,79 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Normal,
                     )
+                }
+            }
+        }
+        AnimatedVisibility(it is Action.DISTURB && viewModel.state.values.action is Action.DISTURB) {
+            Column(
+                Modifier.fillMaxWidth(),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.Center,
+                    Alignment.CenterVertically,
+                ) {
+                    val pauseLength =
+                        (viewModel.state.values.action as? Action.DISTURB)?.pauseLength ?: 5
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DISTURB((pauseLength - 1))),
+                            )
+                        },
+                        enabled = pauseLength > 1,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.remove),
+                            contentDescription = stringResource(R.string.alttext_subtract),
+                        )
+                    }
+                    Text(
+                        stringResource(
+                            R.string.pause_length,
+                            pauseLength.toString().padStart(2, '0'),
+                        ),
+                    )
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DISTURB((pauseLength + 1))),
+                            )
+                        },
+                        enabled = pauseLength < 15,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.add),
+                            contentDescription = stringResource(R.string.alttext_add),
+                        )
+                    }
+                }
+                if (!hasNotificationPolicyPermission) {
+                    ErrorText(R.string.notification_policy_permission_description)
+                    Button(
+                        {
+                            try {
+                                context.startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
+                            } catch (e: Exception) {
+                                Logger.e(
+                                    "UpsertFilterScreen",
+                                    "Error opening notification policy settings",
+                                    e,
+                                )
+                            }
+                        },
+                        Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) {
+                        Text(
+                            stringResource(R.string.grant_permission),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Normal,
+                        )
+                    }
                 }
             }
         }
