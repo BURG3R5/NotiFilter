@@ -10,6 +10,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Build.VERSION_CODES.BAKLAVA
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -335,7 +336,9 @@ class NotificationListener : NotificationListenerService() {
         val originalRingerMode = audioManager.ringerMode
 
         audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
-        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        if (Build.VERSION.SDK_INT <= VANILLA_ICE_CREAM) {
+            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        }
 
         serviceScope.launch {
             try {
@@ -349,7 +352,9 @@ class NotificationListener : NotificationListenerService() {
                 cooldowns -= filter.id
 
                 audioManager.ringerMode = originalRingerMode
-                notificationManager.setInterruptionFilter(originalInterruptionFilter)
+                if (Build.VERSION.SDK_INT <= VANILLA_ICE_CREAM) {
+                    notificationManager.setInterruptionFilter(originalInterruptionFilter)
+                }
             }
         }
     }
