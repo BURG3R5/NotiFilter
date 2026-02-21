@@ -28,7 +28,7 @@ class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             if (isPreview) {
-                WidgetPreview()
+                Content(sampleNotifications)
             } else {
                 Content(
                     AppContainer(context).repository.log().collectAsState(emptyList()).value,
@@ -39,12 +39,12 @@ class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
     }
 
     override suspend fun providePreview(context: Context, widgetCategory: Int) =
-        provideContent { WidgetPreview() }
+        provideContent { Content(sampleNotifications) }
 }
 
 @Composable
 @GlanceComposable
-fun Content(notifications: List<Notification>, allPackages: List<App>) {
+private fun Content(notifications: List<Notification>, allPackages: List<App> = emptyList()) {
     val context = LocalContext.current
 
     Scaffold(
@@ -135,50 +135,47 @@ fun Content(notifications: List<Notification>, allPackages: List<App>) {
 @OptIn(ExperimentalGlancePreviewApi::class)
 @Preview
 @Composable
-fun WidgetPreview() {
-    Content(
-        listOf(
-            Notification(
-                "Download paused",
-                "A software update is available.",
-                "Software update",
-                System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
-                id = 1,
-            ),
-            Notification(
-                "Upcoming alarm",
-                "Wed 8:30 AM - Wake up",
-                "Clock",
-                System.currentTimeMillis() - 28 * 60 * 60 * 1000,
-                id = 2,
-            ),
-            Notification(
-                "Upcoming alarm",
-                "Wed 11:30 AM - Exercise",
-                "Clock",
-                System.currentTimeMillis() - 25 * 60 * 60 * 1000,
-                id = 3,
-            ),
-            Notification(
-                "tom@newsletter.tomscott.com",
-                "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
-                "Gmail",
-                System.currentTimeMillis() - 3 * 60 * 60 * 1000,
-                id = 4,
-            ),
-            Notification(
-                "Book Club",
-                "Bob: Please go for something lighter this time. I'm tired of tomes!",
-                "WhatsApp",
-                System.currentTimeMillis() - 37 * 60 * 1000,
-                id = 5,
-            ),
-        ).reversed(),
-        emptyList(),
-    )
-}
+private fun WidgetPreview() = Content(sampleNotifications)
 
 @OptIn(ExperimentalGlancePreviewApi::class)
 @Preview
 @Composable
-fun WidgetEmptyPreview() = Content(emptyList(), emptyList())
+private fun WidgetEmptyPreview() = Content(emptyList())
+
+private val sampleNotifications = listOf(
+    Notification(
+        "Book Club",
+        "Bob: Please go for something lighter this time. I'm tired of tomes!",
+        "WhatsApp",
+        System.currentTimeMillis() - 37 * 60 * 1000,
+        id = 5,
+    ),
+    Notification(
+        "tom@newsletter.tomscott.com",
+        "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
+        "Gmail",
+        System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+        id = 4,
+    ),
+    Notification(
+        "Upcoming alarm",
+        "Wed 11:30 AM - Exercise",
+        "Clock",
+        System.currentTimeMillis() - 25 * 60 * 60 * 1000,
+        id = 3,
+    ),
+    Notification(
+        "Upcoming alarm",
+        "Wed 8:30 AM - Wake up",
+        "Clock",
+        System.currentTimeMillis() - 28 * 60 * 60 * 1000,
+        id = 2,
+    ),
+    Notification(
+        "Download paused",
+        "A software update is available.",
+        "Software update",
+        System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000,
+        id = 1,
+    ),
+)
