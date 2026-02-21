@@ -13,8 +13,6 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import co.adityarajput.notifilter.R
@@ -131,16 +129,6 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
         }
     }
 }
-
-@OptIn(ExperimentalGlancePreviewApi::class)
-@Preview
-@Composable
-private fun WidgetPreview() = Content(sampleNotifications)
-
-@OptIn(ExperimentalGlancePreviewApi::class)
-@Preview
-@Composable
-private fun WidgetEmptyPreview() = Content(emptyList())
 
 private val sampleNotifications = listOf(
     Notification(
