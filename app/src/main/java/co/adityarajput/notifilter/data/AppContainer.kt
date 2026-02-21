@@ -87,7 +87,7 @@ class AppContainer(private val context: Context) {
                         "Update available",
                         Action.ALERT,
                         RegexTarget.AND,
-                        "NotiFilter",
+                        "NotiFilter|Alarmetrics|FileFlow",
                         historyEnabled = false,
                     ),
                     Filter(
