@@ -3,8 +3,12 @@ package co.adityarajput.notifilter.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import co.adityarajput.notifilter.R
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
-fun Long.toShortHumanReadableTime(): String {
+fun Long.toDelta(): String {
     val now = System.currentTimeMillis()
     val delta = now - this
 
@@ -21,6 +25,15 @@ fun Long.toShortHumanReadableTime(): String {
         seconds > 0 -> "$seconds sec${if (seconds > 1) "s" else ""} ago"
         else -> "just now"
     }
+}
+
+fun Long.toReadableTime(): String {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDateTime().format(
+        if (System.currentTimeMillis() - this > 24 * 60 * 60 * 1000)
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+        else
+            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT),
+    )
 }
 
 fun String.getFirst(length: Int): String =

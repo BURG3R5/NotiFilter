@@ -104,6 +104,10 @@
     <string name="disturb_long">Disable \"Do Not Disturb\"</string>
     <string name="pause_length">Enable after %1$s min(s)</string>
     <string name="notification_policy_permission_description">NotiFilter requires access to the Notification Policy to change DND status</string>
+    <string name="display_options">Choose where to display caught notification</string>
+    <string name="describe_history_screen">In-app History screen</string>
+    <string name="describe_widget">Homescreen Log widget</string>
+    <string name="prompt_widget">Add widget to homescreen</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
     <string name="to">" to "</string>
@@ -139,6 +143,12 @@
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
     <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>ACCESS_NOTIFICATION_POLICY: to execute DISTURB actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul></small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
+    <!-- endregion -->
+
+    <!-- region Widget -->
+    <string name="widget_title">Notification Log</string>
+    <string name="widget_description">View logged notifications</string>
+    <string name="no_notifications_logged">No notifications logged yet</string>
     <!-- endregion -->
 
     <!-- region alttext -->

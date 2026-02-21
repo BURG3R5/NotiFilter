@@ -16,6 +16,10 @@ class Repository(
 
     fun notifications() = notificationDao.list()
 
+    fun history() = notificationDao.history()
+
+    fun log() = notificationDao.widget()
+
     suspend fun registerHit(filter: Filter, notification: Notification) {
         filterDao.registerHit(filter.id)
         notificationDao.upsert(notification)

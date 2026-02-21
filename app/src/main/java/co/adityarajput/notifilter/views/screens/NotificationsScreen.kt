@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.getFirst
-import co.adityarajput.notifilter.utils.toShortHumanReadableTime
+import co.adityarajput.notifilter.utils.toDelta
 import co.adityarajput.notifilter.viewmodels.NotificationDialogState
 import co.adityarajput.notifilter.viewmodels.NotificationsViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
@@ -70,7 +70,7 @@ fun NotificationsScreen(
                         it.title,
                         it.content,
                         it.appNameFrom(viewModel.allPackages).getFirst(30),
-                        it.timestamp.toShortHumanReadableTime(),
+                        it.timestamp.toDelta(),
                         null,
                         {
                             if (viewModel.selectedNotification == it) viewModel.selectedNotification =

@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.data.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,6 +26,9 @@ data class Filter(
     val enabled: Boolean = true,
 
     val historyEnabled: Boolean = true,
+
+    @ColumnInfo(defaultValue = "0")
+    val widgetEnabled: Boolean = false,
 
     val hits: Int = 0,
 

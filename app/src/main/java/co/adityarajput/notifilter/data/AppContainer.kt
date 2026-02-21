@@ -56,7 +56,8 @@ class AppContainer(private val context: Context) {
                         "[Nn]ewsletter",
                         Action.BATCH(3),
                         RegexTarget.OR,
-                        historyEnabled = false,
+                        widgetEnabled = true,
+                        hits = 1,
                     ),
                     Filter(
                         App("WhatsApp", "com.whatsapp"),
@@ -121,6 +122,7 @@ class AppContainer(private val context: Context) {
                         "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
                         "Gmail",
                         System.currentTimeMillis() - 3 * 60 * 60 * 1000,
+                        showInWidget = true,
                     ),
                     Notification(
                         "Book Club",

@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.data.models
 
 import android.service.notification.StatusBarNotification
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -14,13 +15,24 @@ data class Notification(
 
     val timestamp: Long,
 
+    @ColumnInfo(defaultValue = "1")
+    val showInHistory: Boolean = true,
+
+    @ColumnInfo(defaultValue = "0")
+    val showInWidget: Boolean = false,
+
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 ) {
-    constructor(sbn: StatusBarNotification, id: Int = 0) : this(
+    constructor(
+        sbn: StatusBarNotification,
+        showInHistory: Boolean = true,
+        showInWidget: Boolean = false,
+        id: Int = 0,
+    ) : this(
         sbn.notification.extras.getString("android.title") ?: "",
         sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-        sbn.packageName, sbn.postTime, id,
+        sbn.packageName, sbn.postTime, showInHistory, showInWidget, id,
     )
 
     fun isSimilar(other: Notification): Boolean {

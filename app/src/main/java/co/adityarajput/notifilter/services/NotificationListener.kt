@@ -221,17 +221,14 @@ class NotificationListener : NotificationListenerService() {
 
                 if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
                     Logger.d("NotificationListener", "Less than 1 second to batch boundary")
-                    return
-                }
-                if (notifications.any(notification::isSimilar)) {
+                } else if (notifications.any(notification::isSimilar)) {
                     Logger.d("NotificationListener", "Already snoozed")
-                    return
+                } else {
+                    snoozeNotification(
+                        sbn.key,
+                        min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
+                    )
                 }
-
-                snoozeNotification(
-                    sbn.key,
-                    min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
-                )
             }
 
             is Action.DELAY -> {
@@ -245,10 +242,9 @@ class NotificationListener : NotificationListenerService() {
 
                 if (delay < 1000L) {
                     Logger.d("NotificationListener", "Less than 1 second until filter deactivation")
-                    return
+                } else {
+                    snoozeNotification(sbn.key, delay)
                 }
-
-                snoozeNotification(sbn.key, delay)
             }
 
             is Action.DEBOUNCE -> {
@@ -256,11 +252,10 @@ class NotificationListener : NotificationListenerService() {
                     Logger.d("NotificationListener", "Setting cooldown")
                     cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
                     muteNotificationsWhileCooldown(filter)
-                    return
+                } else {
+                    Logger.i("NotificationListener", "Updating cooldown")
+                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
                 }
-
-                Logger.i("NotificationListener", "Updating cooldown")
-                cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
             }
 
             is Action.MUTE -> serviceScope.launch {
@@ -296,17 +291,17 @@ class NotificationListener : NotificationListenerService() {
                     Logger.i("NotificationListener", "Extending disturbance")
                     cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
                 }
-                return
             }
         }
 
-        if (!filter.historyEnabled) {
-            Logger.d("NotificationListener", "History is disabled for filter")
-            return
-        }
-
         serviceScope.launch {
-            repository.registerHit(filter, notification)
+            repository.registerHit(
+                filter,
+                notification.copy(
+                    showInHistory = filter.historyEnabled,
+                    showInWidget = filter.widgetEnabled,
+                ),
+            )
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }

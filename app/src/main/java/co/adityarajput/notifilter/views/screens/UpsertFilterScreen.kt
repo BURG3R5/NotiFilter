@@ -485,12 +485,13 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
 }
 
 @Composable
-private fun ActionPage(viewModel: UpsertFilterViewModel) {
+private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
     var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
     var hasPostNotificationsPermission by remember { mutableStateOf(context.hasPostNotificationsPermission()) }
     var hasNotificationPolicyPermission by remember { mutableStateOf(context.hasNotificationPolicyPermission()) }
+    val hasPinnedWidget by produceState(initialValue = false) { value = context.isWidgetUsed() }
 
     val watcher = object : Runnable {
         override fun run() {
@@ -815,6 +816,63 @@ private fun ActionPage(viewModel: UpsertFilterViewModel) {
                     }
                 }
             }
+        }
+    }
+    HorizontalDivider()
+    Text(
+        stringResource(R.string.display_options),
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Normal,
+    )
+    Row(
+        Modifier
+            .padding(horizontal = dimensionResource(R.dimen.padding_small))
+            .toggleable(viewModel.state.values.historyEnabled) {
+                viewModel.updateForm(
+                    FormPage.ACTION,
+                    viewModel.state.values.copy(historyEnabled = it),
+                )
+            },
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        Alignment.CenterVertically,
+    ) {
+        Checkbox(viewModel.state.values.historyEnabled, null)
+        Text(
+            stringResource(R.string.describe_history_screen),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+    Row(
+        Modifier
+            .padding(horizontal = dimensionResource(R.dimen.padding_small))
+            .toggleable(viewModel.state.values.widgetEnabled) {
+                viewModel.updateForm(
+                    FormPage.ACTION,
+                    viewModel.state.values.copy(widgetEnabled = it),
+                )
+            },
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        Alignment.CenterVertically,
+    ) {
+        Checkbox(viewModel.state.values.widgetEnabled, null)
+        Text(
+            stringResource(R.string.describe_widget),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+    if (viewModel.state.values.widgetEnabled && !hasPinnedWidget) {
+        Button(
+            context::addWidgetToHomeScreen,
+            Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+        ) {
+            Text(
+                stringResource(R.string.prompt_widget),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Normal,
+            )
         }
     }
 }
