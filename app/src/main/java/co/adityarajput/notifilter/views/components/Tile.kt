@@ -71,7 +71,7 @@ fun Tile(
                 style = MaterialTheme.typography.titleMedium,
             )
             if (dividerBetweenTitleAndContent) HorizontalDivider()
-            if (preContent != null && preContent.isNotEmpty())
+            if (!preContent.isNullOrEmpty())
                 Text(
                     preContent,
                     style = MaterialTheme.typography.bodySmall,

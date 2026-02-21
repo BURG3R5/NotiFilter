@@ -15,6 +15,12 @@ interface NotificationDao {
     @Query("SELECT * FROM notifications ORDER BY id DESC")
     fun list(): Flow<List<Notification>>
 
+    @Query("SELECT * FROM notifications WHERE showInHistory = 1 ORDER BY id DESC")
+    fun history(): Flow<List<Notification>>
+
+    @Query("SELECT * FROM notifications WHERE showInWidget = 1 ORDER BY id DESC")
+    fun widget(): Flow<List<Notification>>
+
     @Query("SELECT COUNT(*) FROM notifications")
     suspend fun count(): Int
 

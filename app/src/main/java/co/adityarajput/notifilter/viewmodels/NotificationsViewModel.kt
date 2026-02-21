@@ -26,7 +26,7 @@ class NotificationsViewModel(
     data class State(val notifications: List<Notification>? = null)
 
     val state: StateFlow<State> =
-        repository.notifications()
+        repository.history()
             .map { State(it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 

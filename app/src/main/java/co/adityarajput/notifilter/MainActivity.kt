@@ -25,11 +25,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.views.Navigator
@@ -54,16 +51,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
-                ) {
-                    NotiFilter()
-                }
+                ) { Navigator(rememberNavController()) }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun NotiFilter(navController: NavHostController = rememberNavController()) {
-    Navigator(navController)
 }

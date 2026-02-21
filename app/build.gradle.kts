@@ -18,8 +18,8 @@ android {
         applicationId = "co.adityarajput.notifilter"
         minSdk = 29
         targetSdk = 36
-        versionCode = 21
-        versionName = "4.4.0"
+        versionCode = 22
+        versionName = "4.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,6 +84,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,4 +93,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.glance.preview)
+    debugImplementation(libs.androidx.glance.appwidget.preview)
 }

@@ -10,6 +10,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Build.VERSION_CODES.BAKLAVA
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -220,17 +221,14 @@ class NotificationListener : NotificationListenerService() {
 
                 if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
                     Logger.d("NotificationListener", "Less than 1 second to batch boundary")
-                    return
-                }
-                if (notifications.any(notification::isSimilar)) {
+                } else if (notifications.any(notification::isSimilar)) {
                     Logger.d("NotificationListener", "Already snoozed")
-                    return
+                } else {
+                    snoozeNotification(
+                        sbn.key,
+                        min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
+                    )
                 }
-
-                snoozeNotification(
-                    sbn.key,
-                    min(untilNextBatch, now.until(today.plusDays(1), MILLIS)),
-                )
             }
 
             is Action.DELAY -> {
@@ -244,10 +242,9 @@ class NotificationListener : NotificationListenerService() {
 
                 if (delay < 1000L) {
                     Logger.d("NotificationListener", "Less than 1 second until filter deactivation")
-                    return
+                } else {
+                    snoozeNotification(sbn.key, delay)
                 }
-
-                snoozeNotification(sbn.key, delay)
             }
 
             is Action.DEBOUNCE -> {
@@ -255,11 +252,10 @@ class NotificationListener : NotificationListenerService() {
                     Logger.d("NotificationListener", "Setting cooldown")
                     cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
                     muteNotificationsWhileCooldown(filter)
-                    return
+                } else {
+                    Logger.i("NotificationListener", "Updating cooldown")
+                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
                 }
-
-                Logger.i("NotificationListener", "Updating cooldown")
-                cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
             }
 
             is Action.MUTE -> serviceScope.launch {
@@ -295,17 +291,17 @@ class NotificationListener : NotificationListenerService() {
                     Logger.i("NotificationListener", "Extending disturbance")
                     cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
                 }
-                return
             }
         }
 
-        if (!filter.historyEnabled) {
-            Logger.d("NotificationListener", "History is disabled for filter")
-            return
-        }
-
         serviceScope.launch {
-            repository.registerHit(filter, notification)
+            repository.registerHit(
+                filter,
+                notification.copy(
+                    showInHistory = filter.historyEnabled,
+                    showInWidget = filter.widgetEnabled,
+                ),
+            )
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }
@@ -335,7 +331,9 @@ class NotificationListener : NotificationListenerService() {
         val originalRingerMode = audioManager.ringerMode
 
         audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
-        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        if (Build.VERSION.SDK_INT <= VANILLA_ICE_CREAM) {
+            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        }
 
         serviceScope.launch {
             try {
@@ -349,7 +347,9 @@ class NotificationListener : NotificationListenerService() {
                 cooldowns -= filter.id
 
                 audioManager.ringerMode = originalRingerMode
-                notificationManager.setInterruptionFilter(originalInterruptionFilter)
+                if (Build.VERSION.SDK_INT <= VANILLA_ICE_CREAM) {
+                    notificationManager.setInterruptionFilter(originalInterruptionFilter)
+                }
             }
         }
     }

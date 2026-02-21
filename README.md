@@ -28,6 +28,7 @@ NotiFilter listens to all device notifications and quietly manages those that ma
   8. Play an alert 🔔
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored (locally), just in case 😉
+- **Widget** - Configure filters to send notifications to a home screen widget 📱
 - **Export/Import** - Backup or transfer your filters as JSON files 📂
 - **Free, open-source & private**
     - No ads, subscriptions, or in-app purchases 🆓

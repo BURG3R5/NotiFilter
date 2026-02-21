@@ -39,21 +39,20 @@ class UpsertFilterViewModel(
         val secondaryQueryPattern: String = "",
         val action: Action = Action.DISMISS,
         val schedule: Schedule = Schedule(),
+        val historyEnabled: Boolean = true,
+        val widgetEnabled: Boolean = false,
     ) {
         constructor(filter: Filter) : this(
-            filter.id,
-            null,
-            filter.app,
-            filter.regexTarget,
-            filter.regexPattern,
-            filter.secondaryRegexPattern ?: "",
-            filter.action,
-            filter.schedule,
+            filter.id, null, filter.app, filter.regexTarget,
+            filter.regexPattern, filter.secondaryRegexPattern ?: "",
+            filter.action, filter.schedule, filter.historyEnabled, filter.widgetEnabled,
         )
 
         fun toFilter() = Filter(
             app, queryPattern, action, regexTarget,
             if (regexTarget == RegexTarget.AND) secondaryQueryPattern else null, schedule,
+            historyEnabled = historyEnabled,
+            widgetEnabled = widgetEnabled,
             id = filterId,
         )
     }
@@ -71,7 +70,7 @@ class UpsertFilterViewModel(
         NotificationListener.instance
             ?.activeNotifications
             ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-            ?.mapIndexed { i, sbn -> Notification(sbn, i) }
+            ?.mapIndexed { i, sbn -> Notification(sbn, id = i) }
             ?: listOf(),
     )
 
@@ -86,7 +85,7 @@ class UpsertFilterViewModel(
                 activeNotifications = NotificationListener.instance
                     ?.activeNotifications
                     ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                    ?.mapIndexed { i, sbn -> Notification(sbn, i) }
+                    ?.mapIndexed { i, sbn -> Notification(sbn, id = i) }
                     ?: listOf()
                 delay(500)
             }
