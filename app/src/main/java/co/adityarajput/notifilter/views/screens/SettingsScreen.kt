@@ -46,6 +46,7 @@ import java.time.format.DateTimeFormatter
 @SuppressLint("BatteryLife")
 @Composable
 fun SettingsScreen(
+    goToLicensesScreen: () -> Unit = {},
     goToAboutScreen: () -> Unit = {},
     goBack: () -> Unit = {},
 ) {
@@ -261,60 +262,73 @@ fun SettingsScreen(
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
                     val copySuccess = stringResource(R.string.copy_success)
-                    Row(
+                    Column(
                         Modifier
                             .fillMaxWidth()
                             .padding(
                                 dimensionResource(R.dimen.padding_large),
                                 dimensionResource(R.dimen.padding_medium),
-                                dimensionResource(R.dimen.padding_large),
-                                dimensionResource(R.dimen.padding_small),
-                            )
-                            .clickable {
-                                scope.launch {
-                                    clipboard.setClipEntry(
-                                        ClipData.newPlainText(
-                                            "logs",
-                                            Logger.logs.joinToString("\n"),
-                                        ).toClipEntry(),
-                                    )
-                                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
-                                        Toast
-                                            .makeText(context, copySuccess, Toast.LENGTH_SHORT)
-                                            .show()
-                                }
-                            },
-                        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                            ),
+                        Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                     ) {
-                        Icon(
-                            painterResource(R.drawable.list_alt),
-                            stringResource(R.string.alttext_logs),
-                        )
-                        Text(
-                            stringResource(R.string.copy_logs),
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                dimensionResource(R.dimen.padding_large),
-                                dimensionResource(R.dimen.padding_small),
-                                dimensionResource(R.dimen.padding_large),
-                                dimensionResource(R.dimen.padding_medium),
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    scope.launch {
+                                        clipboard.setClipEntry(
+                                            ClipData.newPlainText(
+                                                "logs",
+                                                Logger.logs.joinToString("\n"),
+                                            ).toClipEntry(),
+                                        )
+                                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
+                                            Toast
+                                                .makeText(context, copySuccess, Toast.LENGTH_SHORT)
+                                                .show()
+                                    }
+                                },
+                            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.list_alt),
+                                stringResource(R.string.alttext_logs),
                             )
-                            .clickable { goToAboutScreen() },
-                        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.info),
-                            stringResource(R.string.alttext_info),
-                        )
-                        Text(
-                            stringResource(R.string.about_app),
-                            fontWeight = FontWeight.Medium,
-                        )
+                            Text(
+                                stringResource(R.string.copy_logs),
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { goToLicensesScreen() },
+                            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.license),
+                                stringResource(R.string.licenses),
+                            )
+                            Text(
+                                stringResource(R.string.view_licenses),
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { goToAboutScreen() },
+                            Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.info),
+                                stringResource(R.string.alttext_info),
+                            )
+                            Text(
+                                stringResource(R.string.about_app),
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
                     }
                 }
             }

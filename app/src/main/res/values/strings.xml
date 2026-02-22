@@ -51,6 +51,7 @@
     <string name="export_explanation">Generates a JSON file</string>
     <string name="export_success">Filters exported successfully</string>
     <string name="copy_logs">Copy logs</string>
+    <string name="view_licenses">View licenses</string>
     <string name="copy_success">Logs copied to clipboard</string>
     <string name="about_app">About NotiFilter</string>
     <!-- endregion -->
@@ -143,6 +144,10 @@
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
     <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>ACCESS_NOTIFICATION_POLICY: to execute DISTURB actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to request exemption from background usage restrictions</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul>Other permissions may be used by libraries to manage tasks, such as widget updates.</small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
+    <!-- endregion -->
+
+    <!-- region LicensesScreen -->
+    <string name="licenses">Licenses</string>
     <!-- endregion -->
 
     <!-- region Widget -->
