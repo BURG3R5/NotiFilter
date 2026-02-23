@@ -15,6 +15,7 @@ import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
 import androidx.glance.text.Text
+import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
@@ -140,16 +141,19 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
                                 )
                             }
                             if (!intents?.actions.isNullOrEmpty()) {
-                                Row(GlanceModifier.fillMaxWidth(), Alignment.End) {
+                                Row(GlanceModifier.fillMaxWidth()) {
                                     intents.actions.forEach { (title, intent) ->
                                         Text(
-                                            title.uppercase(),
+                                            title,
                                             GlanceModifier
-                                                .padding(horizontal = 4.dp)
+                                                .padding(horizontal = 8.dp)
+                                                .padding(top = 8.dp)
+                                                .defaultWeight()
                                                 .clickable { intent?.send() },
                                             style = TextStyle(
                                                 GlanceTheme.colors.onPrimaryContainer,
                                                 14.sp,
+                                                textAlign = TextAlign.Center,
                                             ),
                                         )
                                     }

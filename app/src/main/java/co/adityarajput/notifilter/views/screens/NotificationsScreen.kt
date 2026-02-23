@@ -1,7 +1,9 @@
 package co.adityarajput.notifilter.views.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -93,11 +95,17 @@ fun NotificationsScreen(
                         { viewModel.delete(it) },
                         {
                             intents?.actions?.forEach { (title, intent) ->
-                                Spacer(Modifier.width(dimensionResource(R.dimen.padding_medium)))
                                 Text(
-                                    title.uppercase(),
-                                    Modifier.clickable { intent?.send() },
-                                    style = MaterialTheme.typography.titleSmall.copy(MaterialTheme.colorScheme.primary),
+                                    title,
+                                    Modifier
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                        .padding(top = dimensionResource(R.dimen.padding_small))
+                                        .weight(1f)
+                                        .clickable { intent?.send() },
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textAlign = TextAlign.Center,
+                                    ),
                                 )
                             }
                         },
