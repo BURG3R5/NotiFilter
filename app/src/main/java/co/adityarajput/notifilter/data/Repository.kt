@@ -27,7 +27,10 @@ class Repository(
         val count = notificationDao.count()
         if (count > 50) {
             Logger.d("Repository.registerHit", "Deleting oldest ${count - 50} notification(s)")
-            notificationDao.trim(count - 50)
+            notificationDao.listOldestN(count - 50).forEach {
+                Cache.intents.remove(it.data.hashCode())
+                notificationDao.delete(it)
+            }
         }
     }
 
@@ -37,9 +40,15 @@ class Repository(
 
     suspend fun delete(filter: Filter) = filterDao.delete(filter)
 
-    suspend fun delete(notification: Notification) = notificationDao.delete(notification)
+    suspend fun delete(notification: Notification) {
+        Cache.intents.remove(notification.data.hashCode())
+        notificationDao.delete(notification)
+    }
 
     suspend fun deleteFilters() = filterDao.deleteAll()
 
-    suspend fun deleteNotifications() = notificationDao.deleteAll()
+    suspend fun deleteNotifications() {
+        Cache.intents.clear()
+        notificationDao.deleteAll()
+    }
 }

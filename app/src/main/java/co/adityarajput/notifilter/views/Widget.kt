@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.*
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.cornerRadius
@@ -20,6 +21,7 @@ import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
+import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.toReadableTime
 
 class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
@@ -70,6 +72,8 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
         } else {
             LazyColumn(GlanceModifier.fillMaxSize()) {
                 items(notifications, { it.id.toLong() }) {
+                    val intents = Cache.intents[it.data.hashCode()]
+
                     Box(
                         modifier = GlanceModifier
                             .fillMaxWidth()
@@ -81,7 +85,20 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
                                 .cornerRadius(16.dp)
                                 .padding(16.dp)
                                 .background(GlanceTheme.colors.primaryContainer)
-                                .wrapContentHeight(),
+                                .wrapContentHeight()
+                                .clickable {
+                                    try {
+                                        if (intents?.main != null) intents.launchMain() else {
+                                            context.startActivity(
+                                                context.packageManager.getLaunchIntentForPackage(
+                                                    it.origin,
+                                                ),
+                                            )
+                                        }
+                                    } catch (e: Exception) {
+                                        Logger.e("Widget", "Error clicking $it", e)
+                                    }
+                                },
                         ) {
                             Row(
                                 GlanceModifier.fillMaxWidth(),
@@ -121,6 +138,22 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
                                     ),
                                     maxLines = 2,
                                 )
+                            }
+                            if (!intents?.actions.isNullOrEmpty()) {
+                                Row(GlanceModifier.fillMaxWidth(), Alignment.End) {
+                                    intents.actions.forEach { (title, intent) ->
+                                        Text(
+                                            title.uppercase(),
+                                            GlanceModifier
+                                                .padding(horizontal = 4.dp)
+                                                .clickable { intent?.send() },
+                                            style = TextStyle(
+                                                GlanceTheme.colors.onPrimaryContainer,
+                                                14.sp,
+                                            ),
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

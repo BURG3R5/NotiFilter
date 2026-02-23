@@ -15,6 +15,9 @@ interface NotificationDao {
     @Query("SELECT * FROM notifications ORDER BY id DESC")
     fun list(): Flow<List<Notification>>
 
+    @Query("SELECT * FROM notifications ORDER BY timestamp ASC LIMIT :count")
+    suspend fun listOldestN(count: Int): List<Notification>
+
     @Query("SELECT * FROM notifications WHERE showInHistory = 1 ORDER BY id DESC")
     fun history(): Flow<List<Notification>>
 
@@ -26,9 +29,6 @@ interface NotificationDao {
 
     @Delete
     suspend fun delete(notification: Notification)
-
-    @Query("DELETE FROM notifications WHERE id IN (SELECT id FROM notifications ORDER BY timestamp ASC LIMIT :count)")
-    suspend fun trim(count: Int)
 
     @Query("DELETE FROM notifications")
     suspend fun deleteAll()

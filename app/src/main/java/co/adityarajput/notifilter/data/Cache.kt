@@ -3,17 +3,21 @@ package co.adityarajput.notifilter.data
 import android.content.Intent
 import android.content.pm.PackageManager
 import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.Intents
 import co.adityarajput.notifilter.utils.Logger
+import java.util.Collections.synchronizedMap
 
 object Cache {
     private var _allPackages: List<App>? = null
     private var _visibleApps: List<App>? = null
 
-    private var cachedAt = 0L
+    val intents: MutableMap<Int, Intents> = synchronizedMap(mutableMapOf())
+
+    private var _cachedAt = 0L
     private const val APPS_CACHE_TIMEOUT = 10 * 60 * 1000L
 
     fun getAllPackages(packageManager: PackageManager): List<App> {
-        if (_allPackages == null || System.currentTimeMillis() - cachedAt > APPS_CACHE_TIMEOUT) {
+        if (_allPackages == null || System.currentTimeMillis() - _cachedAt > APPS_CACHE_TIMEOUT) {
             update(packageManager)
         }
 
@@ -21,7 +25,7 @@ object Cache {
     }
 
     fun getVisibleApps(packageManager: PackageManager): List<App> {
-        if (_visibleApps == null || System.currentTimeMillis() - cachedAt > APPS_CACHE_TIMEOUT) {
+        if (_visibleApps == null || System.currentTimeMillis() - _cachedAt > APPS_CACHE_TIMEOUT) {
             update(packageManager)
         }
 
@@ -45,7 +49,7 @@ object Cache {
             )
         }.sortedBy { it.name }
 
-        cachedAt = System.currentTimeMillis()
+        _cachedAt = System.currentTimeMillis()
         Logger.d("Cache", "Updated cache")
     }
 }

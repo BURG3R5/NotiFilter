@@ -109,6 +109,7 @@
     <string name="describe_history_screen">In-app History screen</string>
     <string name="describe_widget">Homescreen Log widget</string>
     <string name="prompt_widget">Add widget to homescreen</string>
+    <string name="make_tappable">Make notifications tappable</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
     <string name="to">" to "</string>
