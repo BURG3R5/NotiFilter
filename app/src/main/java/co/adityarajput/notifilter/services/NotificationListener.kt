@@ -280,10 +280,7 @@ class NotificationListener : NotificationListenerService() {
                     showInWidget = filter.widgetEnabled,
                 ),
             )
-            if (filter.widgetEnabled) {
-                Logger.d("NotificationListener", "Caching intents")
-                Cache.intents[notification.data.hashCode()] = intents
-            }
+            Cache.intents[notification.data.hashCode()] = intents
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }

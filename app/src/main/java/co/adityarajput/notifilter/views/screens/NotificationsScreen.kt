@@ -1,8 +1,7 @@
 package co.adityarajput.notifilter.views.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -10,12 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.Cache
+import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.toDelta
 import co.adityarajput.notifilter.viewmodels.NotificationDialogState
@@ -30,6 +32,7 @@ fun NotificationsScreen(
     goBack: () -> Unit,
     viewModel: NotificationsViewModel = viewModel(factory = Provider.Factory),
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState()
 
     Scaffold(
@@ -66,6 +69,8 @@ fun NotificationsScreen(
                     .fillMaxSize(),
             ) {
                 items(state.value.notifications!!, { it.id }) {
+                    val intents = Cache.intents[it.data.hashCode()]
+
                     Tile(
                         it.title,
                         it.content,
@@ -73,24 +78,30 @@ fun NotificationsScreen(
                         it.timestamp.toDelta(),
                         null,
                         {
-                            if (viewModel.selectedNotification == it) viewModel.selectedNotification =
-                                null
-                            else viewModel.selectedNotification = it
+                            try {
+                                if (intents?.main != null) intents.launchMain() else {
+                                    context.startActivity(
+                                        context.packageManager.getLaunchIntentForPackage(
+                                            it.origin,
+                                        ),
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                Logger.e("NotificationsScreen", "Error clicking $it", e)
+                            }
                         },
+                        { viewModel.delete(it) },
                         {
-                            IconButton(
-                                { viewModel.delete(it) },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.tertiary,
-                                ),
-                            ) {
-                                Icon(
-                                    painterResource(R.drawable.delete),
-                                    stringResource(R.string.delete),
+                            intents?.actions?.forEach { (title, intent) ->
+                                Spacer(Modifier.width(dimensionResource(R.dimen.padding_medium)))
+                                Text(
+                                    title.uppercase(),
+                                    Modifier.clickable { intent?.send() },
+                                    style = MaterialTheme.typography.titleSmall.copy(MaterialTheme.colorScheme.primary),
                                 )
                             }
                         },
-                        viewModel.selectedNotification == it,
+                        true,
                     )
                 }
             }

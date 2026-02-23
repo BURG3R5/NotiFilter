@@ -111,6 +111,7 @@ fun FiltersScreen(
                             if (viewModel.selectedFilter == it) viewModel.selectedFilter = null
                             else viewModel.selectedFilter = it
                         },
+                        null,
                         {
                             IconButton(
                                 {
