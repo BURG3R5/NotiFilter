@@ -49,7 +49,6 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
-
         <service
             android:name=".services.NotificationListener"
             android:exported="true"
