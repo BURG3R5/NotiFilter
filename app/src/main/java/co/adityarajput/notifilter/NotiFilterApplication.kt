@@ -3,7 +3,7 @@ package co.adityarajput.notifilter
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import co.adityarajput.notifilter.data.AppContainer
-import co.adityarajput.notifilter.utils.pushWidgetPreview
+import co.adityarajput.notifilter.utils.setWidgetPreview
 import co.adityarajput.notifilter.utils.subscribeWidgetToFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ class NotiFilterApplication : Application() {
         }
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            this@NotiFilterApplication.pushWidgetPreview()
+            this@NotiFilterApplication.setWidgetPreview()
             subscribeWidgetToFlow(this@NotiFilterApplication, container.repository.log())
         }
     }

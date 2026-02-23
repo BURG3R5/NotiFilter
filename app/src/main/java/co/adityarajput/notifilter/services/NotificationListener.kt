@@ -1,6 +1,5 @@
 package co.adityarajput.notifilter.services
 
-import android.app.ActivityOptions
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,7 +7,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.media.AudioManager
 import android.os.Build
-import android.os.Build.VERSION_CODES.BAKLAVA
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.service.notification.NotificationListenerService
@@ -17,10 +15,8 @@ import androidx.core.app.NotificationCompat
 import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
-import co.adityarajput.notifilter.data.models.Action
-import co.adityarajput.notifilter.data.models.Any
-import co.adityarajput.notifilter.data.models.Filter
-import co.adityarajput.notifilter.data.models.Notification
+import co.adityarajput.notifilter.data.Cache
+import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.Logger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -142,6 +138,7 @@ class NotificationListener : NotificationListenerService() {
             "Received $sbn with extras ${sbn.notification.extras}",
         )
         val notification = Notification(sbn)
+        val intents = Intents(sbn)
         Logger.d("NotificationListener", "Received $notification")
 
         val filter = filters.filter {
@@ -172,26 +169,7 @@ class NotificationListener : NotificationListenerService() {
 
             is Action.TAP_NOTIFICATION ->
                 try {
-                    sbn.notification.contentIntent?.run {
-                        if (Build.VERSION.SDK_INT >= BAKLAVA) {
-                            send(
-                                ActivityOptions.makeBasic()
-                                    .setPendingIntentBackgroundActivityStartMode(
-                                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS,
-                                    )
-                                    .toBundle(),
-                            )
-                        } else if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) {
-                            @Suppress("DEPRECATION")
-                            send(
-                                ActivityOptions.makeBasic()
-                                    .setPendingIntentBackgroundActivityStartMode(
-                                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
-                                    )
-                                    .toBundle(),
-                            )
-                        } else send()
-                    }
+                    intents.launchMain()
                 } catch (e: Exception) {
                     Logger.e("NotificationListener", "Failed to tap notification", e)
                     return
@@ -199,9 +177,9 @@ class NotificationListener : NotificationListenerService() {
 
             is Action.TAP_BUTTON ->
                 try {
-                    sbn.notification.actions.find {
-                        Regex(filter.action.buttonRegex).containsMatchIn(it.title)
-                    }?.actionIntent?.send()
+                    intents.actions.entries.find {
+                        Regex(filter.action.buttonRegex).containsMatchIn(it.key)
+                    }?.value?.send()
                 } catch (e: Exception) {
                     Logger.e("NotificationListener", "Failed to tap button", e)
                     return
@@ -221,7 +199,7 @@ class NotificationListener : NotificationListenerService() {
 
                 if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
                     Logger.d("NotificationListener", "Less than 1 second to batch boundary")
-                } else if (notifications.any(notification::isSimilar)) {
+                } else if (notifications.any { it.data == notification.data }) {
                     Logger.d("NotificationListener", "Already snoozed")
                 } else {
                     snoozeNotification(
@@ -302,6 +280,7 @@ class NotificationListener : NotificationListenerService() {
                     showInWidget = filter.widgetEnabled,
                 ),
             )
+            Cache.intents[notification.data.hashCode()] = intents
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }

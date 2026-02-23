@@ -32,8 +32,6 @@ class NotificationsViewModel(
 
     var allPackages by mutableStateOf<List<App>>(emptyList())
 
-    var selectedNotification by mutableStateOf<Notification?>(null)
-
     var dialogState by mutableStateOf<NotificationDialogState?>(null)
 
     init {

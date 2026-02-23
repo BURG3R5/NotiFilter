@@ -1,10 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    alias(libs.plugins.aboutlibraries.android)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.3.3"
+    alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -18,8 +19,8 @@ android {
         applicationId = "co.adityarajput.notifilter"
         minSdk = 29
         targetSdk = 36
-        versionCode = 22
-        versionName = "4.5.0"
+        versionCode = 23
+        versionName = "4.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -86,6 +87,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
+    implementation(libs.aboutlibraries.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

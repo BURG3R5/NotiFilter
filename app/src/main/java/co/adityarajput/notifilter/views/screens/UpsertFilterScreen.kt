@@ -89,7 +89,10 @@ fun UpsertFilterScreen(
                 { fadeIn() togetherWith fadeOut() },
             ) {
                 Column(
-                    Modifier.fillMaxWidth(),
+                    Modifier.fillMaxWidth().run {
+                        if (it == FormPage.ACTION) this.verticalScroll(rememberScrollState())
+                        else this
+                    },
                     Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 ) {
                     when (it) {
@@ -862,17 +865,42 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
             fontWeight = FontWeight.Normal,
         )
     }
-    if (viewModel.state.values.widgetEnabled && !hasPinnedWidget) {
-        Button(
-            context::addWidgetToHomeScreen,
-            Modifier.align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-        ) {
-            Text(
-                stringResource(R.string.prompt_widget),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Normal,
-            )
+    if (viewModel.state.values.widgetEnabled) {
+        if (!hasAccessibilityPermission) {
+            Button(
+                {
+                    try {
+                        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    } catch (e: Exception) {
+                        Logger.e(
+                            "UpsertFilterScreen",
+                            "Error opening accessibility settings",
+                            e,
+                        )
+                    }
+                },
+                Modifier.align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+            ) {
+                Text(
+                    stringResource(R.string.make_tappable),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Normal,
+                )
+            }
+        }
+        if (!hasPinnedWidget) {
+            Button(
+                context::addWidgetToHomeScreen,
+                Modifier.align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+            ) {
+                Text(
+                    stringResource(R.string.prompt_widget),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Normal,
+                )
+            }
         }
     }
 }

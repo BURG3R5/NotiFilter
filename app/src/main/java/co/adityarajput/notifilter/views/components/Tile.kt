@@ -3,6 +3,7 @@ package co.adityarajput.notifilter.views.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -23,12 +24,12 @@ fun Tile(
     trailing: String? = null,
     preContent: String? = null,
     onClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
     buttons: @Composable RowScope.() -> Unit = {},
     expanded: Boolean = false,
     dividerBetweenTitleAndContent: Boolean = false,
 ) {
     Card(
-        onClick,
         Modifier
             .fillMaxWidth()
             .padding(dimensionResource(R.dimen.padding_small))
@@ -37,6 +38,10 @@ fun Tile(
                     durationMillis = 300,
                     easing = LinearOutSlowInEasing,
                 ),
+            )
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick ?: onClick,
             ),
     ) {
         Column(
@@ -81,7 +86,11 @@ fun Tile(
                 content,
                 style = MaterialTheme.typography.bodySmall,
             )
-            if (expanded) Row(Modifier.fillMaxWidth(), Arrangement.End) { buttons() }
+            if (expanded) Row(
+                Modifier.fillMaxWidth(),
+                Arrangement.End,
+                Alignment.CenterVertically,
+            ) { buttons() }
         }
     }
 }

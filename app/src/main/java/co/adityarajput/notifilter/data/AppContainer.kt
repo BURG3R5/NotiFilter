@@ -76,11 +76,12 @@ class AppContainer(private val context: Context) {
                         historyEnabled = false,
                     ),
                     Filter(
-                        App("Instagram", "com.instagram.android"),
-                        "reels",
+                        App("Tumblr", "com.tumblr"),
+                        "poll",
                         Action.MUTE,
-                        RegexTarget.TITLE,
-                        historyEnabled = false,
+                        RegexTarget.CONTENT,
+                        hits = 17,
+                        widgetEnabled = true,
                     ),
                     Filter(
                         App("F-Droid", "org.fdroid"),
@@ -129,6 +130,12 @@ class AppContainer(private val context: Context) {
                         "Bob: Please go for something lighter this time. I'm tired of tomes!",
                         "WhatsApp",
                         System.currentTimeMillis() - 37 * 60 * 1000,
+                    ),
+                    Notification(
+                        "Poll finale alert",
+                        "Check the poll results for \"Do you pronounce Z as Zed?\".",
+                        "Tumblr",
+                        System.currentTimeMillis() - 3 * 60 * 1000,
                     ),
                 )
             }

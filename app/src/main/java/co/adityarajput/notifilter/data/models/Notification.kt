@@ -35,12 +35,7 @@ data class Notification(
         sbn.packageName, sbn.postTime, showInHistory, showInWidget, id,
     )
 
-    fun isSimilar(other: Notification): Boolean {
-        return this.origin == other.origin &&
-                this.title == other.title &&
-                this.content == other.content &&
-                this.timestamp == other.timestamp
-    }
+    val data get() = listOf(origin, title, content, timestamp)
 
     fun appNameFrom(packages: List<App>) =
         packages.find { it.packageName == origin }?.name ?: origin
