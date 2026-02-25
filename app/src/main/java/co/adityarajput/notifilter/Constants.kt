@@ -3,6 +3,7 @@ package co.adityarajput.notifilter
 object Constants {
     const val STATE = "state"
     const val WIDGET_PREVIEW_SET_AT = "widget_preview_set_at"
+    const val SHOW_MISSING_PERMISSIONS_DIALOG = "show_missing_permissions_dialog"
 
     const val SETTINGS = "settings"
     const val RUN_IN_FOREGROUND = "run_in_foreground"

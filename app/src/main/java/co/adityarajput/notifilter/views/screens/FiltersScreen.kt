@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.views.screens
 
+import android.content.Context.MODE_PRIVATE
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -7,27 +8,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
+import co.adityarajput.notifilter.Constants.SETTINGS
+import co.adityarajput.notifilter.Constants.SHOW_MISSING_PERMISSIONS_DIALOG
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
+import co.adityarajput.notifilter.utils.isGranted
+import co.adityarajput.notifilter.utils.permissionsRequired
 import co.adityarajput.notifilter.viewmodels.FilterDialogState
 import co.adityarajput.notifilter.viewmodels.FiltersViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.ManageFilterDialog
+import co.adityarajput.notifilter.views.components.MissingPermissionsDialog
 import co.adityarajput.notifilter.views.components.Tile
 import kotlinx.serialization.json.Json
 
@@ -38,7 +45,17 @@ fun FiltersScreen(
     goToSettingsScreen: () -> Unit,
     viewModel: FiltersViewModel = viewModel(factory = Provider.Factory),
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState()
+    var hasPermissions by remember(state.value.filters) {
+        mutableStateOf(context.isGranted(permissionsRequired(state.value.filters ?: listOf())))
+    }
+    var showMissingPermissionsDialog by remember {
+        mutableStateOf(
+            context.getSharedPreferences(SETTINGS, MODE_PRIVATE)
+                .getBoolean(SHOW_MISSING_PERMISSIONS_DIALOG, true),
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -167,5 +184,16 @@ fun FiltersScreen(
         }
         if (viewModel.selectedFilter != null && viewModel.dialogState != null)
             ManageFilterDialog(viewModel)
+        if (!hasPermissions.all { it.value } && showMissingPermissionsDialog) {
+            MissingPermissionsDialog(
+                hasPermissions.filter { !it.value }.keys,
+                { showMissingPermissionsDialog = false },
+                {
+                    showMissingPermissionsDialog = false
+                    context.getSharedPreferences(SETTINGS, MODE_PRIVATE)
+                        .edit { putBoolean(SHOW_MISSING_PERMISSIONS_DIALOG, false) }
+                },
+            )
+        }
     }
 }

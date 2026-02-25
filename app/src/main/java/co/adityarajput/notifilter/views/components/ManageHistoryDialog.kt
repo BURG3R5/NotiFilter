@@ -1,6 +1,5 @@
 package co.adityarajput.notifilter.views.components
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -17,12 +16,10 @@ fun ManageHistoryDialog(viewModel: NotificationsViewModel) {
         title = { Text(stringResource(R.string.clear_history)) },
         text = { Text(stringResource(R.string.clear_history_confirmation)) },
         confirmButton = {
-            Row {
-                TextButton(
-                    { viewModel.clearHistory(); hideDialog() },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
-                ) { Text(stringResource(R.string.clear_history)) }
-            }
+            TextButton(
+                { viewModel.clearHistory(); hideDialog() },
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
+            ) { Text(stringResource(R.string.clear_history)) }
         },
         dismissButton = {
             TextButton(hideDialog) {

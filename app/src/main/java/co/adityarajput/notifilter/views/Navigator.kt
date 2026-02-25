@@ -7,13 +7,14 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import co.adityarajput.notifilter.utils.hasNotificationListenerPermission
+import co.adityarajput.notifilter.utils.Permission
+import co.adityarajput.notifilter.utils.isGranted
 import co.adityarajput.notifilter.views.screens.*
 import kotlinx.serialization.Serializable
 
 @Composable
 fun Navigator(controller: NavHostController) {
-    val hasPermission = remember { controller.context.hasNotificationListenerPermission() }
+    val hasPermission = remember { controller.context.isGranted(Permission.NOTIFICATION_LISTENER) }
 
     NavHost(
         controller,

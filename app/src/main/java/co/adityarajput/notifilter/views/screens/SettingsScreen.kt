@@ -1,13 +1,10 @@
 package co.adityarajput.notifilter.views.screens
 
-import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,14 +25,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
-import androidx.core.net.toUri
 import co.adityarajput.notifilter.Constants.RUN_IN_FOREGROUND
 import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.Logger
-import co.adityarajput.notifilter.utils.hasUnrestrictedBackgroundUsagePermission
+import co.adityarajput.notifilter.utils.Permission
+import co.adityarajput.notifilter.utils.isGranted
+import co.adityarajput.notifilter.utils.request
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
 import kotlinx.coroutines.launch
@@ -43,7 +41,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@SuppressLint("BatteryLife")
 @Composable
 fun SettingsScreen(
     goToLicensesScreen: () -> Unit = {},
@@ -58,7 +55,7 @@ fun SettingsScreen(
     val sharedPreferences = remember { context.getSharedPreferences(SETTINGS, MODE_PRIVATE) }
 
     var isInvincible by remember {
-        mutableStateOf(context.hasUnrestrictedBackgroundUsagePermission())
+        mutableStateOf(context.isGranted(Permission.UNRESTRICTED_BACKGROUND_USAGE))
     }
     var isRunningInForeground by remember {
         mutableStateOf(sharedPreferences.getBoolean(RUN_IN_FOREGROUND, false))
@@ -66,7 +63,7 @@ fun SettingsScreen(
 
     val watcher = object : Runnable {
         override fun run() {
-            isInvincible = context.hasUnrestrictedBackgroundUsagePermission()
+            isInvincible = context.isGranted(Permission.UNRESTRICTED_BACKGROUND_USAGE)
             handler.postDelayed(this, 1000)
         }
     }
@@ -111,7 +108,7 @@ fun SettingsScreen(
                     ) {
                         Column(Modifier.weight(1f)) {
                             Text(
-                                stringResource(R.string.disable_battery_optimization),
+                                stringResource(R.string.disable_optimization),
                                 style = MaterialTheme.typography.titleSmall,
                             )
                             Text(
@@ -121,19 +118,7 @@ fun SettingsScreen(
                         }
                         Switch(
                             isInvincible,
-                            {
-                                if (it) {
-                                    val intent = Intent(
-                                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                        "package:${context.packageName}".toUri(),
-                                    )
-                                    context.startActivity(intent)
-                                } else {
-                                    val intent =
-                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                    context.startActivity(intent)
-                                }
-                            },
+                            { context.request(Permission.UNRESTRICTED_BACKGROUND_USAGE, it) },
                         )
                     }
                     Row(

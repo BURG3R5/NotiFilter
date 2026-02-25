@@ -34,12 +34,19 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="delete">Delete</string>
+
+    <string name="missing_permissions">Missing permissions</string>
+    <string name="explain_missing_permissions">Your filters require the following permissions to function:</string>
+    <string name="explain_accessibility_service_permission">Tap on notifications</string>
+    <string name="explain_post_notifications_permission">Post notifications</string>
+    <string name="explain_notification_policy_permission">Manage DND state</string>
+    <string name="hide_permanently">"Don't show this again"</string>
+    <string name="done">Done</string>
     <!-- endregion -->
 
     <!-- region SettingsScreen -->
     <string name="settings">Settings</string>
     <string name="settings_section_1">Optional Enhancements</string>
-    <string name="disable_battery_optimization">Disable optimization</string>
     <string name="explain_disabling_battery_optimization">Exempts the app from being restricted by the OS</string>
     <string name="run_in_foreground">Run in foreground</string>
     <string name="explain_running_in_foreground">Promotes the core listener service to the foreground</string>
@@ -133,7 +140,7 @@
     <!-- endregion -->
 
     <!-- region OnboardingScreen -->
-    <string name="onboarding_info_1">NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn\'t have access to the internet.</string>
+    <string name="onboarding_info_1">"NotiFilter runs a low-impact background service that listens to all device notifications and quietly manages them according to your filters.\n\nNo data is sent off-device; NotiFilter doesn't have access to the internet."</string>
     <string name="grant_permission">Grant permission</string>
     <string name="onboarding_info_2">On some devices, the \'battery optimization\' feature leads to delayed notification dismissal, so you may still experience the initial disruption.\n\nCertain manufacturers have even more aggressive optimizations, so you may need to enable \"Run in foreground\" from the app settings later.</string>
     <string name="disable_optimization">Disable optimization</string>
