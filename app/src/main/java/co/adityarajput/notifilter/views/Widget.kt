@@ -1,8 +1,10 @@
 package co.adityarajput.notifilter.views
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.*
@@ -23,6 +25,8 @@ import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
+import co.adityarajput.notifilter.utils.Permission
+import co.adityarajput.notifilter.utils.isGranted
 import co.adityarajput.notifilter.utils.toReadableTime
 
 class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
@@ -47,6 +51,7 @@ class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
 @GlanceComposable
 private fun Content(notifications: List<Notification>, allPackages: List<App> = emptyList()) {
     val context = LocalContext.current
+    val canLaunchMainIntents = remember { context.isGranted(Permission.ACCESSIBILITY_SERVICE) }
 
     Scaffold(
         GlanceModifier.padding(vertical = 16.dp),
@@ -88,16 +93,24 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
                                 .background(GlanceTheme.colors.primaryContainer)
                                 .wrapContentHeight()
                                 .clickable {
-                                    try {
-                                        if (intents?.main != null) intents.launchMain() else {
-                                            context.startActivity(
-                                                context.packageManager.getLaunchIntentForPackage(
-                                                    it.origin,
-                                                ),
-                                            )
+                                    if (!canLaunchMainIntents) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.accessibility_service_description),
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    } else {
+                                        try {
+                                            if (intents?.main != null) intents.launchMain() else {
+                                                context.startActivity(
+                                                    context.packageManager.getLaunchIntentForPackage(
+                                                        it.origin,
+                                                    ),
+                                                )
+                                            }
+                                        } catch (e: Exception) {
+                                            Logger.e("Widget", "Error clicking $it", e)
                                         }
-                                    } catch (e: Exception) {
-                                        Logger.e("Widget", "Error clicking $it", e)
                                     }
                                 },
                         ) {
