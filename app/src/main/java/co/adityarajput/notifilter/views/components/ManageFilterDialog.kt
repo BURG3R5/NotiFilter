@@ -1,6 +1,5 @@
 package co.adityarajput.notifilter.views.components
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -56,29 +55,27 @@ fun ManageFilterDialog(viewModel: FiltersViewModel) {
             )
         },
         confirmButton = {
-            Row {
-                TextButton(
-                    {
-                        when (dialogState) {
-                            FilterDialogState.TOGGLE_HISTORY -> viewModel.toggleHistory()
-                            FilterDialogState.TOGGLE_FILTER -> viewModel.toggleFilter()
-                            FilterDialogState.DELETE -> viewModel.deleteFilter()
-                        }
-                        hideDialog()
+            TextButton(
+                {
+                    when (dialogState) {
+                        FilterDialogState.TOGGLE_HISTORY -> viewModel.toggleHistory()
+                        FilterDialogState.TOGGLE_FILTER -> viewModel.toggleFilter()
+                        FilterDialogState.DELETE -> viewModel.deleteFilter()
+                    }
+                    hideDialog()
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (dialogState == FilterDialogState.DELETE) MaterialTheme.colorScheme.tertiary
+                    else Color.Unspecified,
+                ),
+            ) {
+                Text(
+                    when (dialogState) {
+                        FilterDialogState.TOGGLE_HISTORY -> filter.historyEnabled.getToggleString()
+                        FilterDialogState.TOGGLE_FILTER -> filter.enabled.getToggleString()
+                        FilterDialogState.DELETE -> stringResource(R.string.delete)
                     },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = if (dialogState == FilterDialogState.DELETE) MaterialTheme.colorScheme.tertiary
-                        else Color.Unspecified,
-                    ),
-                ) {
-                    Text(
-                        when (dialogState) {
-                            FilterDialogState.TOGGLE_HISTORY -> filter.historyEnabled.getToggleString()
-                            FilterDialogState.TOGGLE_FILTER -> filter.enabled.getToggleString()
-                            FilterDialogState.DELETE -> stringResource(R.string.delete)
-                        },
-                    )
-                }
+                )
             }
         },
         dismissButton = {

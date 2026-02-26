@@ -1,13 +1,8 @@
 package co.adityarajput.notifilter.views.screens
 
-import android.Manifest
-import android.app.Activity
 import android.app.TimePickerDialog
-import android.content.Intent
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.*
@@ -487,25 +481,27 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
     viewModel.state.warnings.forEach { WarningText(it.description) }
 }
 
+private val permissions = listOf(
+    Permission.ACCESSIBILITY_SERVICE,
+    Permission.POST_NOTIFICATIONS,
+    Permission.NOTIFICATION_POLICY,
+)
+
 @Composable
 private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
-    var hasAccessibilityPermission by remember { mutableStateOf(context.hasAccessibilityServicePermission()) }
-    var hasPostNotificationsPermission by remember { mutableStateOf(context.hasPostNotificationsPermission()) }
-    var hasNotificationPolicyPermission by remember { mutableStateOf(context.hasNotificationPolicyPermission()) }
+    var hasPermissions by remember { mutableStateOf(context.isGranted(permissions)) }
     val hasPinnedWidget by produceState(initialValue = false) { value = context.isWidgetUsed() }
 
     val watcher = object : Runnable {
         override fun run() {
-            hasAccessibilityPermission = context.hasAccessibilityServicePermission()
-            hasPostNotificationsPermission = context.hasPostNotificationsPermission()
-            hasNotificationPolicyPermission = context.hasNotificationPolicyPermission()
+            hasPermissions = context.isGranted(permissions)
 
-            if (hasPostNotificationsPermission)
+            if (hasPermissions.getValue(Permission.POST_NOTIFICATIONS))
                 NotificationListener.createAlertNotificationChannel()
 
-            if (!hasAccessibilityPermission || !hasPostNotificationsPermission || !hasNotificationPolicyPermission)
+            if (!hasPermissions.all { it.value })
                 handler.postDelayed(this, 500)
         }
     }
@@ -545,7 +541,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         AnimatedVisibility(
             it is Action.TAP_NOTIFICATION
                     && viewModel.state.values.action is Action.TAP_NOTIFICATION
-                    && !hasAccessibilityPermission,
+                    && !hasPermissions.getValue(Permission.ACCESSIBILITY_SERVICE),
         ) {
             Column(
                 Modifier
@@ -555,17 +551,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
             ) {
                 ErrorText(R.string.accessibility_service_description)
                 Button(
-                    {
-                        try {
-                            context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                        } catch (e: Exception) {
-                            Logger.e(
-                                "UpsertFilterScreen",
-                                "Error opening accessibility settings",
-                                e,
-                            )
-                        }
-                    },
+                    { context.request(Permission.ACCESSIBILITY_SERVICE) },
                     Modifier.align(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 ) {
@@ -703,7 +689,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         AnimatedVisibility(
             it is Action.ALERT
                     && viewModel.state.values.action is Action.ALERT
-                    && !hasPostNotificationsPermission,
+                    && !hasPermissions.getValue(Permission.POST_NOTIFICATIONS),
         ) {
             Column(
                 Modifier
@@ -713,29 +699,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
             ) {
                 ErrorText(R.string.alert_notifications_description)
                 Button(
-                    {
-                        try {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                requestPermissions(
-                                    context as Activity,
-                                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                                    0,
-                                )
-                            } else {
-                                context.startActivity(
-                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    },
-                                )
-                            }
-                        } catch (e: Exception) {
-                            Logger.e(
-                                "UpsertFilterScreen",
-                                "Error opening notification settings",
-                                e,
-                            )
-                        }
-                    },
+                    { context.request(Permission.POST_NOTIFICATIONS) },
                     Modifier.align(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 ) {
@@ -794,19 +758,11 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                         )
                     }
                 }
-                if (!hasNotificationPolicyPermission) {
+                if (!hasPermissions.getValue(Permission.NOTIFICATION_POLICY)) {
                     ErrorText(R.string.notification_policy_permission_description)
                     Button(
                         {
-                            try {
-                                context.startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
-                            } catch (e: Exception) {
-                                Logger.e(
-                                    "UpsertFilterScreen",
-                                    "Error opening notification policy settings",
-                                    e,
-                                )
-                            }
+                            context.request(Permission.NOTIFICATION_POLICY)
                         },
                         Modifier.align(Alignment.CenterHorizontally),
                         colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
@@ -866,19 +822,9 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         )
     }
     if (viewModel.state.values.widgetEnabled) {
-        if (!hasAccessibilityPermission) {
+        if (!hasPermissions.getValue(Permission.ACCESSIBILITY_SERVICE)) {
             Button(
-                {
-                    try {
-                        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                    } catch (e: Exception) {
-                        Logger.e(
-                            "UpsertFilterScreen",
-                            "Error opening accessibility settings",
-                            e,
-                        )
-                    }
-                },
+                { context.request(Permission.ACCESSIBILITY_SERVICE) },
                 Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
             ) {
