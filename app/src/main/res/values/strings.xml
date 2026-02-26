@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">NotiFilter</string>
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
-    <string name="app_version" translatable="false">4.6.0</string>
+    <string name="app_version" translatable="false">4.6.1</string>
 
     <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>

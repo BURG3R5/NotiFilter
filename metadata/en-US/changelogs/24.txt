@@ -1,0 +1,1 @@
+feat: Warn if permissions are missing
