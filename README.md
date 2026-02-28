@@ -1,5 +1,7 @@
 <img width="192" height="192" alt="NotiFilter app icon" src="https://github.com/BURG3R5/NotiFilter/blob/dev/metadata/en-US/images/icon.png" />
 
+![F-Droid downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fco.adityarajput.notifilter.json&query=%24.total_downloads&logo=fdroid&style=flat-square&label=F-Droid%20downloads) ![GitHub downloads](https://img.shields.io/github/downloads/BURG3R5/NotiFilter/total?style=flat-square&logo=github&label=GitHub%20downloads)
+
 # NotiFilter
 
 **Silence annoying notifications**
