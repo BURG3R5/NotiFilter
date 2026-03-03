@@ -40,10 +40,7 @@ import co.adityarajput.notifilter.viewmodels.FormError
 import co.adityarajput.notifilter.viewmodels.FormPage
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
-import co.adityarajput.notifilter.views.components.AppBar
-import co.adityarajput.notifilter.views.components.ErrorText
-import co.adityarajput.notifilter.views.components.Tile
-import co.adityarajput.notifilter.views.components.WarningText
+import co.adityarajput.notifilter.views.components.*
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -403,31 +400,7 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
             )
         },
         placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
-        supportingText = {
-            if (viewModel.state.values.notification != null)
-                Text(
-                    stringResource(
-                        R.string.pattern_supporting,
-                        buildString {
-                            if (viewModel.state.values.regexTarget == RegexTarget.CONTENT) {
-                                append(viewModel.state.values.notification!!.content.getFirst(20))
-                            } else {
-                                append(viewModel.state.values.notification!!.title.getFirst(20))
-                                if (viewModel.state.values.regexTarget == RegexTarget.OR) {
-                                    append("' ")
-                                    append(stringResource(R.string.or))
-                                    append(" '")
-                                    append(
-                                        viewModel.state.values.notification!!.content.getFirst(
-                                            20,
-                                        ),
-                                    )
-                                }
-                            }
-                        },
-                    ),
-                )
-        },
+        supportingText = { SupportingText(viewModel, true) },
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -447,15 +420,7 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
             Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.content_pattern)) },
             placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
-            supportingText = {
-                if (viewModel.state.values.notification != null)
-                    Text(
-                        stringResource(
-                            R.string.pattern_supporting,
-                            viewModel.state.values.notification!!.content.getFirst(20),
-                        ),
-                    )
-            },
+            supportingText = { SupportingText(viewModel, false) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
