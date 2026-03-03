@@ -16,23 +16,35 @@ import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 fun SupportingText(viewModel: UpsertFilterViewModel, isPrimaryPattern: Boolean) {
     if (viewModel.state.values.notification == null) return
 
-    val title = viewModel.state.values.notification!!.title.getFirst(20)
-    val content = viewModel.state.values.notification!!.content.getFirst(20)
+    val title = viewModel.state.values.notification!!.title
+    val content = viewModel.state.values.notification!!.content
 
-    val target = when (viewModel.state.values.regexTarget) {
-        RegexTarget.TITLE -> title
+    val target = (title.getFirst(20) to content.getFirst(20)).let { (title, content) ->
+        when (viewModel.state.values.regexTarget) {
+            RegexTarget.TITLE -> title
 
-        RegexTarget.CONTENT -> content
+            RegexTarget.CONTENT -> content
 
-        RegexTarget.OR -> "$title' ${stringResource(R.string.or)} '$content"
+            RegexTarget.OR -> "$title' ${stringResource(R.string.or)} '$content"
 
-        RegexTarget.AND if (isPrimaryPattern) -> title
+            RegexTarget.AND if (isPrimaryPattern) -> title
 
-        else -> content
+            else -> content
+        }
     }
-    val pattern = when (viewModel.state.values.regexTarget) {
-        RegexTarget.OR -> title.generateRegex() + "|" + content.generateRegex()
-        else -> target.generateRegex()
+
+    val pattern = (title.generateRegex() to content.generateRegex()).let { (title, content) ->
+        when (viewModel.state.values.regexTarget) {
+            RegexTarget.TITLE -> title
+
+            RegexTarget.CONTENT -> content
+
+            RegexTarget.OR -> "$title|$content"
+
+            RegexTarget.AND if (isPrimaryPattern) -> title
+
+            else -> content
+        }
     }
 
     Text(
