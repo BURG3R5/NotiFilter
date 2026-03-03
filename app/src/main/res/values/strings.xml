@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">NotiFilter</string>
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
-    <string name="app_version" translatable="false">4.6.1</string>
+    <string name="app_version" translatable="false">4.7.0</string>
 
     <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>
@@ -86,8 +86,9 @@
     <string name="title_pattern">Title pattern</string>
     <string name="content_pattern">Content pattern</string>
     <string name="pattern_placeholder">Enter a regex pattern</string>
-    <string name="pattern_supporting">Enter a pattern that matches \'%1$s\'</string>
+    <string name="pattern_supporting">"Enter a pattern that matches \'%1$s\'. "</string>
     <string name="or">or</string>
+    <string name="generate">Generate?</string>
     <string name="pattern_advice"><![CDATA[Tip: Include keywords but exclude non-essentials. Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">here↗</a> for examples.]]></string>
     <string name="invalid_regex">Regex pattern contains errors</string>
     <string name="pattern_doesnt_match_title">"Regex pattern doesn't match selected notification's title"</string>
