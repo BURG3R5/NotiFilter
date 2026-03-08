@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.services
 
+import android.app.AlarmManager
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,6 +19,7 @@ import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.Logger
+import co.adityarajput.notifilter.utils.sendIntent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -65,6 +67,7 @@ class NotificationListener : NotificationListenerService() {
 
     private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val alarmManager by lazy { getSystemService(ALARM_SERVICE) as AlarmManager }
 
     @Volatile
     private var filters: List<Filter> = emptyList()
@@ -151,7 +154,7 @@ class NotificationListener : NotificationListenerService() {
         Logger.i("NotificationListener", "Matched $filter")
 
         when (filter.action) {
-            is Action.DISMISS -> dismissOrSnoozeFor5Hours(sbn)
+            is Action.DISMISS -> dismissNotification(sbn.key, sbn.isClearable)
 
             is Action.TAP_NOTIFICATION ->
                 try {
@@ -265,9 +268,15 @@ class NotificationListener : NotificationListenerService() {
                         retentionLength /= 5
                     }
 
-                    Logger.d("NotificationListener", "Waiting $retentionLength ms before removing")
-                    delay(retentionLength)
-                    dismissOrSnoozeFor5Hours(sbn)
+                    alarmManager.sendIntent(
+                        this@NotificationListener,
+                        retentionLength,
+                        sbn.key.hashCode(),
+                    ) {
+                        action = Constants.ACTION_DISMISS_STALE
+                        putExtra(Constants.EXTRA_SBN_KEY, sbn.key)
+                        putExtra(Constants.EXTRA_SBN_IS_CLEARABLE, sbn.isClearable)
+                    }
                 }
             }
         }
@@ -286,20 +295,17 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    private fun dismissOrSnoozeFor5Hours(sbn: StatusBarNotification) {
-        if (sbn.isClearable) {
+    fun dismissNotification(key: String, isClearable: Boolean) {
+        if (isClearable) {
             try {
-                cancelNotification(sbn.key)
+                Logger.d("NotificationListener", "Canceling")
+                cancelNotification(key)
             } catch (e: Throwable) {
-                Logger.e(
-                    "NotificationListener",
-                    "Failed to dismiss notification",
-                    e,
-                )
+                Logger.e("NotificationListener", "Failed to dismiss notification", e)
             }
         } else {
-            Logger.d("NotificationListener", "Is unclearable")
-            snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
+            Logger.d("NotificationListener", "Snoozing")
+            snoozeNotification(key, 5 * 60 * 60 * 1000L)
         }
     }
 
