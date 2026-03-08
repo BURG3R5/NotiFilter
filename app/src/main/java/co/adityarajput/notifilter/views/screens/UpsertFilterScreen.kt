@@ -450,6 +450,7 @@ private val permissions = listOf(
     Permission.ACCESSIBILITY_SERVICE,
     Permission.POST_NOTIFICATIONS,
     Permission.NOTIFICATION_POLICY,
+    Permission.SCHEDULE_EXACT_ALARM,
 )
 
 @Composable
@@ -786,6 +787,20 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                         Icon(
                             painterResource(R.drawable.add),
                             contentDescription = stringResource(R.string.alttext_add),
+                        )
+                    }
+                }
+                if (!hasPermissions.getValue(Permission.SCHEDULE_EXACT_ALARM)) {
+                    ErrorText(R.string.exact_alarm_permission_description)
+                    Button(
+                        { context.request(Permission.SCHEDULE_EXACT_ALARM) },
+                        Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) {
+                        Text(
+                            stringResource(R.string.disable_optimization),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Normal,
                         )
                     }
                 }

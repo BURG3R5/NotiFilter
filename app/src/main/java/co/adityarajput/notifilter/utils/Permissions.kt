@@ -3,6 +3,7 @@ package co.adityarajput.notifilter.utils
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
@@ -23,6 +24,7 @@ enum class Permission {
     UNRESTRICTED_BACKGROUND_USAGE,
     POST_NOTIFICATIONS,
     NOTIFICATION_POLICY,
+    SCHEDULE_EXACT_ALARM,
 }
 
 fun Context.isGranted(permission: Permission) = when (permission) {
@@ -45,6 +47,11 @@ fun Context.isGranted(permission: Permission) = when (permission) {
     Permission.NOTIFICATION_POLICY ->
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
             .isNotificationPolicyAccessGranted()
+
+    Permission.SCHEDULE_EXACT_ALARM ->
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) true else
+            (getSystemService(Context.ALARM_SERVICE) as AlarmManager)
+                .canScheduleExactAlarms()
 }
 
 fun Context.isGranted(permissions: Iterable<Permission>) =
@@ -59,7 +66,7 @@ fun Context.request(permission: Permission, remove: Boolean = false) = try {
         Permission.ACCESSIBILITY_SERVICE ->
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
 
-        Permission.UNRESTRICTED_BACKGROUND_USAGE ->
+        Permission.UNRESTRICTED_BACKGROUND_USAGE, Permission.SCHEDULE_EXACT_ALARM ->
             startActivity(
                 if (remove)
                     Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -100,4 +107,7 @@ fun permissionsRequired(filters: List<Filter>) = buildList {
 
     if (filters.any { it.action is Action.DISTURB })
         add(Permission.NOTIFICATION_POLICY)
+
+    if (filters.any { it.action is Action.DISMISS_STALE })
+        add(Permission.SCHEDULE_EXACT_ALARM)
 }

@@ -38,6 +38,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="co.adityarajput.notifilter.DISMISS_STALE" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".WidgetReceiver"
             android:exported="true">
