@@ -37,6 +37,9 @@ sealed class Action {
     @Serializable
     data class DISTURB(val pauseLength: Int) : Action()
 
+    @Serializable
+    data class DISMISS_STALE(val retentionLength: Int) : Action()
+
     @Composable
     fun verb() = when (this) {
         is DISMISS -> stringResource(R.string.dismiss_short)
@@ -60,6 +63,11 @@ sealed class Action {
             R.string.disturb_short,
             pluralStringResource(R.plurals.minute, pauseLength, pauseLength),
         )
+
+        is DISMISS_STALE -> stringResource(
+            R.string.dismiss_stale_short,
+            pluralStringResource(R.plurals.minute, retentionLength, retentionLength),
+        )
     }
 
     @Composable
@@ -74,6 +82,7 @@ sealed class Action {
             is MUTE -> R.string.mute_long
             is ALERT -> R.string.alert_long
             is DISTURB -> R.string.disturb_long
+            is DISMISS_STALE -> R.string.dismiss_stale_long
         },
     )
 
@@ -83,7 +92,7 @@ sealed class Action {
         val entries by lazy {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
-                DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5),
+                DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(10),
             )
         }
 
@@ -112,6 +121,10 @@ sealed class Action {
 
             value.startsWith("DISTURB") -> DISTURB(
                 value.removePrefix("DISTURB(pauseLength=").removeSuffix(")").toInt(),
+            )
+
+            value.startsWith("DISMISS_STALE") -> DISMISS_STALE(
+                value.removePrefix("DISMISS_STALE(retentionLength=").removeSuffix(")").toInt(),
             )
 
             else -> {

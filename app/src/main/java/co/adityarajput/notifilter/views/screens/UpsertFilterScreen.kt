@@ -741,6 +741,56 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 }
             }
         }
+        AnimatedVisibility(it is Action.DISMISS_STALE && viewModel.state.values.action is Action.DISMISS_STALE) {
+            Column(
+                Modifier.fillMaxWidth(),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.Center,
+                    Alignment.CenterVertically,
+                ) {
+                    val retentionLength =
+                        (viewModel.state.values.action as? Action.DISMISS_STALE)?.retentionLength
+                            ?: 10
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DISMISS_STALE((retentionLength - 5))),
+                            )
+                        },
+                        enabled = retentionLength > 5,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.remove),
+                            contentDescription = stringResource(R.string.alttext_subtract),
+                        )
+                    }
+                    Text(
+                        stringResource(
+                            R.string.retention_length,
+                            retentionLength.toString().padStart(2, '0'),
+                        ),
+                    )
+                    IconButton(
+                        {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DISMISS_STALE((retentionLength + 5))),
+                            )
+                        },
+                        enabled = retentionLength < 60,
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.add),
+                            contentDescription = stringResource(R.string.alttext_add),
+                        )
+                    }
+                }
+            }
+        }
     }
     HorizontalDivider()
     Text(
