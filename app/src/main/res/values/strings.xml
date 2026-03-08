@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">NotiFilter</string>
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
-    <string name="app_version" translatable="false">4.7.0</string>
+    <string name="app_version" translatable="false">4.8.0</string>
 
     <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>
@@ -19,6 +19,7 @@
     <string name="mute_short">mute notification</string>
     <string name="alert_short">play an alert</string>
     <string name="disturb_short">disable DND for %1$s</string>
+    <string name="dismiss_stale_short">dismiss after %1$s</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -113,6 +114,8 @@
     <string name="disturb_long">Disable \"Do Not Disturb\"</string>
     <string name="pause_length">Enable after %1$s min(s)</string>
     <string name="notification_policy_permission_description">NotiFilter requires access to the Notification Policy to change DND status</string>
+    <string name="dismiss_stale_long">Remove stale notifications</string>
+    <string name="retention_length">Dismiss after %1$s min(s)</string>
     <string name="display_options">Choose where to display caught notification</string>
     <string name="describe_history_screen">In-app History screen</string>
     <string name="describe_widget">Homescreen Log widget</string>

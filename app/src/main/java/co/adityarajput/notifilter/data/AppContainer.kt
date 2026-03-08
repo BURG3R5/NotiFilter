@@ -98,6 +98,13 @@ class AppContainer(private val context: Context) {
                         RegexTarget.OR,
                         historyEnabled = false,
                     ),
+                    Filter(
+                        App("Twitch", "tv.twitch.android.app"),
+                        "live",
+                        Action.DISMISS_STALE(60),
+                        RegexTarget.OR,
+                        historyEnabled = false,
+                    ),
                 )
                 repository.upsert(
                     Notification(

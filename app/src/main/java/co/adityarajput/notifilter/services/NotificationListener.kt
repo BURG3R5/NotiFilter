@@ -151,21 +151,7 @@ class NotificationListener : NotificationListenerService() {
         Logger.i("NotificationListener", "Matched $filter")
 
         when (filter.action) {
-            is Action.DISMISS ->
-                if (sbn.isClearable) {
-                    try {
-                        cancelNotification(sbn.key)
-                    } catch (e: Throwable) {
-                        Logger.e(
-                            "NotificationListener",
-                            "Failed to dismiss notification",
-                            e,
-                        )
-                    }
-                } else {
-                    Logger.d("NotificationListener", "Is unclearable")
-                    snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
-                }
+            is Action.DISMISS -> dismissOrSnoozeFor5Hours(sbn)
 
             is Action.TAP_NOTIFICATION ->
                 try {
@@ -270,6 +256,20 @@ class NotificationListener : NotificationListenerService() {
                     cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
                 }
             }
+
+            is Action.DISMISS_STALE -> {
+                serviceScope.launch {
+                    var retentionLength = filter.action.retentionLength * 60 * 1000L
+                    if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+                        // INFO: While debugging, retain for shorter intervals
+                        retentionLength /= 5
+                    }
+
+                    Logger.d("NotificationListener", "Waiting $retentionLength ms before removing")
+                    delay(retentionLength)
+                    dismissOrSnoozeFor5Hours(sbn)
+                }
+            }
         }
 
         serviceScope.launch {
@@ -283,6 +283,23 @@ class NotificationListener : NotificationListenerService() {
             Cache.intents[notification.data.hashCode()] = intents
             notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
+        }
+    }
+
+    private fun dismissOrSnoozeFor5Hours(sbn: StatusBarNotification) {
+        if (sbn.isClearable) {
+            try {
+                cancelNotification(sbn.key)
+            } catch (e: Throwable) {
+                Logger.e(
+                    "NotificationListener",
+                    "Failed to dismiss notification",
+                    e,
+                )
+            }
+        } else {
+            Logger.d("NotificationListener", "Is unclearable")
+            snoozeNotification(sbn.key, 5 * 60 * 60 * 1000L)
         }
     }
 
