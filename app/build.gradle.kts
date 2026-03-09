@@ -19,8 +19,8 @@ android {
         applicationId = "co.adityarajput.notifilter"
         minSdk = 29
         targetSdk = 36
-        versionCode = 26
-        versionName = "4.8.0"
+        versionCode = 27
+        versionName = "4.8.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

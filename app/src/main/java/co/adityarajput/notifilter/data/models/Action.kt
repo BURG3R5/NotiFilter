@@ -92,7 +92,7 @@ sealed class Action {
         val entries by lazy {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
-                DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(10),
+                DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
             )
         }
 
