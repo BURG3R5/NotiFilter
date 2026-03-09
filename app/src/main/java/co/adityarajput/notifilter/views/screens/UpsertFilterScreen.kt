@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -555,46 +554,16 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
             }
         }
         AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
-            Row(
-                Modifier.fillMaxWidth(),
-                Arrangement.Center,
-                Alignment.CenterVertically,
-            ) {
-                val batchLength = (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3
-                IconButton(
-                    {
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.BATCH((batchLength - 1))),
-                        )
-                    },
-                    enabled = batchLength > 1,
-                ) {
-                    Icon(
-                        painterResource(R.drawable.remove),
-                        contentDescription = stringResource(R.string.alttext_subtract),
-                    )
-                }
-                Text(
-                    stringResource(
-                        R.string.batch_frequency,
-                        batchLength.toString().padStart(2, '0'),
-                    ),
+            IntegerInput(
+                (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
+                1,
+                12,
+                R.string.batch_frequency,
+            ) { value ->
+                viewModel.updateForm(
+                    viewModel.state.page,
+                    viewModel.state.values.copy(action = Action.BATCH(value)),
                 )
-                IconButton(
-                    {
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.BATCH((batchLength + 1))),
-                        )
-                    },
-                    enabled = batchLength < 12,
-                ) {
-                    Icon(
-                        painterResource(R.drawable.add),
-                        contentDescription = stringResource(R.string.alttext_add),
-                    )
-                }
             }
         }
         AnimatedVisibility(it is Action.DEBOUNCE && viewModel.state.values.action is Action.DEBOUNCE) {
@@ -602,47 +571,16 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.Center,
-                    Alignment.CenterVertically,
-                ) {
-                    val cooldownLength =
-                        (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength - 1))),
-                            )
-                        },
-                        enabled = cooldownLength > 1,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.remove),
-                            contentDescription = stringResource(R.string.alttext_subtract),
-                        )
-                    }
-                    Text(
-                        stringResource(
-                            R.string.cooldown_length,
-                            cooldownLength.toString().padStart(2, '0'),
-                        ),
+                IntegerInput(
+                    (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2,
+                    1,
+                    30,
+                    R.string.cooldown_length,
+                ) { value ->
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(action = Action.DEBOUNCE(value)),
                     )
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DEBOUNCE((cooldownLength + 1))),
-                            )
-                        },
-                        enabled = cooldownLength < 15,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.add),
-                            contentDescription = stringResource(R.string.alttext_add),
-                        )
-                    }
                 }
                 Text(
                     stringResource(R.string.explain_debounce),
@@ -682,47 +620,16 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.Center,
-                    Alignment.CenterVertically,
-                ) {
-                    val pauseLength =
-                        (viewModel.state.values.action as? Action.DISTURB)?.pauseLength ?: 5
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DISTURB((pauseLength - 1))),
-                            )
-                        },
-                        enabled = pauseLength > 1,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.remove),
-                            contentDescription = stringResource(R.string.alttext_subtract),
-                        )
-                    }
-                    Text(
-                        stringResource(
-                            R.string.pause_length,
-                            pauseLength.toString().padStart(2, '0'),
-                        ),
+                IntegerInput(
+                    (viewModel.state.values.action as? Action.DISTURB)?.pauseLength ?: 5,
+                    1,
+                    30,
+                    R.string.pause_length,
+                ) { value ->
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(action = Action.DISTURB(value)),
                     )
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DISTURB((pauseLength + 1))),
-                            )
-                        },
-                        enabled = pauseLength < 15,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.add),
-                            contentDescription = stringResource(R.string.alttext_add),
-                        )
-                    }
                 }
                 if (!hasPermissions.getValue(Permission.NOTIFICATION_POLICY)) {
                     ErrorText(R.string.notification_policy_permission_description)
@@ -747,48 +654,19 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.Center,
-                    Alignment.CenterVertically,
-                ) {
-                    val retentionLength =
-                        (viewModel.state.values.action as? Action.DISMISS_STALE)?.retentionLength
-                            ?: 10
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DISMISS_STALE((retentionLength - 5))),
-                            )
-                        },
-                        enabled = retentionLength > 5,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.remove),
-                            contentDescription = stringResource(R.string.alttext_subtract),
-                        )
-                    }
-                    Text(
-                        stringResource(
-                            R.string.retention_length,
-                            retentionLength.toString().padStart(2, '0'),
-                        ),
+                IntegerInput(
+                    (viewModel.state.values.action as? Action.DISMISS_STALE)?.retentionLength ?: 15,
+                    5,
+                    300,
+                    R.string.retention_length,
+                    5,
+                    30,
+                    3,
+                ) { value ->
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(action = Action.DISMISS_STALE(value)),
                     )
-                    IconButton(
-                        {
-                            viewModel.updateForm(
-                                viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DISMISS_STALE((retentionLength + 5))),
-                            )
-                        },
-                        enabled = retentionLength < 60,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.add),
-                            contentDescription = stringResource(R.string.alttext_add),
-                        )
-                    }
                 }
                 if (!hasPermissions.getValue(Permission.SCHEDULE_EXACT_ALARM)) {
                     ErrorText(R.string.exact_alarm_permission_description)

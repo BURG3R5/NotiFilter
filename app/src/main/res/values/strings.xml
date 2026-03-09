@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">NotiFilter</string>
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
-    <string name="app_version" translatable="false">4.8.0</string>
+    <string name="app_version" translatable="false">4.8.1</string>
 
     <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>
@@ -115,7 +115,7 @@
     <string name="pause_length">Enable after %1$s min(s)</string>
     <string name="notification_policy_permission_description">NotiFilter requires access to the Notification Policy to change DND status.</string>
     <string name="dismiss_stale_long">Remove stale notifications</string>
-    <string name="retention_length">Dismiss after %1$s min(s)</string>
+    <string name="retention_length">Dismiss after %1$s mins</string>
     <string name="exact_alarm_permission_description">NotiFilter requires exemption from battery optimization to execute delayed dismissal.</string>
     <string name="display_options">Choose where to display caught notification</string>
     <string name="describe_history_screen">In-app History screen</string>
