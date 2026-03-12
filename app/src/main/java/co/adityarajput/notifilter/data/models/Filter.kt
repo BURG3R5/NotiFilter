@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import co.adityarajput.notifilter.utils.containsMatchIn
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -38,18 +39,18 @@ data class Filter(
     fun matchesTextOf(notification: Notification): Boolean {
         return when (regexTarget) {
             RegexTarget.TITLE ->
-                Regex(regexPattern).containsMatchIn(notification.title)
+                regexPattern.containsMatchIn(notification.title)
 
             RegexTarget.CONTENT ->
-                Regex(regexPattern).containsMatchIn(notification.content)
+                regexPattern.containsMatchIn(notification.content)
 
             RegexTarget.OR ->
-                Regex(regexPattern).containsMatchIn(notification.title) ||
-                        Regex(regexPattern).containsMatchIn(notification.content)
+                regexPattern.containsMatchIn(notification.title) ||
+                        regexPattern.containsMatchIn(notification.content)
 
             RegexTarget.AND ->
-                Regex(regexPattern).containsMatchIn(notification.title) &&
-                        Regex(secondaryRegexPattern!!).containsMatchIn(notification.content)
+                regexPattern.containsMatchIn(notification.title) &&
+                        secondaryRegexPattern!!.containsMatchIn(notification.content)
         }
     }
 }

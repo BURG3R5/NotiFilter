@@ -19,8 +19,8 @@ android {
         applicationId = "co.adityarajput.notifilter"
         minSdk = 29
         targetSdk = 36
-        versionCode = 27
-        versionName = "4.8.1"
+        versionCode = 28
+        versionName = "4.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.aboutlibraries.compose)
+    implementation(libs.jemoji)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

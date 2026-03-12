@@ -405,7 +405,6 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
             unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
         ),
-        singleLine = true,
     )
     AnimatedVisibility(viewModel.state.values.regexTarget == RegexTarget.AND) {
         OutlinedTextField(
@@ -425,7 +424,6 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            singleLine = true,
         )
     }
     Text(
@@ -548,7 +546,6 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                         unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                         disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
-                    singleLine = true,
                 )
                 if (viewModel.state.error == FormError.INVALID_BUTTON_REGEX) ErrorText(R.string.invalid_regex)
             }
