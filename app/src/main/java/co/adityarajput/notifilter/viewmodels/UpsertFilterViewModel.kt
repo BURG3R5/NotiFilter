@@ -13,6 +13,8 @@ import co.adityarajput.notifilter.data.Repository
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.Logger
+import co.adityarajput.notifilter.utils.containsMatchIn
+import co.adityarajput.notifilter.utils.isValidRegex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -108,26 +110,20 @@ class UpsertFilterViewModel(
 
             FormPage.PATTERN -> {
                 if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
-                try {
-                    Regex(values.queryPattern).pattern == values.queryPattern
-                    if (values.regexTarget == RegexTarget.AND) {
-                        if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
-                        Regex(values.secondaryQueryPattern).pattern == values.secondaryQueryPattern
-                    }
-                } catch (_: Exception) {
-                    return FormError.INVALID_NOTIFICATION_REGEX
+
+                if (!values.queryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
+
+                if (values.regexTarget == RegexTarget.AND) {
+                    if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
+                    if (!values.secondaryQueryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
                 }
             }
 
             FormPage.ACTION -> {
                 if (values.action is Action.TAP_BUTTON) {
-                    try {
-                        if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
-                        Regex(values.action.buttonRegex).pattern == values.action.buttonRegex
-                    } catch (_: Exception) {
-                        Logger.d("FiltersViewModel.getError", "Button pattern regex invalid")
-                        return FormError.INVALID_BUTTON_REGEX
-                    }
+                    if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
+
+                    if (!values.action.buttonRegex.isValidRegex()) return FormError.INVALID_BUTTON_REGEX
                 }
 
                 if (values.action is Action.DEBOUNCE && values.app == Any) {
@@ -156,15 +152,15 @@ class UpsertFilterViewModel(
 
             if (
                 regexTarget != RegexTarget.CONTENT
-                && !Regex(values.queryPattern).containsMatchIn(notification.title)
+                && !values.queryPattern.containsMatchIn(notification.title)
             ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_TITLE)
             if (
                 (regexTarget == RegexTarget.CONTENT || regexTarget == RegexTarget.OR)
-                && !Regex(values.queryPattern).containsMatchIn(notification.content)
+                && !values.queryPattern.containsMatchIn(notification.content)
             ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
             if (
                 regexTarget == RegexTarget.AND &&
-                !Regex(values.secondaryQueryPattern).containsMatchIn(notification.content)
+                !values.secondaryQueryPattern.containsMatchIn(notification.content)
             ) warnings.add(FormWarning.REGEX_DOESNT_MATCH_CONTENT)
 
             return warnings

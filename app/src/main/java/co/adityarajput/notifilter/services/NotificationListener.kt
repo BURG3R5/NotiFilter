@@ -19,6 +19,7 @@ import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.Logger
+import co.adityarajput.notifilter.utils.containsMatchIn
 import co.adityarajput.notifilter.utils.sendIntent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -167,7 +168,7 @@ class NotificationListener : NotificationListenerService() {
             is Action.TAP_BUTTON ->
                 try {
                     intents.actions.entries.find {
-                        Regex(filter.action.buttonRegex).containsMatchIn(it.key)
+                        filter.action.buttonRegex.containsMatchIn(it.key)
                     }?.value?.send()
                 } catch (e: Exception) {
                     Logger.e("NotificationListener", "Failed to tap button", e)
