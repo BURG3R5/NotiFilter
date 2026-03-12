@@ -1,0 +1,4 @@
+• fix: Make regex input fields multi-line
+• feat: Allow emoji-matching via a special pattern
+
+The default regex implementation available to us cannot be used to match arbitrary emojis, so a special pattern has been added to simulate this behavior. For details, visit the Tips page of the project wiki.
