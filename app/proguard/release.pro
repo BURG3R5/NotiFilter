@@ -7,3 +7,5 @@
 -assumenosideeffects class co.adityarajput.notifilter.utils.Logger {
     public final void d(...);
 }
+
+-keep class net.fellbaum.jemoji.Emoji { *; }

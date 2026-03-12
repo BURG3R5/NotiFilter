@@ -98,7 +98,6 @@ class UpsertFilterViewModel(
         state = State(page, values, getError(page, values), getWarnings(page, values))
     }
 
-    @Suppress("UnusedEquals")
     private fun getError(
         page: FormPage = state.page,
         values: Values = state.values,
