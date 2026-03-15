@@ -1,5 +1,5 @@
 [versions]
-aboutlibraries = "13.2.1"
+aboutlibraries = "14.0.0-b02"
 agp = "9.1.0"
 kotlin = "2.3.10"
 coreKtx = "1.18.0"
