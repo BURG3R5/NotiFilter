@@ -31,7 +31,7 @@ fun LicensesScreen(goBack: () -> Unit = {}) {
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            val libraries by produceLibraries(R.raw.aboutlibraries)
+            val libraries by produceLibraries()
 
             LibrariesContainer(
                 libraries,

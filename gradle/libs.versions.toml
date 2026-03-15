@@ -1,6 +1,6 @@
 [versions]
-aboutlibraries = "13.2.1"
-agp = "8.13.2"
+aboutlibraries = "14.0.0-b02"
+agp = "9.1.0"
 kotlin = "2.3.10"
 coreKtx = "1.18.0"
 junit = "4.13.2"
@@ -9,7 +9,7 @@ espressoCore = "3.7.0"
 kotlinxSerializationJson = "1.10.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-composeBom = "2026.02.00"
+composeBom = "2026.03.00"
 appcompat = "1.7.1"
 navigation = "2.9.7"
 room = "2.8.4"
@@ -52,6 +52,5 @@ jemoji = { group = "net.fellbaum", name = "jemoji", version.ref = "jemoji" }
 aboutlibraries-android = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutlibraries" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
