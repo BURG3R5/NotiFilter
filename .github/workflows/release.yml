@@ -21,9 +21,7 @@ jobs:
           cache: "gradle"
 
       - name: Build APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease
+        run: ./gradlew assembleRelease
 
       - name: Sign APK
         env:
