@@ -43,11 +43,14 @@ data class Schedule(
             }
         }
 
-    fun includesNow(): Boolean {
-        val calendar = Calendar.getInstance()
+    fun includesNow(calendar: Calendar = Calendar.getInstance()): Boolean {
+        val minuteOfDay =
+            calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
+
         return days.contains(calendar.get(Calendar.DAY_OF_WEEK)) &&
-                calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE) in start..end
+                ((start < end && minuteOfDay in start..end)
+                        || (end < start && minuteOfDay !in (end + 1)..<start))
     }
 
-    fun isRangeValid() = start in 0..1439 && end in 0..1439 && start <= end
+    fun isRangeValid() = start in 0..1439 && end in 0..1439 && start != end
 }

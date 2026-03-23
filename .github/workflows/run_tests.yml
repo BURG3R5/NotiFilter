@@ -1,0 +1,23 @@
+name: run tests
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "temurin"
+          cache: "gradle"
+
+      - name: Run tests
+        run: ./gradlew testReleaseUnitTest
