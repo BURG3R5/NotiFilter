@@ -29,7 +29,6 @@ jobs:
 
       - name: Build APK
         run: |
-          chmod +x gradlew
           ./gradlew assembleNightly
           mv app/build/outputs/apk/nightly/app-nightly-unsigned.apk app/NotiFilter_nightly.apk
 
