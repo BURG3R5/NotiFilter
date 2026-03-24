@@ -203,7 +203,9 @@ class NotificationListener : NotificationListenerService() {
                 val zone = ZoneId.systemDefault()
                 val now = ZonedDateTime.now(zone)
                 val delay = now.until(
-                    now.toLocalDate().atStartOfDay(zone)
+                    now.toLocalDate()
+                        .plusDays(if (filter.schedule.end < filter.schedule.start) 1 else 0)
+                        .atStartOfDay(zone)
                         .plusMinutes(filter.schedule.end.toLong()),
                     MILLIS,
                 )
