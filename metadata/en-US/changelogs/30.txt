@@ -1,0 +1,5 @@
+• feat: Support overnight schedules
+
+Intervals like 9pm to 7am (of the next day) are now supported.
+
+Note that the schedule must include the correct days of the week. For example, if you want to schedule something from 9pm on Monday to 7am on Tuesday, both Monday and Tuesday must be active.
