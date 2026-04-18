@@ -5,10 +5,8 @@ import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.ApplicationInfo
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.media.AudioManager
 import android.os.Build
-import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -117,7 +115,6 @@ class NotificationListener : NotificationListenerService() {
                 .setContentText(getString(R.string.foreground_notification_content))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setOngoing(true).setSilent(true).build(),
-            if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
         Logger.i("NotificationListener", "Promoted to foreground")
     }

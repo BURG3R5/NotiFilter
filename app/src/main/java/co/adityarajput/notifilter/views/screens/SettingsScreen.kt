@@ -143,9 +143,17 @@ fun SettingsScreen(
                         Switch(
                             isRunningInForeground,
                             {
-                                isRunningInForeground = it
-                                sharedPreferences.edit { putBoolean(RUN_IN_FOREGROUND, it) }
-                                NotificationListener.updateForegroundStatus(it)
+                                if (NotificationListener.instance == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "Notification listener isn't properly initialized.",
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                } else {
+                                    isRunningInForeground = it
+                                    sharedPreferences.edit { putBoolean(RUN_IN_FOREGROUND, it) }
+                                    NotificationListener.updateForegroundStatus(it)
+                                }
                             },
                         )
                     }
