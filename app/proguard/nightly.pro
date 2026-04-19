@@ -5,3 +5,7 @@
 }
 
 -keep class net.fellbaum.jemoji.Emoji { *; }
+
+-dontwarn javax.annotation.processing.Processor
+-dontwarn javax.annotation.processing.AbstractProcessor
+-dontwarn javax.annotation.processing.SupportedOptions

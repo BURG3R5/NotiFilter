@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
+import co.adityarajput.notifilter.BuildConfig
 import co.adityarajput.notifilter.Constants.RUN_IN_FOREGROUND
 import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.R
@@ -166,7 +167,7 @@ fun SettingsScreen(
                     val importSuccess = stringResource(R.string.import_success)
                     val exportSuccess = stringResource(R.string.export_success)
                     val appNameAndVersion =
-                        "${stringResource(R.string.app_name)}_${stringResource(R.string.app_version)}"
+                        "${stringResource(R.string.app_name)}_${BuildConfig.VERSION_NAME}"
 
                     val importLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.OpenDocument(),

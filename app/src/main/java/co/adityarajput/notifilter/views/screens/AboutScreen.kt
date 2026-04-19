@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import co.adityarajput.notifilter.BuildConfig
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.views.Theme
 import co.adityarajput.notifilter.views.components.AppBar
@@ -99,7 +100,7 @@ fun AboutScreen(goBack: () -> Unit) {
                     Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        "v${stringResource(R.string.app_version)}",
+                        "v${BuildConfig.VERSION_NAME}",
                         Modifier.padding(
                             top = dimensionResource(R.dimen.padding_large),
                             bottom = dimensionResource(R.dimen.padding_small),
