@@ -14,7 +14,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val key = intent.getStringExtra(Constants.EXTRA_SBN_KEY) ?: return
             val isClearable = intent.getBooleanExtra(Constants.EXTRA_SBN_IS_CLEARABLE, false)
 
-            NotificationListener.instance?.dismissNotification(key, isClearable)
+            NotificationListener.instance.dismissNotification(key, isClearable)
         }
     }
 }
