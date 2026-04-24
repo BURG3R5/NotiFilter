@@ -70,10 +70,9 @@ class UpsertFilterViewModel(
 
     var activeNotifications by mutableStateOf(
         NotificationListener.instance
-            ?.activeNotifications
-            ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-            ?.mapIndexed { i, sbn -> Notification(sbn, id = i) }
-            ?: listOf(),
+            .activeNotifications
+            .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+            .mapIndexed { i, sbn -> Notification(sbn, id = i) },
     )
 
     init {
@@ -85,10 +84,9 @@ class UpsertFilterViewModel(
 
             while (true) {
                 activeNotifications = NotificationListener.instance
-                    ?.activeNotifications
-                    ?.filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                    ?.mapIndexed { i, sbn -> Notification(sbn, id = i) }
-                    ?: listOf()
+                    .activeNotifications
+                    .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+                    .mapIndexed { i, sbn -> Notification(sbn, id = i) }
                 delay(500)
             }
         }

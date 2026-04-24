@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name" translatable="false">NotiFilter</string>
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
-    <string name="app_version" translatable="false">4.10.1</string>
 
     <!-- region FiltersScreen -->
     <string name="no_filters">No filters added.\nTap + to get started.</string>

@@ -25,6 +25,3 @@ jobs:
 
       - name: Check changelog
         run: git diff HEAD~...HEAD --name-status -- 'metadata/en-US/changelogs/' | grep -qE '^A' || (echo "Changelog file not added" && exit 1)
-
-      - name: Check version string
-        run: git diff HEAD~...HEAD -- app/src/main/res/values/strings.xml | grep -E '^\+' | grep -q 'app_version' || (echo "Version string not updated" && exit 1)

@@ -2,6 +2,7 @@ package co.adityarajput.notifilter.utils
 
 import android.util.Log
 import co.adityarajput.notifilter.Constants
+import org.acra.ACRA
 
 object Logger {
     val logs = ArrayDeque<String>(Constants.LOG_SIZE)
@@ -18,6 +19,8 @@ object Logger {
 
         if (logs.size >= Constants.LOG_SIZE) logs.removeFirst()
         logs.addLast("[${System.currentTimeMillis()}][$tag][INFO] $msg")
+
+        ACRA.errorReporter.putCustomData("logs", logs.joinToString("\n"))
     }
 
     fun e(tag: String, msg: String, tr: Throwable? = null) {
@@ -25,5 +28,7 @@ object Logger {
 
         if (logs.size >= Constants.LOG_SIZE) logs.removeFirst()
         logs.addLast("[${System.currentTimeMillis()}][$tag][ERROR] $msg")
+
+        ACRA.errorReporter.putCustomData("logs", logs.joinToString("\n"))
     }
 }

@@ -5,10 +5,8 @@ import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.ApplicationInfo
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.media.AudioManager
 import android.os.Build
-import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -32,14 +30,19 @@ import kotlin.math.min
 class NotificationListener : NotificationListenerService() {
     companion object {
         @Volatile
-        var instance: NotificationListener? = null
+        private var _instance: NotificationListener? = null
+
+        var instance: NotificationListener
+            get() = _instance ?: throw IllegalStateException("NotificationListener not initialized")
+            private set(value) {
+                _instance = value
+            }
 
         const val NOTIFICATION_SOUND_DURATION = 3000L
 
         fun createAlertNotificationChannel() {
-            val notificationManager = instance?.notificationManager ?: return
-            if (notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) {
-                notificationManager.createNotificationChannel(
+            if (instance.notificationManager.getNotificationChannel(Constants.ALERT_NOTIFICATION_CHANNEL_ID) == null) {
+                instance.notificationManager.createNotificationChannel(
                     NotificationChannel(
                         Constants.ALERT_NOTIFICATION_CHANNEL_ID,
                         "NotiFilter Alert Service",
@@ -53,9 +56,9 @@ class NotificationListener : NotificationListenerService() {
 
         fun updateForegroundStatus(runInForeground: Boolean) {
             if (runInForeground) {
-                instance!!.startForeground()
+                instance.startForeground()
             } else {
-                instance!!.stopForeground(STOP_FOREGROUND_REMOVE)
+                instance.stopForeground(STOP_FOREGROUND_REMOVE)
             }
         }
     }
@@ -117,7 +120,6 @@ class NotificationListener : NotificationListenerService() {
                 .setContentText(getString(R.string.foreground_notification_content))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setOngoing(true).setSilent(true).build(),
-            if (Build.VERSION.SDK_INT >= UPSIDE_DOWN_CAKE) FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0,
         )
         Logger.i("NotificationListener", "Promoted to foreground")
     }
@@ -361,7 +363,7 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
-        if (instance == this) instance = null
+        if (instance == this) _instance = null
         Logger.i("NotificationListener", "Listener disconnected")
     }
 

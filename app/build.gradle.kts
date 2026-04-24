@@ -61,6 +61,7 @@ android {
         }
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     ksp {
@@ -89,6 +90,8 @@ dependencies {
     implementation(libs.androidx.glance.material3)
     implementation(libs.aboutlibraries.compose)
     implementation(libs.jemoji)
+    implementation(libs.acra.dialog)
+    implementation(libs.acra.mail)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
