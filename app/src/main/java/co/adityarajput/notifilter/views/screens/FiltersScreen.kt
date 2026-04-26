@@ -56,6 +56,7 @@ fun FiltersScreen(
                 .getBoolean(SHOW_MISSING_PERMISSIONS_DIALOG, true),
         )
     }
+    var isAdjustingPriorities by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -130,52 +131,84 @@ fun FiltersScreen(
                         },
                         null,
                         {
-                            IconButton(
-                                {
-                                    viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
-                                },
-                            ) {
-                                Icon(
-                                    painterResource(R.drawable.manage_history),
-                                    stringResource(
-                                        R.string.toggle_history,
-                                        it.historyEnabled.getToggleString(),
+                            if (!isAdjustingPriorities) {
+                                IconButton(
+                                    {
+                                        viewModel.normalizePriorities()
+                                        isAdjustingPriorities = true
+                                    },
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.format_line_spacing),
+                                        stringResource(R.string.adjust_priorities),
+                                    )
+                                }
+                                IconButton(
+                                    {
+                                        viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
+                                    },
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.manage_history),
+                                        stringResource(
+                                            R.string.toggle_history,
+                                            it.historyEnabled.getToggleString(),
+                                        ),
+                                    )
+                                }
+                                IconButton(
+                                    {
+                                        viewModel.dialogState = FilterDialogState.TOGGLE_FILTER
+                                    },
+                                ) {
+                                    Icon(
+                                        if (it.enabled) painterResource(R.drawable.archive)
+                                        else painterResource(R.drawable.unarchive),
+                                        stringResource(
+                                            R.string.toggle_filter,
+                                            it.enabled.getToggleString(),
+                                        ),
+                                    )
+                                }
+                                IconButton({ goToUpsertFilterScreen(Json.encodeToString(it)) }) {
+                                    Icon(
+                                        painterResource(R.drawable.edit),
+                                        stringResource(R.string.edit_filter),
+                                    )
+                                }
+                                IconButton(
+                                    { viewModel.dialogState = FilterDialogState.DELETE },
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.tertiary,
                                     ),
-                                )
-                            }
-                            IconButton(
-                                {
-                                    viewModel.dialogState = FilterDialogState.TOGGLE_FILTER
-                                },
-                            ) {
-                                Icon(
-                                    if (it.enabled) painterResource(R.drawable.archive)
-                                    else painterResource(R.drawable.unarchive),
-                                    stringResource(
-                                        R.string.toggle_filter,
-                                        it.enabled.getToggleString(),
-                                    ),
-                                )
-                            }
-                            IconButton({ goToUpsertFilterScreen(Json.encodeToString(it)) }) {
-                                Icon(
-                                    painterResource(R.drawable.edit),
-                                    stringResource(R.string.edit_filter),
-                                )
-                            }
-                            IconButton(
-                                { viewModel.dialogState = FilterDialogState.DELETE },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.tertiary,
-                                ),
-                            ) {
-                                Icon(
-                                    painterResource(R.drawable.delete),
-                                    stringResource(R.string.delete),
-                                )
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.delete),
+                                        stringResource(R.string.delete),
+                                    )
+                                }
+                            } else {
+                                IconButton({ viewModel.updatePriority(it, true) }) {
+                                    Icon(
+                                        painterResource(R.drawable.up),
+                                        stringResource(R.string.move_up),
+                                    )
+                                }
+                                IconButton({ viewModel.updatePriority(it, false) }) {
+                                    Icon(
+                                        painterResource(R.drawable.down),
+                                        stringResource(R.string.move_down),
+                                    )
+                                }
+                                IconButton({ isAdjustingPriorities = false }) {
+                                    Icon(
+                                        painterResource(R.drawable.check),
+                                        stringResource(R.string.save),
+                                    )
+                                }
                             }
                         },
-                        viewModel.selectedFilter == it,
+                        isAdjustingPriorities || viewModel.selectedFilter == it,
                         true,
                     )
                 }

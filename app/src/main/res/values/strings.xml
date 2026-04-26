@@ -23,6 +23,9 @@
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
+    <string name="adjust_priorities">Adjust priorities</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
     <string name="toggle_history">%1$s history</string>
     <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
     <string name="enable_history_confirmation">Enable history for this filter?</string>

@@ -31,6 +31,9 @@ data class Filter(
     @ColumnInfo(defaultValue = "0")
     val widgetEnabled: Boolean = false,
 
+    @ColumnInfo(defaultValue = "0")
+    val priority: Int = 0,
+
     val hits: Int = 0,
 
     @PrimaryKey(autoGenerate = true)
