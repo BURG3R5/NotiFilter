@@ -25,23 +25,52 @@ class FiltersViewModel(private val repository: Repository) : ViewModel() {
 
     var selectedFilter by mutableStateOf<Filter?>(null)
 
+    fun normalizePriorities() {
+        viewModelScope.launch {
+            Logger.d("FiltersViewModel", "Normalizing filter priorities")
+            state.value.filters!!.forEachIndexed { index, filter ->
+                repository.upsert(filter.copy(priority = index))
+            }
+        }
+    }
+
+    fun updatePriority(filter: Filter, increase: Boolean) {
+        viewModelScope.launch {
+            Logger.d("FiltersViewModel", "Updating priority of $selectedFilter")
+            val currentPriority = filter.priority
+            if (increase && currentPriority > 0) {
+                val filterAbove = state.value.filters!!.first { it.priority == currentPriority - 1 }
+                repository.upsert(
+                    filterAbove.copy(priority = currentPriority),
+                    selectedFilter!!.copy(priority = currentPriority - 1),
+                )
+            } else if (!increase && currentPriority < state.value.filters!!.size - 1) {
+                val filterBelow = state.value.filters!!.first { it.priority == currentPriority + 1 }
+                repository.upsert(
+                    filterBelow.copy(priority = currentPriority),
+                    selectedFilter!!.copy(priority = currentPriority + 1),
+                )
+            }
+        }
+    }
+
     fun toggleHistory() {
         viewModelScope.launch {
-            Logger.d("FiltersViewModel.toggleHistory", "Toggling history for $selectedFilter")
+            Logger.d("FiltersViewModel", "Toggling history for $selectedFilter")
             repository.toggleHistory(selectedFilter!!)
         }
     }
 
     fun toggleFilter() {
         viewModelScope.launch {
-            Logger.d("FiltersViewModel.toggleFilter", "Toggling enabled state of $selectedFilter")
+            Logger.d("FiltersViewModel", "Toggling enabled state of $selectedFilter")
             repository.toggleEnabled(selectedFilter!!)
         }
     }
 
     fun deleteFilter() {
         viewModelScope.launch {
-            Logger.d("FiltersViewModel.deleteFilter", "Deleting $selectedFilter")
+            Logger.d("FiltersViewModel", "Deleting $selectedFilter")
             repository.delete(selectedFilter!!)
         }
     }

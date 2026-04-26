@@ -43,11 +43,13 @@ class UpsertFilterViewModel(
         val schedule: Schedule = Schedule(),
         val historyEnabled: Boolean = true,
         val widgetEnabled: Boolean = false,
+        val priority: Int = 0,
     ) {
         constructor(filter: Filter) : this(
             filter.id, null, filter.app, filter.regexTarget,
             filter.regexPattern, filter.secondaryRegexPattern ?: "",
             filter.action, filter.schedule, filter.historyEnabled, filter.widgetEnabled,
+            filter.priority,
         )
 
         fun toFilter() = Filter(
@@ -56,6 +58,7 @@ class UpsertFilterViewModel(
             historyEnabled = historyEnabled,
             widgetEnabled = widgetEnabled,
             id = filterId,
+            priority = if (filterId == 0) Int.MAX_VALUE else priority,
         )
     }
 

@@ -18,6 +18,7 @@ import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.containsMatchIn
+import co.adityarajput.notifilter.utils.printable
 import co.adityarajput.notifilter.utils.sendIntent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -141,7 +142,7 @@ class NotificationListener : NotificationListenerService() {
 
         Logger.d(
             "NotificationListener",
-            "Received $sbn with extras ${sbn.notification.extras}",
+            "Received $sbn with extras ${sbn.notification.extras.printable}",
         )
         val notification = Notification(sbn)
         val intents = Intents(sbn)
@@ -152,7 +153,7 @@ class NotificationListener : NotificationListenerService() {
                     && it.enabled
                     && it.schedule.includesNow()
                     && it.matchesTextOf(notification)
-        }.minByOrNull { it.id } ?: return
+        }.minByOrNull { it.priority } ?: return
 
         Logger.i("NotificationListener", "Matched $filter")
 

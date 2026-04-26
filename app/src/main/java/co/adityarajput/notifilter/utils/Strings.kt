@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.utils
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import co.adityarajput.notifilter.R
@@ -45,3 +46,5 @@ fun Int.toHourMinuteString() =
 @Composable
 fun Boolean.getToggleString(): String =
     stringResource(if (this) R.string.disable else R.string.enable)
+
+val Bundle.printable get() = "Bundle(${keySet().joinToString(", ") { "$it=${get(it)}" }})"

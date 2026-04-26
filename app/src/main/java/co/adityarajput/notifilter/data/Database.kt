@@ -10,12 +10,13 @@ import co.adityarajput.notifilter.data.models.Notification
 
 @Database(
     entities = [Filter::class, Notification::class],
-    version = 11,
+    version = 12,
     autoMigrations = [
         AutoMigration(1, 2), AutoMigration(2, 3), AutoMigration(3, 4),
         AutoMigration(4, 5), AutoMigration(5, 6),
         AutoMigration(6, 7, NotiFilterDatabase.DeleteTableAN::class),
         AutoMigration(7, 8), AutoMigration(8, 9), AutoMigration(10, 11),
+        AutoMigration(11, 12),
     ],
 )
 @TypeConverters(Converters::class)
