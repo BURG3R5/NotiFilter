@@ -1,0 +1,3 @@
+• fix: Make "foregrounding" safer on older devices
+• feat: Add opt-in email-based crash reporting using ACRA
+• feat: Let users reorder filters
