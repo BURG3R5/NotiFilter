@@ -37,18 +37,17 @@ class FiltersViewModel(private val repository: Repository) : ViewModel() {
     fun updatePriority(filter: Filter, increase: Boolean) {
         viewModelScope.launch {
             Logger.d("FiltersViewModel", "Updating priority of $selectedFilter")
-            val currentPriority = filter.priority
-            if (increase && currentPriority > 0) {
-                val filterAbove = state.value.filters!!.first { it.priority == currentPriority - 1 }
+            if (increase && filter.priority > 0) {
+                val filterAbove = state.value.filters!!.first { it.priority == filter.priority - 1 }
                 repository.upsert(
-                    filterAbove.copy(priority = currentPriority),
-                    selectedFilter!!.copy(priority = currentPriority - 1),
+                    filterAbove.copy(priority = filter.priority),
+                    filter.copy(priority = filter.priority - 1),
                 )
-            } else if (!increase && currentPriority < state.value.filters!!.size - 1) {
-                val filterBelow = state.value.filters!!.first { it.priority == currentPriority + 1 }
+            } else if (!increase && filter.priority < state.value.filters!!.size - 1) {
+                val filterBelow = state.value.filters!!.first { it.priority == filter.priority + 1 }
                 repository.upsert(
-                    filterBelow.copy(priority = currentPriority),
-                    selectedFilter!!.copy(priority = currentPriority + 1),
+                    filterBelow.copy(priority = filter.priority),
+                    filter.copy(priority = filter.priority + 1),
                 )
             }
         }
