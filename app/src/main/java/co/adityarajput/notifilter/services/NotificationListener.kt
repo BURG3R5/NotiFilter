@@ -27,6 +27,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class NotificationListener : NotificationListenerService() {
     companion object {
@@ -38,6 +40,8 @@ class NotificationListener : NotificationListenerService() {
             private set(value) {
                 _instance = value
             }
+
+        val isServiceInitialized get() = _instance != null
 
         const val NOTIFICATION_SOUND_DURATION = 3000L
 
@@ -55,12 +59,22 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        fun updateForegroundStatus(runInForeground: Boolean) {
+        fun updateForegroundStatus(runInForeground: Boolean): Boolean {
+            if (!isServiceInitialized) {
+                Logger.i(
+                    "NotificationListener",
+                    "Skipping foreground toggle because service is not initialized",
+                )
+                return false
+            }
+
             if (runInForeground) {
                 instance.startForeground()
             } else {
                 instance.stopForeground(STOP_FOREGROUND_REMOVE)
             }
+
+            return true
         }
     }
 
@@ -232,10 +246,10 @@ class NotificationListener : NotificationListenerService() {
             }
 
             is Action.MUTE -> serviceScope.launch {
-                delay(300L)
+                delay(300.milliseconds)
                 Logger.i("NotificationListener", "Muting")
                 requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
-                delay(NOTIFICATION_SOUND_DURATION)
+                delay(NOTIFICATION_SOUND_DURATION.milliseconds)
                 Logger.d("NotificationListener", "Unmuting")
                 requestListenerHints(0)
             }
@@ -249,7 +263,7 @@ class NotificationListener : NotificationListenerService() {
                         .setAutoCancel(true).build(),
                 )
                 serviceScope.launch {
-                    delay(2000L)
+                    delay(2.seconds)
                     notificationManager.cancel(Constants.ALERT_NOTIFICATION_ID)
                 }
             }
@@ -317,14 +331,14 @@ class NotificationListener : NotificationListenerService() {
 
     private fun muteNotificationsWhileCooldown(filter: Filter) {
         serviceScope.launch {
-            delay(NOTIFICATION_SOUND_DURATION) // INFO: Wait for original notification sound
+            delay(NOTIFICATION_SOUND_DURATION.milliseconds) // INFO: Wait for original notification sound
             Logger.d("NotificationListener", "Applying cooldown")
             requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
             try {
                 while (true) {
                     val cooldownEnd = cooldowns[filter.id] ?: break
                     if (System.currentTimeMillis() > cooldownEnd) break
-                    delay(500L)
+                    delay(500.milliseconds)
                 }
             } finally {
                 Logger.d("NotificationListener", "Cooldown ended")
@@ -348,7 +362,7 @@ class NotificationListener : NotificationListenerService() {
                 while (true) {
                     val cooldownEnd = cooldowns[filter.id] ?: break
                     if (System.currentTimeMillis() > cooldownEnd) break
-                    delay(500L)
+                    delay(500.milliseconds)
                 }
             } finally {
                 Logger.d("NotificationListener", "Disturbance ended")

@@ -4,6 +4,7 @@
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
 
     <!-- region FiltersScreen -->
+    <string name="listener_uninitialized">Waiting for OS to initialize\nnotification listener service…</string>
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
     <string name="on_weekends">"on weekends "</string>

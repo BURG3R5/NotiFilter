@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class UpsertFilterViewModel(
     filter: Filter?,
@@ -72,10 +73,11 @@ class UpsertFilterViewModel(
     var allPackages by mutableStateOf<List<App>>(emptyList())
 
     var activeNotifications by mutableStateOf(
-        NotificationListener.instance
-            .activeNotifications
-            .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-            .mapIndexed { i, sbn -> Notification(sbn, id = i) },
+        if (!NotificationListener.isServiceInitialized) emptyList() else
+            NotificationListener.instance
+                .activeNotifications
+                .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+                .mapIndexed { i, sbn -> Notification(sbn, id = i) },
     )
 
     init {
@@ -86,11 +88,12 @@ class UpsertFilterViewModel(
             }
 
             while (true) {
-                activeNotifications = NotificationListener.instance
-                    .activeNotifications
-                    .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                    .mapIndexed { i, sbn -> Notification(sbn, id = i) }
-                delay(500)
+                activeNotifications =
+                    if (!NotificationListener.isServiceInitialized) emptyList() else
+                        NotificationListener.instance.activeNotifications
+                            .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+                            .mapIndexed { i, sbn -> Notification(sbn, id = i) }
+                delay(500.milliseconds)
             }
         }
     }
