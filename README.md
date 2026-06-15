@@ -30,6 +30,7 @@ NotiFilter listens to all device notifications and quietly manages those that ma
   8. Play an alert 🔔
   9. Disable DND mode 🔊
   10. Remove after a delay ⏲️
+  11. Replace with a custom notification 📝
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored locally, for reference and retrieval 🧾
 - **Widget** - Configure filters to send notifications to a home screen widget 📱

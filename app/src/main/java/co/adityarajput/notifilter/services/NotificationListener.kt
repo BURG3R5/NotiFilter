@@ -4,10 +4,12 @@ import android.app.AlarmManager
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.media.AudioManager
 import android.os.Build
 import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
+import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -16,10 +18,7 @@ import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
-import co.adityarajput.notifilter.utils.Logger
-import co.adityarajput.notifilter.utils.containsMatchIn
-import co.adityarajput.notifilter.utils.printable
-import co.adityarajput.notifilter.utils.sendIntent
+import co.adityarajput.notifilter.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -55,6 +54,29 @@ class NotificationListener : NotificationListenerService() {
                     ).apply {
                         description = "Required for ALERT Actions"
                     },
+                )
+            }
+        }
+
+        fun createReplaceNotificationChannel(filterId: Int, openSettings: Boolean = false) {
+            val channelId = Constants.getReplaceNotificationChannelId(filterId)
+            if (instance.notificationManager.getNotificationChannel(channelId) == null) {
+                instance.notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        channelId,
+                        "NotiFilter Replace Notifications for Filter #$filterId",
+                        NotificationManager.IMPORTANCE_HIGH,
+                    ).apply {
+                        description = "Required for REPLACE Actions"
+                    },
+                )
+            }
+            if (openSettings) {
+                instance.startActivity(
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, instance.packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 )
             }
         }
@@ -298,6 +320,31 @@ class NotificationListener : NotificationListenerService() {
                         putExtra(Constants.EXTRA_SBN_IS_CLEARABLE, sbn.isClearable)
                     }
                 }
+            }
+
+            is Action.REPLACE -> {
+                createReplaceNotificationChannel(filter.id)
+                val allPackages = Cache.getAllPackages(packageManager)
+
+                cancelNotification(sbn.key)
+                notificationManager.notify(
+                    Constants.getReplaceNotificationId(filter.id),
+                    NotificationCompat
+                        .Builder(this, Constants.getReplaceNotificationChannelId(filter.id))
+                        .setContentTitle(
+                            filter.action.titleTemplate.replaceWithNotificationData(
+                                notification, allPackages,
+                            ),
+                        )
+                        .setContentText(
+                            filter.action.contentTemplate.replaceWithNotificationData(
+                                notification, allPackages,
+                            ),
+                        )
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentIntent(sbn.notification.contentIntent)
+                        .build(),
+                )
             }
         }
 

@@ -1,5 +1,7 @@
 package co.adityarajput.notifilter.utils
 
+import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.Notification
 import net.fellbaum.jemoji.EmojiManager
 
 private const val EMOJI_PATTERN_DISPLAY = "\\p{Emoji}"
@@ -16,6 +18,13 @@ fun String.containsMatchIn(input: String): Boolean {
 
     return Regex(pattern).containsMatchIn(text)
 }
+
+fun String.replaceWithNotificationData(notification: Notification, allPackages: List<App>) =
+    this.replace($$"${app}", notification.appNameFrom(allPackages))
+        .replace($$"${title}", notification.title)
+        .replace($$"${content}", notification.content)
+        .replace($$"${postTime}", notification.timestamp.toReadableTime())
+        .replace($$"${package}", notification.origin)
 
 fun String.isValidRegex() = try {
     this

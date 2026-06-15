@@ -14,6 +14,8 @@ object Constants {
     const val ALERT_NOTIFICATION_CHANNEL_ID = "notifilter_alert"
     const val FOREGROUND_NOTIFICATION_ID = 1001
     const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "notifilter_foreground"
+    fun getReplaceNotificationId(filterId: Int) = 1002 + filterId
+    fun getReplaceNotificationChannelId(filterId: Int) = "notifilter_replace_$filterId"
 
     const val ACTION_DISMISS_STALE = "co.adityarajput.notifilter.DISMISS_STALE"
     const val EXTRA_SBN_KEY = "extra_sbn_key"

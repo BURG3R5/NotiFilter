@@ -681,6 +681,74 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 }
             }
         }
+        AnimatedVisibility(it is Action.REPLACE && viewModel.state.values.action is Action.REPLACE) {
+            val action = (viewModel.state.values.action as? Action.REPLACE)
+                ?: Action.REPLACE($$"${app} - ${title}", $$"${content}")
+            Column(
+                Modifier.fillMaxWidth(),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                OutlinedTextField(
+                    action.titleTemplate,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = action.copy(titleTemplate = value)),
+                        )
+                    },
+                    Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.title_template)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                )
+                OutlinedTextField(
+                    action.contentTemplate,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = action.copy(contentTemplate = value)),
+                        )
+                    },
+                    Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.content_template)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                )
+                Text(
+                    AnnotatedString.fromHtml(
+                        stringResource(R.string.notification_template_advice),
+                        TextLinkStyles(
+                            SpanStyle(
+                                MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                            ),
+                        ),
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Normal,
+                )
+                if (!hasPermissions.getValue(Permission.POST_NOTIFICATIONS)) {
+                    ErrorText(R.string.replace_notifications_description)
+                    Button(
+                        { context.request(Permission.POST_NOTIFICATIONS) },
+                        Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) {
+                        Text(
+                            stringResource(R.string.grant_permission),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Normal,
+                        )
+                    }
+                }
+            }
+        }
     }
     HorizontalDivider()
     Text(

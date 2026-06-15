@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.Constants.SHOW_MISSING_PERMISSIONS_DIALOG
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.models.Action
 import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.services.NotificationListener
@@ -164,6 +165,20 @@ fun FiltersScreen(
                                         stringResource(R.string.adjust_priorities),
                                     )
                                 }
+                                if (it.action is Action.REPLACE)
+                                    IconButton(
+                                        {
+                                            NotificationListener.createReplaceNotificationChannel(
+                                                it.id,
+                                                true,
+                                            )
+                                        },
+                                    ) {
+                                        Icon(
+                                            painterResource(R.drawable.notification_settings),
+                                            stringResource(R.string.adjust_priorities),
+                                        )
+                                    }
                                 IconButton(
                                     {
                                         viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY

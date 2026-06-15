@@ -20,6 +20,7 @@
     <string name="alert_short">play an alert</string>
     <string name="disturb_short">disable DND for %1$s</string>
     <string name="dismiss_stale_short">dismiss after %1$s</string>
+    <string name="replace_short">replace with %1$s | %2$s</string>
     <string name="any_app">Any app</string>
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
@@ -27,6 +28,7 @@
     <string name="adjust_priorities">Adjust priorities</string>
     <string name="move_up">Move up</string>
     <string name="move_down">Move down</string>
+    <string name="configure_notifications">Configure notifications</string>
     <string name="toggle_history">%1$s history</string>
     <string name="disable_history_confirmation">Disable history and reset hits for this filter? Dismissed notifications will not be saved.</string>
     <string name="enable_history_confirmation">Enable history for this filter?</string>
@@ -120,6 +122,11 @@
     <string name="dismiss_stale_long">Remove stale notifications</string>
     <string name="retention_length">Dismiss after %1$s mins</string>
     <string name="exact_alarm_permission_description">NotiFilter requires exemption from battery optimization to execute delayed dismissal.</string>
+    <string name="replace_long">Replace with custom notification</string>
+    <string name="title_template">Title template</string>
+    <string name="content_template">Content template</string>
+    <string name="notification_template_advice"><![CDATA[Use ${app}, ${title} and ${content} as placeholders to access data from the original notification. Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Notification-Data\">here↗</a> for more templates.]]></string>
+    <string name="replace_notifications_description">NotiFilter dismisses the original notification and sends a new one with your chosen values.</string>
     <string name="display_options">Choose where to display caught notification</string>
     <string name="describe_history_screen">In-app History screen</string>
     <string name="describe_widget">Homescreen Log widget</string>
