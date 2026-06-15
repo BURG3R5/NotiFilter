@@ -21,5 +21,6 @@ object Constants {
     const val EXTRA_SBN_KEY = "extra_sbn_key"
     const val EXTRA_SBN_IS_CLEARABLE = "extra_sbn_is_clearable"
 
+    const val HISTORY_SIZE = 200
     const val LOG_SIZE = 100
 }
