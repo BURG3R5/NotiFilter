@@ -1,0 +1,2 @@
+• fix: Warn if `NotificationListener` is uninitialized
+• feat: Add "REPLACE" action
