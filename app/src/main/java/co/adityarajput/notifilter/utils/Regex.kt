@@ -4,7 +4,7 @@ import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
 import net.fellbaum.jemoji.EmojiManager
 
-private const val EMOJI_PATTERN_DISPLAY = "\\p{Emoji}"
+const val EMOJI_PATTERN_DISPLAY = "\\p{Emoji}"
 private const val EMOJI_PATTERN_INTERNAL = "\uE010"
 
 fun String.containsMatchIn(input: String): Boolean {

@@ -7,25 +7,25 @@ import java.util.Calendar
 
 @Suppress("TestFunctionName")
 class ScheduleTest {
-    val mondayTenAM: Calendar = Calendar.getInstance().apply {
+    private val mondayTenAM: Calendar = Calendar.getInstance().apply {
         set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
         set(Calendar.HOUR_OF_DAY, 10)
         set(Calendar.MINUTE, 0)
     }
 
-    val tuesdayNinePM: Calendar = Calendar.getInstance().apply {
+    private val tuesdayNinePM: Calendar = Calendar.getInstance().apply {
         set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY)
         set(Calendar.HOUR_OF_DAY, 21)
         set(Calendar.MINUTE, 0)
     }
 
-    val saturdayElevenPM: Calendar = Calendar.getInstance().apply {
+    private val saturdayElevenPM: Calendar = Calendar.getInstance().apply {
         set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
         set(Calendar.HOUR_OF_DAY, 23)
         set(Calendar.MINUTE, 0)
     }
 
-    val atWork = Schedule(
+    private val atWork = Schedule(
         9 * 60,
         (12 + 5) * 60,
         setOf(
@@ -37,7 +37,7 @@ class ScheduleTest {
         ),
     )
 
-    val atHome = Schedule(
+    private val atHome = Schedule(
         (12 + 5) * 60,
         9 * 60,
         setOf(
@@ -49,7 +49,7 @@ class ScheduleTest {
         ),
     )
 
-    val weekend = Schedule(days = setOf(Calendar.SATURDAY, Calendar.SUNDAY))
+    private val weekend = Schedule(days = setOf(Calendar.SATURDAY, Calendar.SUNDAY))
 
     @Test
     fun Schedule_includesNow_correct() {
