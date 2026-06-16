@@ -114,29 +114,30 @@ sealed class Action {
 
             value == "ALERT" -> ALERT
 
-            value.startsWith("TAP_BUTTON") -> TAP_BUTTON(
-                value.removePrefix("TAP_BUTTON(buttonRegex=").removeSuffix(")"),
+            value.startsWith("TAP_BUTTON(") -> TAP_BUTTON(
+                value.removeSurrounding("TAP_BUTTON(buttonRegex=", ")"),
             )
 
-            value.startsWith("BATCH") -> BATCH(
-                value.removePrefix("BATCH(batchLength=").removeSuffix(")").toInt(),
+            value.startsWith("BATCH(") -> BATCH(
+                value.removeSurrounding("BATCH(batchLength=", ")").toInt(),
             )
 
-            value.startsWith("DEBOUNCE") -> DEBOUNCE(
-                value.removePrefix("DEBOUNCE(cooldownLength=").removeSuffix(")").toInt(),
+            value.startsWith("DEBOUNCE(") -> DEBOUNCE(
+                value.removeSurrounding("DEBOUNCE(cooldownLength=", ")").toInt(),
             )
 
-            value.startsWith("DISTURB") -> DISTURB(
-                value.removePrefix("DISTURB(pauseLength=").removeSuffix(")").toInt(),
+            value.startsWith("DISTURB(") -> DISTURB(
+                value.removeSurrounding("DISTURB(pauseLength=", ")").toInt(),
             )
 
-            value.startsWith("DISMISS_STALE") -> DISMISS_STALE(
-                value.removePrefix("DISMISS_STALE(retentionLength=").removeSuffix(")").toInt(),
+            value.startsWith("DISMISS_STALE(") -> DISMISS_STALE(
+                value.removeSurrounding("DISMISS_STALE(retentionLength=", ")").toInt(),
             )
 
-            value.startsWith("REPLACE") -> {
-                val params = value.removePrefix("REPLACE(titleTemplate=").removeSuffix(")")
+            value.startsWith("REPLACE(") -> {
+                val params = value.removeSurrounding("REPLACE(titleTemplate=", ")")
                     .split(", contentTemplate=")
+
                 REPLACE(params[0], params[1])
             }
 
