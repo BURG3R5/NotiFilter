@@ -40,6 +40,9 @@ sealed class Action {
     @Serializable
     data class DISMISS_STALE(val retentionLength: Int) : Action()
 
+    @Serializable
+    data class REPLACE(val titleTemplate: String, val contentTemplate: String) : Action()
+
     @Composable
     fun verb() = when (this) {
         is DISMISS -> stringResource(R.string.dismiss_short)
@@ -68,6 +71,8 @@ sealed class Action {
             R.string.dismiss_stale_short,
             pluralStringResource(R.plurals.minute, retentionLength, retentionLength),
         )
+
+        is REPLACE -> stringResource(R.string.replace_short, titleTemplate, contentTemplate)
     }
 
     @Composable
@@ -83,6 +88,7 @@ sealed class Action {
             is ALERT -> R.string.alert_long
             is DISTURB -> R.string.disturb_long
             is DISMISS_STALE -> R.string.dismiss_stale_long
+            is REPLACE -> R.string.replace_long
         },
     )
 
@@ -93,6 +99,7 @@ sealed class Action {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
                 DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
+                REPLACE($$"${app} - ${title}", $$"${content}"),
             )
         }
 
@@ -126,6 +133,12 @@ sealed class Action {
             value.startsWith("DISMISS_STALE") -> DISMISS_STALE(
                 value.removePrefix("DISMISS_STALE(retentionLength=").removeSuffix(")").toInt(),
             )
+
+            value.startsWith("REPLACE") -> {
+                val params = value.removePrefix("REPLACE(titleTemplate=").removeSuffix(")")
+                    .split(", contentTemplate=")
+                REPLACE(params[0], params[1])
+            }
 
             else -> {
                 Logger.e("Action.fromString", value)

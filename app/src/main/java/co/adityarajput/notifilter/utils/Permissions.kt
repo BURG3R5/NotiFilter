@@ -102,7 +102,7 @@ fun permissionsRequired(filters: List<Filter>) = buildList {
     if (filters.any { it.action is Action.TAP_NOTIFICATION })
         add(Permission.ACCESSIBILITY_SERVICE)
 
-    if (filters.any { it.action is Action.ALERT })
+    if (filters.any { it.action is Action.ALERT || it.action is Action.REPLACE })
         add(Permission.POST_NOTIFICATIONS)
 
     if (filters.any { it.action is Action.DISTURB })

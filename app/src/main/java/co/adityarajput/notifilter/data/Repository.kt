@@ -1,5 +1,6 @@
 package co.adityarajput.notifilter.data
 
+import co.adityarajput.notifilter.Constants
 import co.adityarajput.notifilter.data.models.Filter
 import co.adityarajput.notifilter.data.models.Notification
 import co.adityarajput.notifilter.utils.Logger
@@ -25,9 +26,12 @@ class Repository(
         notificationDao.upsert(notification)
 
         val count = notificationDao.count()
-        if (count > 50) {
-            Logger.d("Repository.registerHit", "Deleting oldest ${count - 50} notification(s)")
-            notificationDao.listOldestN(count - 50).forEach {
+        if (count > Constants.HISTORY_SIZE) {
+            Logger.d(
+                "Repository",
+                "Deleting oldest ${count - Constants.HISTORY_SIZE} notification(s)",
+            )
+            notificationDao.listOldestN(count - Constants.HISTORY_SIZE).forEach {
                 Cache.intents.remove(it.data.hashCode())
                 notificationDao.delete(it)
             }

@@ -14,6 +14,14 @@ class AlarmReceiver : BroadcastReceiver() {
             val key = intent.getStringExtra(Constants.EXTRA_SBN_KEY) ?: return
             val isClearable = intent.getBooleanExtra(Constants.EXTRA_SBN_IS_CLEARABLE, false)
 
+            if (!NotificationListener.isServiceInitialized) {
+                Logger.i(
+                    "AlarmReceiver",
+                    "Skipping `DISMISS_STALE` because listener is not initialized",
+                )
+                return
+            }
+
             NotificationListener.instance.dismissNotification(key, isClearable)
         }
     }

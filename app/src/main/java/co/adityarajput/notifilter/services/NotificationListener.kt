@@ -4,10 +4,12 @@ import android.app.AlarmManager
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.media.AudioManager
 import android.os.Build
 import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
+import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -16,10 +18,7 @@ import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.AppContainer
 import co.adityarajput.notifilter.data.Cache
 import co.adityarajput.notifilter.data.models.*
-import co.adityarajput.notifilter.utils.Logger
-import co.adityarajput.notifilter.utils.containsMatchIn
-import co.adityarajput.notifilter.utils.printable
-import co.adityarajput.notifilter.utils.sendIntent
+import co.adityarajput.notifilter.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -27,6 +26,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.MILLIS
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class NotificationListener : NotificationListenerService() {
     companion object {
@@ -38,6 +39,8 @@ class NotificationListener : NotificationListenerService() {
             private set(value) {
                 _instance = value
             }
+
+        val isServiceInitialized get() = _instance != null
 
         const val NOTIFICATION_SOUND_DURATION = 3000L
 
@@ -55,12 +58,45 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        fun updateForegroundStatus(runInForeground: Boolean) {
+        fun createReplaceNotificationChannel(filterId: Int, openSettings: Boolean = false) {
+            val channelId = Constants.getReplaceNotificationChannelId(filterId)
+            if (instance.notificationManager.getNotificationChannel(channelId) == null) {
+                instance.notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        channelId,
+                        "NotiFilter Replace Notifications for Filter #$filterId",
+                        NotificationManager.IMPORTANCE_HIGH,
+                    ).apply {
+                        description = "Required for REPLACE Actions"
+                    },
+                )
+            }
+            if (openSettings) {
+                instance.startActivity(
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, instance.packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+            }
+        }
+
+        fun updateForegroundStatus(runInForeground: Boolean): Boolean {
+            if (!isServiceInitialized) {
+                Logger.i(
+                    "NotificationListener",
+                    "Skipping foreground toggle because service is not initialized",
+                )
+                return false
+            }
+
             if (runInForeground) {
                 instance.startForeground()
             } else {
                 instance.stopForeground(STOP_FOREGROUND_REMOVE)
             }
+
+            return true
         }
     }
 
@@ -232,10 +268,10 @@ class NotificationListener : NotificationListenerService() {
             }
 
             is Action.MUTE -> serviceScope.launch {
-                delay(300L)
+                delay(300.milliseconds)
                 Logger.i("NotificationListener", "Muting")
                 requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
-                delay(NOTIFICATION_SOUND_DURATION)
+                delay(NOTIFICATION_SOUND_DURATION.milliseconds)
                 Logger.d("NotificationListener", "Unmuting")
                 requestListenerHints(0)
             }
@@ -249,7 +285,7 @@ class NotificationListener : NotificationListenerService() {
                         .setAutoCancel(true).build(),
                 )
                 serviceScope.launch {
-                    delay(2000L)
+                    delay(2.seconds)
                     notificationManager.cancel(Constants.ALERT_NOTIFICATION_ID)
                 }
             }
@@ -285,6 +321,31 @@ class NotificationListener : NotificationListenerService() {
                     }
                 }
             }
+
+            is Action.REPLACE -> {
+                createReplaceNotificationChannel(filter.id)
+                val allPackages = Cache.getAllPackages(packageManager)
+
+                cancelNotification(sbn.key)
+                notificationManager.notify(
+                    Constants.getReplaceNotificationId(filter.id),
+                    NotificationCompat
+                        .Builder(this, Constants.getReplaceNotificationChannelId(filter.id))
+                        .setContentTitle(
+                            filter.action.titleTemplate.replaceWithNotificationData(
+                                notification, allPackages,
+                            ),
+                        )
+                        .setContentText(
+                            filter.action.contentTemplate.replaceWithNotificationData(
+                                notification, allPackages,
+                            ),
+                        )
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentIntent(sbn.notification.contentIntent)
+                        .build(),
+                )
+            }
         }
 
         serviceScope.launch {
@@ -317,14 +378,14 @@ class NotificationListener : NotificationListenerService() {
 
     private fun muteNotificationsWhileCooldown(filter: Filter) {
         serviceScope.launch {
-            delay(NOTIFICATION_SOUND_DURATION) // INFO: Wait for original notification sound
+            delay(NOTIFICATION_SOUND_DURATION.milliseconds) // INFO: Wait for original notification sound
             Logger.d("NotificationListener", "Applying cooldown")
             requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
             try {
                 while (true) {
                     val cooldownEnd = cooldowns[filter.id] ?: break
                     if (System.currentTimeMillis() > cooldownEnd) break
-                    delay(500L)
+                    delay(500.milliseconds)
                 }
             } finally {
                 Logger.d("NotificationListener", "Cooldown ended")
@@ -348,7 +409,7 @@ class NotificationListener : NotificationListenerService() {
                 while (true) {
                     val cooldownEnd = cooldowns[filter.id] ?: break
                     if (System.currentTimeMillis() > cooldownEnd) break
-                    delay(500L)
+                    delay(500.milliseconds)
                 }
             } finally {
                 Logger.d("NotificationListener", "Disturbance ended")

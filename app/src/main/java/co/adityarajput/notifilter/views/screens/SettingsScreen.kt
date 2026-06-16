@@ -141,12 +141,17 @@ fun SettingsScreen(
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
+                        val toastText = stringResource(R.string.listener_uninitialized)
                         Switch(
                             isRunningInForeground,
                             {
-                                isRunningInForeground = it
-                                sharedPreferences.edit { putBoolean(RUN_IN_FOREGROUND, it) }
-                                NotificationListener.updateForegroundStatus(it)
+                                val result = NotificationListener.updateForegroundStatus(it)
+                                if (!result) {
+                                    Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    isRunningInForeground = it
+                                    sharedPreferences.edit { putBoolean(RUN_IN_FOREGROUND, it) }
+                                }
                             },
                         )
                     }

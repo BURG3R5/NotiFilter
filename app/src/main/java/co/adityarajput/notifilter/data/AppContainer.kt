@@ -105,6 +105,13 @@ class AppContainer(private val context: Context) {
                         RegexTarget.OR,
                         historyEnabled = false,
                     ),
+                    Filter(
+                        App("GitHub", "com.github.android"),
+                        "approved your pull request",
+                        Action.REPLACE("PR approved", $$"${content}"),
+                        RegexTarget.TITLE,
+                        historyEnabled = false,
+                    ),
                 )
                 repository.upsert(
                     Notification(

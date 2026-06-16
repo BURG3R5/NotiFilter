@@ -23,8 +23,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.Constants.SETTINGS
 import co.adityarajput.notifilter.Constants.SHOW_MISSING_PERMISSIONS_DIALOG
 import co.adityarajput.notifilter.R
+import co.adityarajput.notifilter.data.models.Action
 import co.adityarajput.notifilter.data.models.Any
 import co.adityarajput.notifilter.data.models.RegexTarget
+import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
 import co.adityarajput.notifilter.utils.isGranted
@@ -36,7 +38,9 @@ import co.adityarajput.notifilter.views.components.AppBar
 import co.adityarajput.notifilter.views.components.ManageFilterDialog
 import co.adityarajput.notifilter.views.components.MissingPermissionsDialog
 import co.adityarajput.notifilter.views.components.Tile
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun FiltersScreen(
@@ -57,6 +61,16 @@ fun FiltersScreen(
         )
     }
     var isAdjustingPriorities by remember { mutableStateOf(false) }
+    var isListenerServiceInitialized by remember {
+        mutableStateOf(NotificationListener.isServiceInitialized)
+    }
+
+    LaunchedEffect(Unit) {
+        while (!isListenerServiceInitialized) {
+            isListenerServiceInitialized = NotificationListener.isServiceInitialized
+            delay(1.seconds)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -87,6 +101,14 @@ fun FiltersScreen(
     ) { paddingValues ->
         if (state.value.filters == null) {
             Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
+        } else if (!isListenerServiceInitialized) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
+                Text(
+                    stringResource(R.string.listener_uninitialized),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
         } else if (state.value.filters!!.isEmpty()) {
             Box(
                 Modifier.fillMaxSize(),
@@ -143,6 +165,20 @@ fun FiltersScreen(
                                         stringResource(R.string.adjust_priorities),
                                     )
                                 }
+                                if (it.action is Action.REPLACE)
+                                    IconButton(
+                                        {
+                                            NotificationListener.createReplaceNotificationChannel(
+                                                it.id,
+                                                true,
+                                            )
+                                        },
+                                    ) {
+                                        Icon(
+                                            painterResource(R.drawable.notification_settings),
+                                            stringResource(R.string.adjust_priorities),
+                                        )
+                                    }
                                 IconButton(
                                     {
                                         viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
