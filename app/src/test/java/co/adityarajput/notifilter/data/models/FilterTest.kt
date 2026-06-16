@@ -4,7 +4,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-@Suppress("TestFunctionName")
 class FilterTest {
     private val pollResultNotification = Notification(
         "Poll finale alert",

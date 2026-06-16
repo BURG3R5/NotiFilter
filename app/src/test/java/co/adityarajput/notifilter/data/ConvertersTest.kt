@@ -4,7 +4,6 @@ import co.adityarajput.notifilter.data.models.Action
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-@Suppress("TestFunctionName")
 class ConvertersTest {
     @Test
     fun Converters_Action_roundtrip() {

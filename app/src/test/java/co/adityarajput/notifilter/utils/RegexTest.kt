@@ -1,8 +1,11 @@
 package co.adityarajput.notifilter.utils
 
+import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.Notification
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.ZonedDateTime
 
 @Suppress("TestFunctionName")
 class RegexTest {
@@ -21,8 +24,26 @@ class RegexTest {
         assertFalse("🌍".containsMatchIn("Hello, world"))
 
         assertTrue(EMOJI_PATTERN_DISPLAY.containsMatchIn("Hello, 🌍"))
-        assertTrue("${EMOJI_PATTERN_DISPLAY}+".containsMatchIn("👋🌍"))
+        assertTrue("$EMOJI_PATTERN_DISPLAY, $EMOJI_PATTERN_DISPLAY".containsMatchIn("👋, 🌍"))
         assertFalse(EMOJI_PATTERN_DISPLAY.containsMatchIn("Hello, world"))
+    }
+
+    @Test
+    fun Regex_replaceWithNotificationData() {
+        val notification = Notification(
+            "MyTitle", "MyContent", "com.example.app",
+            ZonedDateTime.now().withHour(1).withMinute(0).withSecond(0).withNano(0)
+                .toInstant()
+                .toEpochMilli(),
+            id = 1,
+        )
+        val allPackages = listOf(App("MyApp", "com.example.app"))
+
+        assertTrue(
+            $$"At ${postTime}, ${app} (${package}) sent ${title} - ${content} and ${unknown}"
+                .replaceWithNotificationData(notification, allPackages)
+                    == $$"At 1:00 am, MyApp (com.example.app) sent MyTitle - MyContent and ${unknown}",
+        )
     }
 
     @Test
