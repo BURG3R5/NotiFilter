@@ -18,6 +18,7 @@ glance = "1.2.0-rc01"
 ksp = "2.3.4"
 jemoji = "1.7.6"
 acra = "5.13.1"
+betterParse = "0.4.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,7 +51,7 @@ aboutlibraries-compose = { group = "com.mikepenz", name = "aboutlibraries-compos
 jemoji = { group = "net.fellbaum", name = "jemoji", version.ref = "jemoji" }
 acra-dialog = { group = "ch.acra", name = "acra-dialog", version.ref = "acra" }
 acra-mail = { group = "ch.acra", name = "acra-mail", version.ref = "acra" }
-
+better-parse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
 
 [plugins]
 aboutlibraries-android = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutlibraries" }
@@ -59,3 +60,4 @@ devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
