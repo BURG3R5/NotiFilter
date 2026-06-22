@@ -43,38 +43,21 @@ class ActionTest {
 
     @Test
     fun Action_deserialization_incorrectParams() {
-        // INFO: If exact prefix and suffix are not found, weird stuff happens. Hopefully this error can be manually resolved if it ever happens.
-        listOf("TAP_BUTTON()", "TAP_BUTTON(parameter=1)").forEach {
-            assertEquals(Action.fromString(it), TAP_BUTTON(it))
-        }
-
         listOf(
-            // INFO: Wrong parameters
-            "BATCH(parameter=2)", "DEBOUNCE(parameter=3)", "DISTURB(parameter=4)",
-            "DISMISS_STALE(parameter=5)",
-
-            // INFO: Non-integer parameters
-            "BATCH(batchLength=a)", "DEBOUNCE(cooldownLength=b)", "DISTURB(pauseLength=c)",
-            "DISMISS_STALE(retentionLength=d)",
-        ).forEach {
-            assertFailsWith<NumberFormatException> {
-                Action.fromString(it)
-            }
-        }
-
-        listOf(
+            // Missing or wrong parameters
+            "TAP_BUTTON()", "TAP_BUTTON(parameter=1)", "BATCH(parameter=2)",
+            "DEBOUNCE(parameter=3)", "DISTURB(parameter=4)", "DISMISS_STALE(parameter=5)",
             "REPLACE()", "REPLACE(param=6)", "REPLACE(param=7, anotherParam=8)",
             "REPLACE(titleTemplate=title)", "REPLACE(titleTemplate=title, param=9)",
             "REPLACE(contentTemplate=content)",
             "REPLACE(contentTemplate=content, titleTemplate=title)",
-        ).forEach {
-            assertFailsWith<IndexOutOfBoundsException> { Action.fromString(it) }
-        }
+            "REPLACE(param=10, contentTemplate=content)",
 
-        // INFO: If exact prefix and suffix are not found, weird stuff happens. Hopefully this error can be manually resolved if it ever happens.
-        assertEquals(
-            REPLACE("REPLACE(param=10", "content)"),
-            Action.fromString("REPLACE(param=10, contentTemplate=content)"),
-        )
+            // Non-integer parameters
+            "BATCH(batchLength=a)", "DEBOUNCE(cooldownLength=b)", "DISTURB(pauseLength=c)",
+            "DISMISS_STALE(retentionLength=d)",
+        ).forEach {
+            assertFailsWith<IllegalArgumentException> { Action.fromString(it) }
+        }
     }
 }

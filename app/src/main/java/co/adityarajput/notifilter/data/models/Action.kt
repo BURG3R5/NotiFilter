@@ -103,48 +103,53 @@ sealed class Action {
             )
         }
 
-        fun fromString(value: String) = when {
-            value == "DISMISS" -> DISMISS
+        fun fromString(value: String): Action = when (value) {
+            "DISMISS" -> DISMISS
 
-            value == "TAP_NOTIFICATION" -> TAP_NOTIFICATION
+            "TAP_NOTIFICATION" -> TAP_NOTIFICATION
 
-            value == "DELAY" -> DELAY
+            "DELAY" -> DELAY
 
-            value == "MUTE" -> MUTE
+            "MUTE" -> MUTE
 
-            value == "ALERT" -> ALERT
-
-            value.startsWith("TAP_BUTTON(") -> TAP_BUTTON(
-                value.removeSurrounding("TAP_BUTTON(buttonRegex=", ")"),
-            )
-
-            value.startsWith("BATCH(") -> BATCH(
-                value.removeSurrounding("BATCH(batchLength=", ")").toInt(),
-            )
-
-            value.startsWith("DEBOUNCE(") -> DEBOUNCE(
-                value.removeSurrounding("DEBOUNCE(cooldownLength=", ")").toInt(),
-            )
-
-            value.startsWith("DISTURB(") -> DISTURB(
-                value.removeSurrounding("DISTURB(pauseLength=", ")").toInt(),
-            )
-
-            value.startsWith("DISMISS_STALE(") -> DISMISS_STALE(
-                value.removeSurrounding("DISMISS_STALE(retentionLength=", ")").toInt(),
-            )
-
-            value.startsWith("REPLACE(") -> {
-                val params = value.removeSurrounding("REPLACE(titleTemplate=", ")")
-                    .split(", contentTemplate=")
-
-                REPLACE(params[0], params[1])
-            }
+            "ALERT" -> ALERT
 
             else -> {
+                TAP_BUTTON_REGEX.matchEntire(value)?.groupValues?.let {
+                    return TAP_BUTTON(it[1])
+                }
+
+                BATCH_REGEX.matchEntire(value)?.groupValues?.let {
+                    return BATCH(it[1].toInt())
+                }
+
+                DEBOUNCE_REGEX.matchEntire(value)?.groupValues?.let {
+                    return DEBOUNCE(it[1].toInt())
+                }
+
+                DISTURB_REGEX.matchEntire(value)?.groupValues?.let {
+                    return DISTURB(it[1].toInt())
+                }
+
+                DISMISS_STALE_REGEX.matchEntire(value)?.groupValues?.let {
+                    return DISMISS_STALE(it[1].toInt())
+                }
+
+                REPLACE_REGEX.matchEntire(value)?.groupValues?.let {
+                    return REPLACE(it[1], it[2])
+                }
+
                 Logger.e("Action.fromString", value)
-                throw IllegalArgumentException("Can't convert value to Action, unknown value: $value")
+                throw IllegalArgumentException("Can't convert $value into an Action")
             }
         }
+
+        private val TAP_BUTTON_REGEX = Regex("^TAP_BUTTON\\(buttonRegex=(.*)\\)$")
+        private val BATCH_REGEX = Regex("^BATCH\\(batchLength=(\\d+)\\)$")
+        private val DEBOUNCE_REGEX = Regex("^DEBOUNCE\\(cooldownLength=(\\d+)\\)$")
+        private val DISTURB_REGEX = Regex("^DISTURB\\(pauseLength=(\\d+)\\)$")
+        private val DISMISS_STALE_REGEX = Regex("^DISMISS_STALE\\(retentionLength=(\\d+)\\)$")
+        private val REPLACE_REGEX =
+            Regex("^REPLACE\\(titleTemplate=(.*?), contentTemplate=(.*)\\)$")
     }
 }
