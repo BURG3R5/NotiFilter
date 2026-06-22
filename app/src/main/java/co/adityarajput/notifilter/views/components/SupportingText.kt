@@ -16,6 +16,8 @@ import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 fun SupportingText(viewModel: UpsertFilterViewModel, isPrimaryPattern: Boolean) {
     if (viewModel.state.values.notification == null) return
 
+    if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) return
+
     val title = viewModel.state.values.notification!!.title
     val content = viewModel.state.values.notification!!.content
 

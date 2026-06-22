@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import co.adityarajput.notifilter.utils.containsMatchIn
+import co.adityarajput.notifilter.utils.evaluateAgainst
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,6 +14,7 @@ data class Filter(
     @Embedded(prefix = "app_")
     val app: App,
 
+    // INFO: Can also hold an expression to be evaulated
     val regexPattern: String,
 
     val action: Action,
@@ -39,6 +41,12 @@ data class Filter(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 ) {
+    init {
+        if (regexTarget == RegexTarget.AND) {
+            requireNotNull(secondaryRegexPattern) { "Secondary pattern must be provided for AND target" }
+        }
+    }
+
     fun matchesTextOf(notification: Notification): Boolean {
         return when (regexTarget) {
             RegexTarget.TITLE ->
@@ -54,6 +62,9 @@ data class Filter(
             RegexTarget.AND ->
                 regexPattern.containsMatchIn(notification.title) &&
                         secondaryRegexPattern!!.containsMatchIn(notification.content)
+
+            RegexTarget.EXPRESSION ->
+                regexPattern.evaluateAgainst(notification)
         }
     }
 }

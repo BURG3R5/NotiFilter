@@ -1,6 +1,8 @@
 package co.adityarajput.notifilter.utils
 
 fun <T> List<T>.filterFirst(count: Int, predicate: (T) -> Boolean): Pair<List<T>, Boolean> {
+    if (count < 1) return emptyList<T>() to false
+
     val result = mutableListOf<T>()
 
     forEach {

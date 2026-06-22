@@ -20,4 +20,4 @@ jobs:
           cache: "gradle"
 
       - name: Run tests
-        run: ./gradlew testReleaseUnitTest
+        run: ./gradlew app:testReleaseUnitTest evaluator:test

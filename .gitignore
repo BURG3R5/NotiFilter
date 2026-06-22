@@ -3,6 +3,7 @@
 /local.properties
 .idea/*
 !.idea/icon.png
+!.idea/inspectionProfiles
 .DS_Store
 /build
 /captures

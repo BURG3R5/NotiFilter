@@ -1,10 +1,12 @@
 package co.adityarajput.notifilter.utils
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import co.adityarajput.notifilter.data.models.App
+import co.adityarajput.notifilter.data.models.Notification
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@Suppress("TestFunctionName")
 class RegexTest {
     @Test
     fun Regex_containsMatchIn_normal() {
@@ -21,14 +23,29 @@ class RegexTest {
         assertFalse("🌍".containsMatchIn("Hello, world"))
 
         assertTrue(EMOJI_PATTERN_DISPLAY.containsMatchIn("Hello, 🌍"))
-        assertTrue("${EMOJI_PATTERN_DISPLAY}+".containsMatchIn("👋🌍"))
+        assertTrue("$EMOJI_PATTERN_DISPLAY, $EMOJI_PATTERN_DISPLAY".containsMatchIn("👋, 🌍"))
         assertFalse(EMOJI_PATTERN_DISPLAY.containsMatchIn("Hello, world"))
     }
 
     @Test
+    fun Regex_replaceWithNotificationData() {
+        val notification = Notification("MyTitle", "MyContent", "com.example.app", 0, id = 1)
+        val allPackages = listOf(App("MyApp", "com.example.app"))
+
+        assertEquals(
+            $$"MyApp (com.example.app) sent MyTitle - MyContent and ${unknown}",
+            $$"${app} (${package}) sent ${title} - ${content} and ${unknown}"
+                .replaceWithNotificationData(notification, allPackages),
+        )
+    }
+
+    @Test
     fun Regex_generateRegex() {
-        assertTrue("test".generateRegex() == "^test$")
-        assertTrue("tom@newsletter.tomscott.com".generateRegex() == "^tom@newsletter\\.tomscott\\.com$")
-        assertTrue("assertTrue(0 == 0)".generateRegex() == "^assertTrue\\(0 == 0\\)$")
+        assertEquals("^test$", "test".generateRegex())
+        assertEquals(
+            "^tom@newsletter\\.tomscott\\.com$",
+            "tom@newsletter.tomscott.com".generateRegex(),
+        )
+        assertEquals("^assertTrue\\(0 == 0\\)$", "assertTrue(0 == 0)".generateRegex())
     }
 }

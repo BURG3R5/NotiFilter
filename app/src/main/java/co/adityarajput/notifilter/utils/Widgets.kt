@@ -11,14 +11,11 @@ import co.adityarajput.notifilter.Constants.STATE
 import co.adityarajput.notifilter.Constants.WIDGET_PREVIEW_SET_AT
 import co.adityarajput.notifilter.WidgetReceiver
 import co.adityarajput.notifilter.views.Widget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 
 suspend fun Context.setWidgetPreview() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -31,12 +28,21 @@ suspend fun Context.setWidgetPreview() {
             ) < 2 * 60 * 60 * 1000
         ) return
 
-        val result = GlanceAppWidgetManager(this@setWidgetPreview)
-            .setWidgetPreviews(WidgetReceiver::class)
+        try {
+            val result = GlanceAppWidgetManager(this@setWidgetPreview)
+                .setWidgetPreviews(WidgetReceiver::class)
 
-        if (result != SET_WIDGET_PREVIEWS_RESULT_SUCCESS) return
+            if (result != SET_WIDGET_PREVIEWS_RESULT_SUCCESS) {
+                Logger.i("Widgets", "Preview update skipped with result: $result")
+                return
+            }
 
-        sharedPreferences.edit { putLong(WIDGET_PREVIEW_SET_AT, now) }
+            sharedPreferences.edit { putLong(WIDGET_PREVIEW_SET_AT, now) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Logger.e("Widgets", "Preview update failed", e)
+        }
     }
 }
 

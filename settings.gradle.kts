@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NotiFilter"
 include(":app")
+include(":evaluator")
