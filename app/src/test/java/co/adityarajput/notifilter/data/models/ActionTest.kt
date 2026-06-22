@@ -1,9 +1,9 @@
 package co.adityarajput.notifilter.data.models
 
 import co.adityarajput.notifilter.data.models.Action.*
-import org.junit.Assert.assertThrows
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ActionTest {
     @Test
@@ -19,13 +19,13 @@ class ActionTest {
         )
 
         actions.forEach {
-            assertTrue(it == Action.fromString(it.toString()))
+            assertEquals(it, Action.fromString(it.toString()))
         }
     }
 
     @Test
     fun Action_deserialization_incorrectBase() {
-        val strings = listOf(
+        listOf(
             // INFO: 🤷
             "UNKNOWN_ACTION", "UNKNOWN_ACTION()", "UNKNOWN_ACTION(parameter=1)",
 
@@ -34,10 +34,8 @@ class ActionTest {
 
             // INFO: These should be instances, not singletons
             "TAP_BUTTON", "BATCH", "DEBOUNCE", "DISTURB", "DISMISS_STALE", "REPLACE",
-        )
-
-        strings.forEach {
-            assertThrows(IllegalArgumentException::class.java) {
+        ).forEach {
+            assertFailsWith<IllegalArgumentException> {
                 Action.fromString(it)
             }
         }
@@ -45,14 +43,12 @@ class ActionTest {
 
     @Test
     fun Action_deserialization_incorrectParams() {
-        val strings1 = listOf("TAP_BUTTON()", "TAP_BUTTON(parameter=1)")
-
         // INFO: If exact prefix and suffix are not found, weird stuff happens. Hopefully this error can be manually resolved if it ever happens.
-        strings1.forEach {
-            assertTrue(Action.fromString(it) == TAP_BUTTON(it))
+        listOf("TAP_BUTTON()", "TAP_BUTTON(parameter=1)").forEach {
+            assertEquals(Action.fromString(it), TAP_BUTTON(it))
         }
 
-        val strings2 = listOf(
+        listOf(
             // INFO: Wrong parameters
             "BATCH(parameter=2)", "DEBOUNCE(parameter=3)", "DISTURB(parameter=4)",
             "DISMISS_STALE(parameter=5)",
@@ -60,29 +56,25 @@ class ActionTest {
             // INFO: Non-integer parameters
             "BATCH(batchLength=a)", "DEBOUNCE(cooldownLength=b)", "DISTURB(pauseLength=c)",
             "DISMISS_STALE(retentionLength=d)",
-        )
-
-        strings2.forEach {
-            assertThrows(NumberFormatException::class.java) {
+        ).forEach {
+            assertFailsWith<NumberFormatException> {
                 Action.fromString(it)
             }
         }
 
-        val strings3 = listOf(
+        listOf(
             "REPLACE()", "REPLACE(param=6)", "REPLACE(param=7, anotherParam=8)",
             "REPLACE(titleTemplate=title)", "REPLACE(titleTemplate=title, param=9)",
             "REPLACE(contentTemplate=content)",
             "REPLACE(contentTemplate=content, titleTemplate=title)",
-        )
-
-        strings3.forEach {
-            assertThrows(IndexOutOfBoundsException::class.java) { Action.fromString(it) }
+        ).forEach {
+            assertFailsWith<IndexOutOfBoundsException> { Action.fromString(it) }
         }
 
         // INFO: If exact prefix and suffix are not found, weird stuff happens. Hopefully this error can be manually resolved if it ever happens.
-        assertTrue(
-            Action.fromString("REPLACE(param=10, contentTemplate=content)") ==
-                    REPLACE("REPLACE(param=10", "content)"),
+        assertEquals(
+            REPLACE("REPLACE(param=10", "content)"),
+            Action.fromString("REPLACE(param=10, contentTemplate=content)"),
         )
     }
 }

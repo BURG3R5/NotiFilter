@@ -1,9 +1,9 @@
 package co.adityarajput.notifilter.data.models
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
 import java.util.Calendar
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ScheduleTest {
     private val mondayEightAM = Calendar.getInstance().apply {

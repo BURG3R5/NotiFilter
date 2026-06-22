@@ -1,8 +1,8 @@
 package co.adityarajput.notifilter.data.models
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class FilterTest {
     private val pollResultNotification = Notification(

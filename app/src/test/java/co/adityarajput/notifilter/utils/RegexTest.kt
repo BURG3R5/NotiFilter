@@ -2,8 +2,10 @@ package co.adityarajput.notifilter.utils
 
 import co.adityarajput.notifilter.data.models.App
 import co.adityarajput.notifilter.data.models.Notification
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class RegexTest {
     @Test
@@ -31,16 +33,19 @@ class RegexTest {
         val allPackages = listOf(App("MyApp", "com.example.app"))
 
         assertEquals(
+            $$"MyApp (com.example.app) sent MyTitle - MyContent and ${unknown}",
             $$"${app} (${package}) sent ${title} - ${content} and ${unknown}"
                 .replaceWithNotificationData(notification, allPackages),
-            $$"MyApp (com.example.app) sent MyTitle - MyContent and ${unknown}",
         )
     }
 
     @Test
     fun Regex_generateRegex() {
-        assertTrue("test".generateRegex() == "^test$")
-        assertTrue("tom@newsletter.tomscott.com".generateRegex() == "^tom@newsletter\\.tomscott\\.com$")
-        assertTrue("assertTrue(0 == 0)".generateRegex() == "^assertTrue\\(0 == 0\\)$")
+        assertEquals("^test$", "test".generateRegex())
+        assertEquals(
+            "^tom@newsletter\\.tomscott\\.com$",
+            "tom@newsletter.tomscott.com".generateRegex(),
+        )
+        assertEquals("^assertTrue\\(0 == 0\\)$", "assertTrue(0 == 0)".generateRegex())
     }
 }

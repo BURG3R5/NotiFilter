@@ -1,7 +1,7 @@
 package co.adityarajput.evaluator.functions
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class EqualTest {
     @Test

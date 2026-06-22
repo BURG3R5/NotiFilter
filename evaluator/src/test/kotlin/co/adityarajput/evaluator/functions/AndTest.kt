@@ -1,8 +1,8 @@
 package co.adityarajput.evaluator.functions
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class AndTest {
     @Test
@@ -19,7 +19,7 @@ class AndTest {
             listOf("notABoolean", "true"),
             listOf("true", "notABoolean"),
         ).forEach {
-            assertThrows(IllegalArgumentException::class.java) {
+            assertFailsWith<IllegalArgumentException> {
                 And.evaluate(it)
             }
         }

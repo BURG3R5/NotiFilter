@@ -1,7 +1,7 @@
 package co.adityarajput.notifilter.utils
 
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class CollectionsTest {
     val numbers = (0..9).toList()
@@ -10,16 +10,16 @@ class CollectionsTest {
 
     @Test
     fun Collections_filterFirst_returnsEarly() {
-        assertTrue(numbers.filterFirst(0, isEven) == emptyList<Int>() to false)
-        assertTrue(numbers.filterFirst(1, isEven) == listOf(0) to false)
-        assertTrue(numbers.filterFirst(3, isEven) == listOf(0, 2, 4) to false)
+        assertEquals(emptyList<Int>() to false, numbers.filterFirst(0, isEven))
+        assertEquals(listOf(0) to false, numbers.filterFirst(1, isEven))
+        assertEquals(listOf(0, 2, 4) to false, numbers.filterFirst(3, isEven))
     }
 
     val isLargerThanTen = { it: Int -> it > 10 }
 
     @Test
     fun Collections_filterFirst_returnsComplete() {
-        assertTrue(numbers.filterFirst(10, isEven) == listOf(0, 2, 4, 6, 8) to true)
-        assertTrue(numbers.filterFirst(10, isLargerThanTen) == emptyList<Int>() to true)
+        assertEquals(listOf(0, 2, 4, 6, 8) to true, numbers.filterFirst(10, isEven))
+        assertEquals(emptyList<Int>() to true, numbers.filterFirst(10, isLargerThanTen))
     }
 }

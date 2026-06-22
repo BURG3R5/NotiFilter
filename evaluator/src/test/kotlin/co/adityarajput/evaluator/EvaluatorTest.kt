@@ -1,8 +1,8 @@
 package co.adityarajput.evaluator
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class EvaluatorTest {
     private val basicEvaluator = Evaluator()
@@ -78,7 +78,7 @@ class EvaluatorTest {
             // Two expressions at root
             """and("true", "false") or("true", "false")""",
         ).forEach {
-            assertThrows(IllegalArgumentException::class.java) {
+            assertFailsWith<IllegalArgumentException> {
                 basicEvaluator.evaluate(it)
             }
         }
