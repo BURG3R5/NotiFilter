@@ -26,6 +26,13 @@ class FilterTest {
 
     private val andFilter = Filter(Any, "Poll", Action.MUTE, RegexTarget.AND, "poll")
 
+    private val expressionFilter = Filter(
+        Any,
+        """and(titleMatches("Poll"), contentMatches("poll"))""",
+        Action.MUTE,
+        RegexTarget.EXPRESSION,
+    )
+
     @Test
     fun Filter_matchesTextOf_correct() {
         assertTrue(titleFilter.matchesTextOf(pollResultNotification))
@@ -38,6 +45,8 @@ class FilterTest {
         assertTrue(orFilter.matchesTextOf(withoutContent))
 
         assertTrue(andFilter.matchesTextOf(pollResultNotification))
+
+        assertTrue(expressionFilter.matchesTextOf(pollResultNotification))
     }
 
     @Test
@@ -54,5 +63,9 @@ class FilterTest {
         assertFalse(andFilter.matchesTextOf(withoutContent))
         assertFalse(andFilter.matchesTextOf(withoutTitle))
         assertFalse(andFilter.matchesTextOf(emptyNotification))
+
+        assertFalse(expressionFilter.matchesTextOf(withoutContent))
+        assertFalse(expressionFilter.matchesTextOf(withoutTitle))
+        assertFalse(expressionFilter.matchesTextOf(emptyNotification))
     }
 }
