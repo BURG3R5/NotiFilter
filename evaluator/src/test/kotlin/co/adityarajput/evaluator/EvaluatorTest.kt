@@ -8,7 +8,7 @@ class EvaluatorTest {
     private val basicEvaluator = Evaluator()
 
     private val extendedEvaluator = Evaluator(
-        object : Function("custom_function", 2) {
+        object : Function("customFunction", 2) {
             override fun evaluate(arguments: List<String>): String =
                 (!arguments[0].toBooleanStrict() && arguments[1] == "string").toString()
         },
@@ -35,7 +35,7 @@ class EvaluatorTest {
         // Nested expressions
         assertEquals(
             "false",
-            extendedEvaluator.evaluate("""and(or("true", equal("42", "42")), not(custom_function("false", "string")))"""),
+            extendedEvaluator.evaluate("""and(or("true", equal("42", "42")), not(customFunction("false", "string")))"""),
         )
         assertEquals(
             "true",
@@ -72,7 +72,7 @@ class EvaluatorTest {
             // Incorrect function names
             """Not("true")""",
             """EQUAL("true", "false")""",
-            """unknown_function("true")""",
+            """unknownFunction("true")""",
             """42("true", "false")""",
 
             // Two expressions at root

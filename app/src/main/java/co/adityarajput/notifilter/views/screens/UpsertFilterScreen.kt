@@ -350,36 +350,64 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Normal,
     )
-    Text(
-        stringResource(R.string.regex_target),
-        style = MaterialTheme.typography.labelLarge,
-        fontWeight = FontWeight.Normal,
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RadioButton(
+            viewModel.state.values.regexTarget != RegexTarget.EXPRESSION,
+            null,
+            Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
+        )
+        Text(
+            stringResource(R.string.search_text),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
+        )
+    }
     FlowRow(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))) {
         RegexTarget.entries.forEach {
-            Row(
-                Modifier
-                    .fillMaxWidth(0.5f)
-                    .selectable((it == viewModel.state.values.regexTarget)) {
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(regexTarget = it),
-                        )
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(
-                    (it == viewModel.state.values.regexTarget),
-                    null,
-                    Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
-                )
-                Text(
-                    stringResource(it.description),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Normal,
-                )
-            }
+            if (it.description != null)
+                Row(
+                    Modifier
+                        .fillMaxWidth(0.5f)
+                        .selectable((it == viewModel.state.values.regexTarget)) {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(regexTarget = it),
+                            )
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        (it == viewModel.state.values.regexTarget),
+                        null,
+                        Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                    )
+                    Text(
+                        stringResource(it.description),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
         }
+    }
+    Row(
+        Modifier.selectable(viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) {
+            viewModel.updateForm(
+                viewModel.state.page,
+                viewModel.state.values.copy(regexTarget = RegexTarget.EXPRESSION),
+            )
+        },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(
+            viewModel.state.values.regexTarget == RegexTarget.EXPRESSION,
+            null,
+            Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
+        )
+        Text(
+            stringResource(R.string.use_expression),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
+        )
     }
     OutlinedTextField(
         viewModel.state.values.queryPattern,
@@ -393,12 +421,22 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
         label = {
             Text(
                 stringResource(
-                    if (viewModel.state.values.regexTarget == RegexTarget.AND) R.string.title_pattern
-                    else R.string.notification_pattern,
+                    when (viewModel.state.values.regexTarget) {
+                        RegexTarget.EXPRESSION -> R.string.expression
+                        RegexTarget.AND -> R.string.title_pattern
+                        else -> R.string.notification_pattern
+                    },
                 ),
             )
         },
-        placeholder = { Text(stringResource(R.string.pattern_placeholder)) },
+        placeholder = {
+            Text(
+                stringResource(
+                    if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) R.string.expression_placeholder
+                    else R.string.pattern_placeholder,
+                ),
+            )
+        },
         supportingText = { SupportingText(viewModel, true) },
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -428,7 +466,10 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
     }
     Text(
         AnnotatedString.fromHtml(
-            stringResource(R.string.pattern_advice),
+            stringResource(
+                if (viewModel.state.values.regexTarget == RegexTarget.EXPRESSION) R.string.expression_advice
+                else R.string.pattern_advice,
+            ),
             TextLinkStyles(
                 SpanStyle(
                     MaterialTheme.colorScheme.primary,
@@ -440,6 +481,7 @@ private fun PatternPage(viewModel: UpsertFilterViewModel) {
         fontWeight = FontWeight.Normal,
     )
     if (viewModel.state.error == FormError.INVALID_NOTIFICATION_REGEX) ErrorText(R.string.invalid_regex)
+    if (viewModel.state.error == FormError.INVALID_EXPRESSION) ErrorText(R.string.invalid_expression)
     viewModel.state.warnings.forEach { WarningText(it.description) }
 }
 

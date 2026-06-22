@@ -5,7 +5,6 @@ import co.adityarajput.notifilter.data.models.Notification
 import org.junit.Assert.*
 import org.junit.Test
 
-@Suppress("TestFunctionName")
 class RegexTest {
     @Test
     fun Regex_containsMatchIn_normal() {

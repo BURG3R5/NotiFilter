@@ -15,6 +15,6 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.better.parse)
+    api(libs.better.parse)
     testImplementation(kotlin("test"))
 }

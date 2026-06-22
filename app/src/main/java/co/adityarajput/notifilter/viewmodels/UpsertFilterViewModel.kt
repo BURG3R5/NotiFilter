@@ -14,6 +14,7 @@ import co.adityarajput.notifilter.data.models.*
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.Logger
 import co.adityarajput.notifilter.utils.containsMatchIn
+import co.adityarajput.notifilter.utils.evaluateAgainst
 import co.adityarajput.notifilter.utils.isValidRegex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -114,11 +115,19 @@ class UpsertFilterViewModel(
             FormPage.PATTERN -> {
                 if (values.queryPattern.isBlank()) return FormError.BLANK_FIELDS
 
-                if (!values.queryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
+                if (values.regexTarget != RegexTarget.EXPRESSION) {
+                    if (!values.queryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
 
-                if (values.regexTarget == RegexTarget.AND) {
-                    if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
-                    if (!values.secondaryQueryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
+                    if (values.regexTarget == RegexTarget.AND) {
+                        if (values.secondaryQueryPattern.isBlank()) return FormError.BLANK_FIELDS
+                        if (!values.secondaryQueryPattern.isValidRegex()) return FormError.INVALID_NOTIFICATION_REGEX
+                    }
+                } else {
+                    try {
+                        values.queryPattern.evaluateAgainst(values.notification)
+                    } catch (_: Exception) {
+                        return FormError.INVALID_EXPRESSION
+                    }
                 }
             }
 
@@ -151,8 +160,13 @@ class UpsertFilterViewModel(
         try {
             val regexTarget = values.regexTarget
             val notification = values.notification
-            val warnings = mutableListOf<FormWarning>()
 
+            if (regexTarget == RegexTarget.EXPRESSION) {
+                return if (values.queryPattern.evaluateAgainst(notification)) emptyList() else
+                    listOf(FormWarning.EXPRESSION_DOESNT_MATCH_NOTIFICATION)
+            }
+
+            val warnings = mutableListOf<FormWarning>()
             if (
                 regexTarget != RegexTarget.CONTENT
                 && !values.queryPattern.containsMatchIn(notification.title)
@@ -199,6 +213,7 @@ enum class FormPage {
 enum class FormError {
     BLANK_FIELDS,
     INVALID_NOTIFICATION_REGEX,
+    INVALID_EXPRESSION,
     INVALID_BUTTON_REGEX,
     CANT_DEBOUNCE_ANY,
     INVALID_TIME_RANGE,
@@ -206,5 +221,6 @@ enum class FormError {
 
 enum class FormWarning(val description: Int) {
     REGEX_DOESNT_MATCH_TITLE(R.string.pattern_doesnt_match_title),
-    REGEX_DOESNT_MATCH_CONTENT(R.string.pattern_doesnt_match_content)
+    REGEX_DOESNT_MATCH_CONTENT(R.string.pattern_doesnt_match_content),
+    EXPRESSION_DOESNT_MATCH_NOTIFICATION(R.string.expression_doesnt_match_notification),
 }

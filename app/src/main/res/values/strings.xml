@@ -82,23 +82,29 @@
     <string name="system_packages_warning">Notifications from system packages may contain critical information.</string>
     <string name="package_name">Package name</string>
     <string name="package_name_placeholder">Search installed apps</string>
-    <string name="pattern_page_title">Configure the pattern and target</string>
-    <string name="regex_target">Search in the notification\'s</string>
+    <string name="pattern_page_title">Configure the matching method</string>
+    <string name="search_text">Search in the notification\'s</string>
     <string name="title">title</string>
     <string name="content">content</string>
     <string name="title_or_content">title or content</string>
     <string name="title_and_content">title and content</string>
+    <string name="use_expression">Evaluate an expression</string>
     <string name="notification_pattern">Notification pattern</string>
     <string name="title_pattern">Title pattern</string>
     <string name="content_pattern">Content pattern</string>
+    <string name="expression">Expression</string>
     <string name="pattern_placeholder">Enter a regex pattern</string>
+    <string name="expression_placeholder">Enter a valid expression</string>
     <string name="pattern_supporting">"Enter a pattern that matches \'%1$s\'. "</string>
     <string name="or">or</string>
     <string name="generate">Generate?</string>
     <string name="pattern_advice"><![CDATA[Tip: Include keywords but exclude non-essentials. Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">here↗</a> for examples.]]></string>
+    <string name="expression_advice"><![CDATA[Click <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Expressions\">here↗</a> to learn about expressions.]]></string>
     <string name="invalid_regex">Regex pattern contains errors</string>
+    <string name="invalid_expression">Expression contains errors</string>
     <string name="pattern_doesnt_match_title">"Regex pattern doesn't match selected notification's title"</string>
     <string name="pattern_doesnt_match_content">"Regex pattern doesn't match selected notification's content"</string>
+    <string name="expression_doesnt_match_notification">"Expression doesn't match selected notification's data"</string>
     <string name="action_page_title">Choose the action to take</string>
     <string name="dismiss_long">Dismiss the notification</string>
     <string name="tap_notification_long">Tap the notification</string>
