@@ -1,0 +1,2 @@
+• fix: Have `setWidgetPreview` fail gracefully
+• feat: Let users enter expressions to match notifications against
