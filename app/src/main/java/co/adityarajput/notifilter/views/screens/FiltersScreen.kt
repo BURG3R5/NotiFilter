@@ -130,14 +130,13 @@ fun FiltersScreen(
                 items(state.value.filters!!, { it.id }) {
                     Tile(
                         buildString {
-                            append("/")
-                            append(it.regexPattern)
-                            append("/")
+                            if (it.regexTarget == RegexTarget.EXPRESSION) {
+                                append("`${it.regexPattern}`")
+                            } else {
+                                append("/${it.regexPattern}/")
 
-                            if (it.regexTarget == RegexTarget.AND) {
-                                append(" && /")
-                                append(it.secondaryRegexPattern)
-                                append("/")
+                                if (it.regexTarget == RegexTarget.AND)
+                                    append(" && /${it.secondaryRegexPattern}/")
                             }
                         },
                         it.action.verb(),

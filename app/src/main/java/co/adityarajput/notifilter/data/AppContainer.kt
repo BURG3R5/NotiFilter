@@ -107,9 +107,9 @@ class AppContainer(private val context: Context) {
                     ),
                     Filter(
                         App("GitHub", "com.github.android"),
-                        "approved your pull request",
+                        """titleMatches("approved your pull request")""",
                         Action.REPLACE("PR approved", $$"${content}"),
-                        RegexTarget.TITLE,
+                        RegexTarget.EXPRESSION,
                         historyEnabled = false,
                     ),
                 )
