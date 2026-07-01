@@ -46,6 +46,7 @@
     <string name="explain_accessibility_service_permission">Tap on notifications</string>
     <string name="explain_post_notifications_permission">Post notifications</string>
     <string name="explain_notification_policy_permission">Manage DND state</string>
+    <string name="explain_exact_alarm_permission">Dismiss after a precise delay</string>
     <string name="hide_permanently">"Don't show this again"</string>
     <string name="done">Done</string>
     <!-- endregion -->
