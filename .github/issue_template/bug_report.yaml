@@ -1,0 +1,37 @@
+name: Bug report
+description: "Report unexpected behavior or crashes"
+
+labels: bug
+assignees: BURG3R5
+
+body:
+  - type: textarea
+    attributes:
+      label: Problem description
+      description: "A clear and concise description of the problem."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      description: "Steps to reproduce the bug."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: "A clear and concise description of what you expected to happen."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Screenshots and logs
+      description: "Any relevant screenshots and logs."
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: "Any other context about the bug report."
+    validations:
+      required: false
