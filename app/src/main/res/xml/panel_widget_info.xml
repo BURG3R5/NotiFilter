@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:description="@string/widget_description"
+    android:description="@string/panel_widget_description"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="300dp"
     android:minHeight="150dp"

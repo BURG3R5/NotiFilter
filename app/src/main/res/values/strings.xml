@@ -137,7 +137,7 @@
     <string name="display_options">Choose where to display caught notification</string>
     <string name="describe_history_screen">In-app History screen</string>
     <string name="describe_widget">Homescreen Log widget</string>
-    <string name="prompt_widget">Add widget to homescreen</string>
+    <string name="prompt_log_widget">Add widget to homescreen</string>
     <string name="make_tappable">Make notifications tappable</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
@@ -181,9 +181,12 @@
     <!-- endregion -->
 
     <!-- region Widget -->
-    <string name="widget_title">Notification Log</string>
-    <string name="widget_description">View logged notifications</string>
+    <string name="log_widget_title">NotiFilter Logs</string>
+    <string name="log_widget_description">View logged notifications</string>
     <string name="no_notifications_logged">No notifications logged yet</string>
+    <string name="panel_widget_title">NotiFilter Toggles</string>
+    <string name="panel_widget_description">Toggle filters</string>
+    <string name="no_filters_short">No filters added yet</string>
     <!-- endregion -->
 
     <!-- region alttext -->

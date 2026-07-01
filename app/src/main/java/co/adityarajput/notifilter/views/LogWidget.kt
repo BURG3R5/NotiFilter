@@ -29,7 +29,7 @@ import co.adityarajput.notifilter.utils.Permission
 import co.adityarajput.notifilter.utils.isGranted
 import co.adityarajput.notifilter.utils.toReadableTime
 
-class Widget(val isPreview: Boolean = false) : GlanceAppWidget() {
+class LogWidget(val isPreview: Boolean = false) : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             if (isPreview) {
@@ -57,7 +57,7 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
         GlanceModifier.padding(vertical = 16.dp),
         if (notifications.isEmpty()) null else { ->
             Text(
-                context.getString(R.string.widget_title),
+                context.getString(R.string.log_widget_title),
                 GlanceModifier
                     .fillMaxWidth()
                     .padding(16.dp, 0.dp, 16.dp, 8.dp),
@@ -109,7 +109,7 @@ private fun Content(notifications: List<Notification>, allPackages: List<App> = 
                                                 )
                                             }
                                         } catch (e: Exception) {
-                                            Logger.e("Widget", "Error clicking $it", e)
+                                            Logger.e("LogWidget", "Error clicking $it", e)
                                         }
                                     }
                                 },

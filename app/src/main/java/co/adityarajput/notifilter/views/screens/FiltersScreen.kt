@@ -30,7 +30,6 @@ import co.adityarajput.notifilter.Constants.SHOW_MISSING_PERMISSIONS_DIALOG
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.data.models.Action
 import co.adityarajput.notifilter.data.models.Any
-import co.adityarajput.notifilter.data.models.RegexTarget
 import co.adityarajput.notifilter.services.NotificationListener
 import co.adityarajput.notifilter.utils.getFirst
 import co.adityarajput.notifilter.utils.getToggleString
@@ -142,16 +141,7 @@ fun FiltersScreen(
             ) {
                 items(state.value.filters!!, { it.id }) {
                     Tile(
-                        buildString {
-                            if (it.regexTarget == RegexTarget.EXPRESSION) {
-                                append("`${it.regexPattern}`")
-                            } else {
-                                append("/${it.regexPattern}/")
-
-                                if (it.regexTarget == RegexTarget.AND)
-                                    append(" && /${it.secondaryRegexPattern}/")
-                            }
-                        },
+                        it.title,
                         it.action.verb(),
                         if (it.app == Any) stringResource(R.string.any_app)
                         else it.app.name.getFirst(30),
