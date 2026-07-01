@@ -16,7 +16,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -104,7 +109,15 @@ fun FiltersScreen(
         } else if (!isListenerServiceInitialized) {
             Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Text(
-                    stringResource(R.string.listener_uninitialized),
+                    AnnotatedString.fromHtml(
+                        stringResource(R.string.listener_uninitialized),
+                        TextLinkStyles(
+                            SpanStyle(
+                                MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                            ),
+                        ),
+                    ),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
                 )
