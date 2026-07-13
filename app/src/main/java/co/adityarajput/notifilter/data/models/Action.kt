@@ -1,5 +1,8 @@
 package co.adityarajput.notifilter.data.models
 
+import android.content.Context
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -44,35 +47,49 @@ sealed class Action {
     data class REPLACE(val titleTemplate: String, val contentTemplate: String) : Action()
 
     @Composable
-    fun verb() = when (this) {
-        is DISMISS -> stringResource(R.string.dismiss_short)
-        is TAP_NOTIFICATION -> stringResource(R.string.tap_notification_short)
-        is TAP_BUTTON -> stringResource(R.string.tap_button_short, buttonRegex)
-        is DELAY -> stringResource(R.string.delay_short)
-        is MUTE -> stringResource(R.string.mute_short)
-        is ALERT -> stringResource(R.string.alert_short)
+    fun verb(isGlance: Boolean = false, context: Context? = null): String {
+        @Composable
+        fun getString(@StringRes id: Int, vararg formatArgs: Any) =
+            if (isGlance) context!!.getString(id, *formatArgs)
+            else stringResource(id, *formatArgs)
 
-        is BATCH -> stringResource(
-            R.string.batch_short,
-            pluralStringResource(R.plurals.hour, batchLength, batchLength),
-        )
+        @Composable
+        fun getPlural(@PluralsRes id: Int, count: Int, vararg formatArgs: Any) =
+            if (isGlance)
+                context!!.applicationContext.resources.getQuantityString(id, count, *formatArgs)
+            else
+                pluralStringResource(id, count, *formatArgs)
 
-        is DEBOUNCE -> stringResource(
-            R.string.debounce_short,
-            pluralStringResource(R.plurals.minute, cooldownLength, cooldownLength),
-        )
+        return when (this) {
+            is DISMISS -> getString(R.string.dismiss_short)
+            is TAP_NOTIFICATION -> getString(R.string.tap_notification_short)
+            is TAP_BUTTON -> getString(R.string.tap_button_short, buttonRegex)
+            is DELAY -> getString(R.string.delay_short)
+            is MUTE -> getString(R.string.mute_short)
+            is ALERT -> getString(R.string.alert_short)
 
-        is DISTURB -> stringResource(
-            R.string.disturb_short,
-            pluralStringResource(R.plurals.minute, pauseLength, pauseLength),
-        )
+            is BATCH -> getString(
+                R.string.batch_short,
+                getPlural(R.plurals.hour, batchLength, batchLength),
+            )
 
-        is DISMISS_STALE -> stringResource(
-            R.string.dismiss_stale_short,
-            pluralStringResource(R.plurals.minute, retentionLength, retentionLength),
-        )
+            is DEBOUNCE -> getString(
+                R.string.debounce_short,
+                getPlural(R.plurals.minute, cooldownLength, cooldownLength),
+            )
 
-        is REPLACE -> stringResource(R.string.replace_short, titleTemplate, contentTemplate)
+            is DISTURB -> getString(
+                R.string.disturb_short,
+                getPlural(R.plurals.minute, pauseLength, pauseLength),
+            )
+
+            is DISMISS_STALE -> getString(
+                R.string.dismiss_stale_short,
+                getPlural(R.plurals.minute, retentionLength, retentionLength),
+            )
+
+            is REPLACE -> getString(R.string.replace_short, titleTemplate, contentTemplate)
+        }
     }
 
     @Composable

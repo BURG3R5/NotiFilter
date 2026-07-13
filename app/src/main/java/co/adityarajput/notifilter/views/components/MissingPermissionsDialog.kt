@@ -67,6 +67,7 @@ fun MissingPermissionsDialog(
                                     Permission.ACCESSIBILITY_SERVICE -> R.string.explain_accessibility_service_permission
                                     Permission.POST_NOTIFICATIONS -> R.string.explain_post_notifications_permission
                                     Permission.NOTIFICATION_POLICY -> R.string.explain_notification_policy_permission
+                                    Permission.SCHEDULE_EXACT_ALARM -> R.string.explain_exact_alarm_permission
                                     else -> 0
                                 },
                             ),

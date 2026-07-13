@@ -497,7 +497,9 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
     val context = LocalContext.current
     val handler = remember { Handler(Looper.getMainLooper()) }
     var hasPermissions by remember { mutableStateOf(context.isGranted(permissions)) }
-    val hasPinnedWidget by produceState(initialValue = false) { value = context.isWidgetUsed() }
+    val hasPinnedLogWidget by produceState(initialValue = false) {
+        value = context.isLogWidgetUsed()
+    }
 
     val watcher = object : Runnable {
         override fun run() {
@@ -850,14 +852,14 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 )
             }
         }
-        if (!hasPinnedWidget) {
+        if (!hasPinnedLogWidget) {
             Button(
-                context::addWidgetToHomeScreen,
+                context::addLogWidgetToHomeScreen,
                 Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
             ) {
                 Text(
-                    stringResource(R.string.prompt_widget),
+                    stringResource(R.string.prompt_log_widget),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Normal,
                 )

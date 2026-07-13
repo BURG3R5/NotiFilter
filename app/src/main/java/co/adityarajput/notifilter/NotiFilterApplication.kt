@@ -2,8 +2,8 @@ package co.adityarajput.notifilter
 
 import android.app.Application
 import co.adityarajput.notifilter.data.AppContainer
-import co.adityarajput.notifilter.utils.setWidgetPreview
-import co.adityarajput.notifilter.utils.subscribeWidgetToFlow
+import co.adityarajput.notifilter.utils.setWidgetPreviews
+import co.adityarajput.notifilter.utils.subscribeWidgetsToFlows
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,8 +50,8 @@ class NotiFilterApplication : Application() {
         }
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            this@NotiFilterApplication.setWidgetPreview()
-            subscribeWidgetToFlow(this@NotiFilterApplication, container.repository.log())
+            this@NotiFilterApplication.setWidgetPreviews()
+            subscribeWidgetsToFlows(this@NotiFilterApplication)
         }
     }
 }

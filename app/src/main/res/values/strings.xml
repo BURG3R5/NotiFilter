@@ -4,7 +4,7 @@
     <string name="app_name_launcher" translatable="false">NotiFilter</string>
 
     <!-- region FiltersScreen -->
-    <string name="listener_uninitialized">Waiting for OS to initialize\nnotification listener service…</string>
+    <string name="listener_uninitialized"><![CDATA[Waiting for OS to initialize notification listener service. <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Troubleshooting#stuck-on-waiting-for-os-to-initialize-notification-listener-service\">Stuck?</a>]]></string>
     <string name="no_filters">No filters added.\nTap + to get started.</string>
     <string name="on_weekdays">"on weekdays "</string>
     <string name="on_weekends">"on weekends "</string>
@@ -46,6 +46,7 @@
     <string name="explain_accessibility_service_permission">Tap on notifications</string>
     <string name="explain_post_notifications_permission">Post notifications</string>
     <string name="explain_notification_policy_permission">Manage DND state</string>
+    <string name="explain_exact_alarm_permission">Dismiss after a precise delay</string>
     <string name="hide_permanently">"Don't show this again"</string>
     <string name="done">Done</string>
     <!-- endregion -->
@@ -136,7 +137,7 @@
     <string name="display_options">Choose where to display caught notification</string>
     <string name="describe_history_screen">In-app History screen</string>
     <string name="describe_widget">Homescreen Log widget</string>
-    <string name="prompt_widget">Add widget to homescreen</string>
+    <string name="prompt_log_widget">Add widget to homescreen</string>
     <string name="make_tappable">Make notifications tappable</string>
     <string name="schedule_page_title">Configure a schedule</string>
     <string name="run_from">"Run from "</string>
@@ -180,9 +181,12 @@
     <!-- endregion -->
 
     <!-- region Widget -->
-    <string name="widget_title">Notification Log</string>
-    <string name="widget_description">View logged notifications</string>
+    <string name="log_widget_title">NotiFilter Logs</string>
+    <string name="log_widget_description">View logged notifications</string>
     <string name="no_notifications_logged">No notifications logged yet</string>
+    <string name="panel_widget_title">NotiFilter Toggles</string>
+    <string name="panel_widget_description">Toggle filters</string>
+    <string name="no_filters_short">No filters added yet</string>
     <!-- endregion -->
 
     <!-- region alttext -->

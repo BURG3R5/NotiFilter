@@ -47,14 +47,24 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".WidgetReceiver"
+            android:name=".LogWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
+                android:resource="@xml/log_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".PanelWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/panel_widget_info" />
         </receiver>
 
         <service

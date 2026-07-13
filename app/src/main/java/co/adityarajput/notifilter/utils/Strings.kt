@@ -47,4 +47,5 @@ fun Int.toHourMinuteString() =
 fun Boolean.getToggleString(): String =
     stringResource(if (this) R.string.disable else R.string.enable)
 
+@Suppress("DEPRECATION")
 val Bundle.printable get() = "Bundle(${keySet().joinToString(", ") { "$it=${get(it)}" }})"
