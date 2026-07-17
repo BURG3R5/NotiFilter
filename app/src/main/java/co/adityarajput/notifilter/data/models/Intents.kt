@@ -15,7 +15,11 @@ data class Intents(
         sbn.notification.contentIntent,
         (sbn.notification.actions ?: emptyArray())
             .filter { it.remoteInputs == null || it.remoteInputs.isEmpty() }
-            .associate { it.title.toString() to it.actionIntent },
+            .mapIndexed { i, it ->
+                (it.title?.toString()?.takeIf { it.isNotEmpty() } ?: "Action ${i + 1}") to
+                        it.actionIntent
+            }
+            .toMap(),
     )
 
     fun launchMain() {

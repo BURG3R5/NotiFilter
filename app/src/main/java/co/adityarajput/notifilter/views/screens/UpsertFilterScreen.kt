@@ -505,10 +505,10 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         override fun run() {
             hasPermissions = context.isGranted(permissions)
 
-            if (hasPermissions.getValue(Permission.POST_NOTIFICATIONS))
+            if (NotificationListener.isServiceInitialized && hasPermissions.getValue(Permission.POST_NOTIFICATIONS))
                 NotificationListener.createAlertNotificationChannel()
 
-            if (!hasPermissions.all { it.value })
+            if (!NotificationListener.isServiceInitialized || !hasPermissions.all { it.value })
                 handler.postDelayed(this, 500)
         }
     }
@@ -605,6 +605,72 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                     viewModel.state.page,
                     viewModel.state.values.copy(action = Action.BATCH(value)),
                 )
+            }
+        }
+        AnimatedVisibility(it is Action.DELAY && viewModel.state.values.action is Action.DELAY) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            ) {
+                val useDelayFor =
+                    (viewModel.state.values.action as? Action.DELAY)?.delayLength != null
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .selectable(!useDelayFor) {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DELAY()),
+                            )
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        !useDelayFor,
+                        null,
+                        Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
+                    )
+                    Text(
+                        stringResource(R.string.delay_while_active),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .selectable(useDelayFor) {
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DELAY(5)),
+                            )
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        useDelayFor,
+                        null,
+                        Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small)),
+                    )
+                    Text(
+                        stringResource(R.string.delay_for),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+                IntegerInput(
+                    (viewModel.state.values.action as? Action.DELAY)?.delayLength ?: 5,
+                    1,
+                    30,
+                    R.string.delay_length,
+                ) { value ->
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(action = Action.DELAY(value)),
+                    )
+                }
             }
         }
         AnimatedVisibility(it is Action.DEBOUNCE && viewModel.state.values.action is Action.DEBOUNCE) {
@@ -988,7 +1054,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
         }
     }
     if (viewModel.state.error == FormError.BLANK_FIELDS) ErrorText(R.string.empty_active_days)
-    if (viewModel.state.values.action == Action.DELAY)
+    if (viewModel.state.values.action.let { it is Action.DELAY && it.delayLength == null })
         Text(
             stringResource(R.string.delay_action_reminder),
             style = MaterialTheme.typography.labelLarge,

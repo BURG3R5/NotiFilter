@@ -72,6 +72,17 @@ private fun Content(filters: List<Filter>) {
         } else {
             LazyColumn(GlanceModifier.fillMaxSize()) {
                 items(filters, { it.id.toLong() }) {
+                    fun toggle() {
+                        coroutineScope.launch {
+                            try {
+                                Logger.d("PanelWidget", "Toggling $it")
+                                AppContainer(context).repository.toggleEnabled(it)
+                            } catch (e: Exception) {
+                                Logger.e("PanelWidget", "Error toggling $it", e)
+                            }
+                        }
+                    }
+
                     Box(
                         modifier = GlanceModifier
                             .fillMaxWidth()
@@ -84,16 +95,7 @@ private fun Content(filters: List<Filter>) {
                                 .padding(16.dp)
                                 .background(GlanceTheme.colors.primaryContainer)
                                 .wrapContentHeight()
-                                .clickable {
-                                    coroutineScope.launch {
-                                        try {
-                                            Logger.d("PanelWidget", "Toggling $it")
-                                            AppContainer(context).repository.toggleEnabled(it)
-                                        } catch (e: Exception) {
-                                            Logger.e("PanelWidget", "Error toggling $it", e)
-                                        }
-                                    }
-                                },
+                                .clickable(::toggle),
                         ) {
                             Row(
                                 GlanceModifier.fillMaxWidth(),
@@ -107,7 +109,7 @@ private fun Content(filters: List<Filter>) {
                                     ),
                                 )
                                 Spacer(GlanceModifier.defaultWeight())
-                                CheckBox(it.enabled, {})
+                                CheckBox(it.enabled, ::toggle)
                             }
                             Text(
                                 it.title,
@@ -150,7 +152,7 @@ private val sampleFilters = listOf(
     Filter(
         App("WhatsApp", "com.whatsapp"),
         "Book Club",
-        Action.DELAY,
+        Action.DELAY(),
         RegexTarget.AND,
         "^Bob",
         schedule = Schedule(start = 9 * 60, end = 17 * 60),
