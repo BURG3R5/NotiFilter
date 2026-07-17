@@ -505,10 +505,10 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
         override fun run() {
             hasPermissions = context.isGranted(permissions)
 
-            if (hasPermissions.getValue(Permission.POST_NOTIFICATIONS))
+            if (NotificationListener.isServiceInitialized && hasPermissions.getValue(Permission.POST_NOTIFICATIONS))
                 NotificationListener.createAlertNotificationChannel()
 
-            if (!hasPermissions.all { it.value })
+            if (!NotificationListener.isServiceInitialized || !hasPermissions.all { it.value })
                 handler.postDelayed(this, 500)
         }
     }
