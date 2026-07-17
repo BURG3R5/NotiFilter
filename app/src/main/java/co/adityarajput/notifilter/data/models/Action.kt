@@ -26,7 +26,7 @@ sealed class Action {
     data class BATCH(val batchLength: Int) : Action()
 
     @Serializable
-    data object DELAY : Action()
+    data class DELAY(val delayLength: Int? = null) : Action()
 
     @Serializable
     data class DEBOUNCE(val cooldownLength: Int) : Action()
@@ -64,7 +64,11 @@ sealed class Action {
             is DISMISS -> getString(R.string.dismiss_short)
             is TAP_NOTIFICATION -> getString(R.string.tap_notification_short)
             is TAP_BUTTON -> getString(R.string.tap_button_short, buttonRegex)
-            is DELAY -> getString(R.string.delay_short)
+            is DELAY -> if (delayLength == null) getString(R.string.delay_short) else getString(
+                R.string.delay_by_short,
+                getPlural(R.plurals.minute, delayLength, delayLength),
+            )
+
             is MUTE -> getString(R.string.mute_short)
             is ALERT -> getString(R.string.alert_short)
 
@@ -115,7 +119,7 @@ sealed class Action {
         val entries by lazy {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
-                DELAY, DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
+                DELAY(), DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
                 REPLACE($$"${app} - ${title}", $$"${content}"),
             )
         }
@@ -125,7 +129,7 @@ sealed class Action {
 
             "TAP_NOTIFICATION" -> TAP_NOTIFICATION
 
-            "DELAY" -> DELAY
+            "DELAY" -> DELAY()
 
             "MUTE" -> MUTE
 
@@ -138,6 +142,10 @@ sealed class Action {
 
                 BATCH_REGEX.matchEntire(value)?.groupValues?.let {
                     return BATCH(it[1].toInt())
+                }
+
+                DELAY_REGEX.matchEntire(value)?.groupValues?.let {
+                    return if (it[1] == "null") DELAY() else DELAY(it[1].toInt())
                 }
 
                 DEBOUNCE_REGEX.matchEntire(value)?.groupValues?.let {
@@ -163,6 +171,7 @@ sealed class Action {
 
         private val TAP_BUTTON_REGEX = Regex("^TAP_BUTTON\\(buttonRegex=(.*)\\)$")
         private val BATCH_REGEX = Regex("^BATCH\\(batchLength=(\\d+)\\)$")
+        private val DELAY_REGEX = Regex("^DELAY\\(delayLength=(null|\\d+)\\)$")
         private val DEBOUNCE_REGEX = Regex("^DEBOUNCE\\(cooldownLength=(\\d+)\\)$")
         private val DISTURB_REGEX = Regex("^DISTURB\\(pauseLength=(\\d+)\\)$")
         private val DISMISS_STALE_REGEX = Regex("^DISMISS_STALE\\(retentionLength=(\\d+)\\)$")

@@ -15,6 +15,7 @@
     <string name="tap_button_short">tap \"%1$s\"</string>
     <string name="batch_short">batch every %1$s</string>
     <string name="delay_short">delay notifications</string>
+    <string name="delay_by_short">delay notifications by %1$s</string>
     <string name="debounce_short">debounce for %1$s</string>
     <string name="mute_short">mute notification</string>
     <string name="alert_short">play an alert</string>
@@ -116,6 +117,9 @@
     <string name="batch_long">Batch notifications</string>
     <string name="batch_frequency">Every %1$s hour(s)</string>
     <string name="delay_long">Delay notifications</string>
+    <string name="delay_while_active">While filter is active</string>
+    <string name="delay_for">For a set duration</string>
+    <string name="delay_length">Delay for %1$s min(s)</string>
     <string name="debounce_long">Debounce notifications</string>
     <string name="cooldown_length">Cooldown for %1$s min(s)</string>
     <string name="explain_debounce">Notifications sent in quick succession will be muted.</string>

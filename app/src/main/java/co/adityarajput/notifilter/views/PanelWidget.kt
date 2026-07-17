@@ -150,7 +150,7 @@ private val sampleFilters = listOf(
     Filter(
         App("WhatsApp", "com.whatsapp"),
         "Book Club",
-        Action.DELAY,
+        Action.DELAY(),
         RegexTarget.AND,
         "^Bob",
         schedule = Schedule(start = 9 * 60, end = 17 * 60),
