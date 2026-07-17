@@ -190,7 +190,7 @@ private val sampleNotifications = listOf(
     ),
     Notification(
         "tom@newsletter.tomscott.com",
-        "The week: a microphone, a ropeway, and something very sour.\nHello!\nOver the last few days...",
+        "The week: a microphone, a ropeway, and something very sour. Hello! Over the last few days...",
         "Gmail",
         System.currentTimeMillis() - 3 * 60 * 60 * 1000,
         id = 4,

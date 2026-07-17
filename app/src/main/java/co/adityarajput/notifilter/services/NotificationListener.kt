@@ -229,7 +229,9 @@ class NotificationListener : NotificationListenerService() {
                 if ((untilNextBatch < 1000L) || (batchLength - untilNextBatch < 1000L)) {
                     Logger.d("NotificationListener", "Less than 1 second to batch boundary")
                 } else if (notifications.any { it.data == notification.data }) {
-                    Logger.d("NotificationListener", "Already snoozed")
+                    // TODO: The above condition does not use the updated `notification.matches(other, delay)` check.
+                    Logger.d("NotificationListener", "Already batched")
+                    return
                 } else {
                     snoozeNotification(
                         sbn.key,
@@ -255,6 +257,9 @@ class NotificationListener : NotificationListenerService() {
 
                 if (delay < 1000L) {
                     Logger.d("NotificationListener", "Less than 1 second of delay")
+                } else if (notifications.any { notification.matches(it, delay) }) {
+                    Logger.d("NotificationListener", "Already delayed")
+                    return
                 } else {
                     snoozeNotification(sbn.key, delay)
                 }
