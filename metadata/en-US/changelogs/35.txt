@@ -1,0 +1,7 @@
+• feat: Add "panel" widget
+• fix: Access system-nullable values safely
+• feat: Add "delay for" sub-action to "DELAY"
+
+The "DELAY" action is now split into two sub-actions:
+- "Delay while active" will snooze notifications till it is deactivated by the schedule. This is the original functionality and will continue to work as-is.
+- "Delay for" will snooze notifications for a set duration. This is the new feature.
