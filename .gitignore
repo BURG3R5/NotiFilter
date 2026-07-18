@@ -4,6 +4,7 @@
 .idea/*
 !.idea/icon.png
 !.idea/inspectionProfiles
+!.idea/runConfigurations
 .DS_Store
 /build
 /captures

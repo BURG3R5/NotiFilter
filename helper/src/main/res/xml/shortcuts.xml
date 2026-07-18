@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="a_shortcut"
+        android:shortcutShortLabel="@string/a">
+        <intent
+            android:action="co.adityarajput.notificationhelper.ACTION_A"
+            android:targetClass="co.adityarajput.notificationhelper.MainActivity"
+            android:targetPackage="co.adityarajput.notificationhelper" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="b_shortcut"
+        android:shortcutShortLabel="@string/b">
+        <intent
+            android:action="co.adityarajput.notificationhelper.ACTION_B"
+            android:targetClass="co.adityarajput.notificationhelper.MainActivity"
+            android:targetPackage="co.adityarajput.notificationhelper" />
+    </shortcut>
+</shortcuts>
