@@ -21,16 +21,16 @@ NotiFilter listens to all device notifications and quietly manages those that ma
   each app 🎯
 - **Actions** - Choose what to do with the filtered notifications ⚙
     1. Dismiss it 🚫
-  2. Tap it ✅
-  3. Tap a button 🔽️
-  4. Delay it ⏳
-  5. Collect into batches 📦
-  6. Debounce it ❄
-  7. Mute it 🔇
-  8. Play an alert 🔔
-  9. Disable DND mode 🔊
-  10. Remove after a delay ⏲️
-  11. Replace with a custom notification 📝
+    2. Tap it ✅
+    3. Tap a button 🔽️
+    4. Delay it ⏳
+    5. Collect into batches 📦
+    6. Debounce it ❄
+    7. Mute it 🔇
+    8. Play an alert 🔔
+    9. Disable DND mode 🔊
+    10. Remove after a delay ⏲️
+    11. Replace with a custom notification 📝
 - **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
 - **History** - Recently dismissed notifications are stored locally, for reference and retrieval 🧾
 - **Widget** - Configure filters to send notifications to a home screen widget 📱
@@ -45,3 +45,10 @@ NotiFilter listens to all device notifications and quietly manages those that ma
 
 Refer to the [wiki](https://github.com/BURG3R5/NotiFilter/wiki) for instructions, examples, tips,
 and FAQs.
+
+## Verification
+
+Package ID: `co.adityarajput.notifilter`
+
+SHA256 hash of signing certificate:
+`56:0A:30:9B:4F:01:AC:3D:28:65:EA:C6:E3:C3:35:59:EC:C7:E9:AD:8E:A7:9E:CD:58:D2:56:B4:B6:45:8A:0E`
