@@ -189,6 +189,7 @@ class NotificationListener : NotificationListenerService() {
                     && it.enabled
                     && it.schedule.includesNow()
                     && it.matchesTextOf(notification)
+                    && it.isNotOnCooldown(notifications)
         }.minByOrNull { it.priority } ?: return
 
         Logger.i("NotificationListener", "Matched $filter")
@@ -371,6 +372,7 @@ class NotificationListener : NotificationListenerService() {
             repository.registerHit(
                 filter,
                 notification.copy(
+                    filterId = filter.id,
                     showInHistory = filter.historyEnabled,
                     showInWidget = filter.widgetEnabled,
                 ),

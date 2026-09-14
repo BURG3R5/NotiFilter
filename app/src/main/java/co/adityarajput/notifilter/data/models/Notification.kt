@@ -1,12 +1,24 @@
 package co.adityarajput.notifilter.data.models
 
 import android.service.notification.StatusBarNotification
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
+import androidx.room.ForeignKey.Companion.SET_NULL
 import kotlin.math.abs
 
-@Entity(tableName = "notifications")
+@Entity(
+    "notifications",
+    foreignKeys = [
+        ForeignKey(
+            Filter::class,
+            ["id"],
+            ["filterId"],
+            SET_NULL,
+        ),
+    ],
+    indices = [
+        Index(value = ["filterId"]),
+    ],
+)
 data class Notification(
     val title: String,
 
@@ -22,21 +34,19 @@ data class Notification(
     @ColumnInfo(defaultValue = "0")
     val showInWidget: Boolean = false,
 
+    @ColumnInfo(defaultValue = "NULL")
+    val filterId: Int? = null,
+
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 ) {
-    constructor(
-        sbn: StatusBarNotification,
-        showInHistory: Boolean = true,
-        showInWidget: Boolean = false,
-        id: Int = 0,
-    ) : this(
+    constructor(sbn: StatusBarNotification, id: Int = 0) : this(
         sbn.notification.extras.getString("android.title") ?: "",
         sbn.notification.extras.getCharSequence("android.text")?.toString() ?: "",
-        sbn.packageName, sbn.postTime, showInHistory, showInWidget, id,
+        sbn.packageName, sbn.postTime, id = id,
     )
 
-    val data get() = listOf(origin, title, content, timestamp)
+    val data get() = listOf(origin, title, content, timestamp, filterId)
 
     /**
      * Checks whether this notification is the same as another,
@@ -47,6 +57,7 @@ data class Notification(
                 && this.title == other.title
                 && this.content == other.content
                 && abs(abs(this.timestamp - other.timestamp) - delay) < 10 * 1000L
+                && this.filterId == other.filterId
 
     fun appNameFrom(packages: List<App>) =
         packages.find { it.packageName == origin }?.name ?: origin
