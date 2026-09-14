@@ -1,4 +1,4 @@
-package co.adityarajput.notifilter.views.screens
+package co.adityarajput.notifilter.views.components
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*

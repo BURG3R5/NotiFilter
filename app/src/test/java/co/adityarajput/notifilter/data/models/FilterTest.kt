@@ -68,4 +68,67 @@ class FilterTest {
         assertFalse(expressionFilter.matchesTextOf(withoutTitle))
         assertFalse(expressionFilter.matchesTextOf(emptyNotification))
     }
+
+    @Test
+    fun Filter_isNotOnCooldown() {
+        val oldAndEmpty = Notification("", "", "", 0)
+        val oldFilteredByThis = oldAndEmpty.copy(filterId = 0)
+        val newAndEmpty = oldAndEmpty.copy(timestamp = System.currentTimeMillis())
+        val newFilteredByThis = newAndEmpty.copy(filterId = 0)
+        val newFilteredByOther = newAndEmpty.copy(filterId = 1)
+
+        val withoutCooldown = Filter(Any, "", Action.DISMISS)
+
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf()))
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf(oldAndEmpty)))
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf(newAndEmpty)))
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf(oldFilteredByThis)))
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf(newFilteredByThis)))
+        assertTrue(withoutCooldown.isNotOnCooldown(listOf(newFilteredByOther)))
+        assertTrue(
+            withoutCooldown.isNotOnCooldown(
+                listOf(
+                    oldAndEmpty,
+                    oldFilteredByThis,
+                    newAndEmpty,
+                    newFilteredByThis,
+                    newFilteredByOther,
+                ),
+            ),
+        )
+
+        val withCooldown = withoutCooldown.copy(cooldown = 86_400_000)
+
+        assertTrue(withCooldown.isNotOnCooldown(listOf()))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(oldAndEmpty)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(newAndEmpty)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(oldFilteredByThis)))
+        assertFalse(withCooldown.isNotOnCooldown(listOf(newFilteredByThis)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(newFilteredByOther)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(oldAndEmpty, newAndEmpty)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(newAndEmpty, oldFilteredByThis)))
+        assertTrue(withCooldown.isNotOnCooldown(listOf(oldFilteredByThis, newFilteredByOther)))
+        assertFalse(withCooldown.isNotOnCooldown(listOf(newFilteredByOther, newFilteredByThis)))
+        assertTrue(
+            withCooldown.isNotOnCooldown(
+                listOf(
+                    oldAndEmpty,
+                    oldFilteredByThis,
+                    newAndEmpty,
+                    newFilteredByOther,
+                ),
+            ),
+        )
+        assertFalse(
+            withCooldown.isNotOnCooldown(
+                listOf(
+                    oldAndEmpty,
+                    oldFilteredByThis,
+                    newAndEmpty,
+                    newFilteredByThis,
+                    newFilteredByOther,
+                ),
+            ),
+        )
+    }
 }

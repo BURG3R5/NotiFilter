@@ -162,6 +162,10 @@
     <string name="delay_action_reminder">Any notifications received during this time will be snoozed until the filter becomes inactive.</string>
     <string name="empty_active_days">No days selected</string>
     <string name="invalid_time_range">Time range is invalid</string>
+    <string name="filter_cooldown">Apply filter-level cooldown</string>
+    <string name="filter_cooldown_length">Cooldown length</string>
+    <string name="arrow_drop_down">An arrow pointing downward</string>
+    <string name="invalid_cooldown">Cooldown must be between one second and one day</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
     <string name="skip">Skip</string>

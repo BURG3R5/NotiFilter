@@ -36,6 +36,9 @@ data class Filter(
     @ColumnInfo(defaultValue = "0")
     val priority: Int = 0,
 
+    @ColumnInfo(defaultValue = "NULL")
+    val cooldown: Long? = null,
+
     val hits: Int = 0,
 
     @PrimaryKey(autoGenerate = true)
@@ -78,5 +81,18 @@ data class Filter(
             RegexTarget.EXPRESSION ->
                 regexPattern.evaluateAgainst(notification)
         }
+    }
+
+    fun isNotOnCooldown(notifications: List<Notification>): Boolean {
+        if (cooldown == null)
+            return true
+
+        val latestFilteredNotification =
+            notifications.filter { it.filterId == id }.maxByOrNull { it.timestamp }
+
+        if (latestFilteredNotification == null)
+            return true
+
+        return System.currentTimeMillis() - latestFilteredNotification.timestamp > cooldown
     }
 }

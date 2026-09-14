@@ -46,21 +46,21 @@ class UpsertFilterViewModel(
         val historyEnabled: Boolean = true,
         val widgetEnabled: Boolean = false,
         val priority: Int = 0,
+        val cooldown: Long? = null,
     ) {
         constructor(filter: Filter) : this(
             filter.id, null, filter.app, filter.regexTarget,
             filter.regexPattern, filter.secondaryRegexPattern ?: "",
             filter.action, filter.schedule, filter.historyEnabled, filter.widgetEnabled,
-            filter.priority,
+            filter.priority, filter.cooldown,
         )
 
         fun toFilter() = Filter(
             app, queryPattern, action, regexTarget,
-            if (regexTarget == RegexTarget.AND) secondaryQueryPattern else null, schedule,
-            historyEnabled = historyEnabled,
-            widgetEnabled = widgetEnabled,
+            if (regexTarget == RegexTarget.AND) secondaryQueryPattern else null,
+            schedule, true, historyEnabled, widgetEnabled,
+            if (filterId == 0) Int.MAX_VALUE else priority, if (cooldown == 0L) null else cooldown,
             id = filterId,
-            priority = if (filterId == 0) Int.MAX_VALUE else priority,
         )
     }
 
@@ -78,7 +78,7 @@ class UpsertFilterViewModel(
             NotificationListener.instance
                 .activeNotifications
                 .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                .mapIndexed { i, sbn -> Notification(sbn, id = i) },
+                .mapIndexed { id, sbn -> Notification(sbn, id) },
     )
 
     init {
@@ -93,7 +93,7 @@ class UpsertFilterViewModel(
                     if (!NotificationListener.isServiceInitialized) emptyList() else
                         NotificationListener.instance.activeNotifications
                             .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                            .mapIndexed { i, sbn -> Notification(sbn, id = i) }
+                            .mapIndexed { id, sbn -> Notification(sbn, id) }
                 delay(500.milliseconds)
             }
         }
@@ -146,6 +146,7 @@ class UpsertFilterViewModel(
             FormPage.SCHEDULE -> {
                 if (!values.schedule.isRangeValid()) return FormError.INVALID_TIME_RANGE
                 if (values.schedule.days.isEmpty()) return FormError.BLANK_FIELDS
+                if (values.cooldown != null && values.cooldown !in 1..<86_400_000L) return FormError.INVALID_COOLDOWN
             }
         }
         return null
@@ -217,6 +218,7 @@ enum class FormError {
     INVALID_BUTTON_REGEX,
     CANT_DEBOUNCE_ANY,
     INVALID_TIME_RANGE,
+    INVALID_COOLDOWN,
 }
 
 enum class FormWarning(val description: Int) {

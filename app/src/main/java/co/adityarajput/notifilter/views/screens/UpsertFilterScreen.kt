@@ -29,6 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,7 +43,7 @@ import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 import co.adityarajput.notifilter.views.components.*
 import kotlinx.coroutines.launch
-import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun UpsertFilterScreen(
@@ -898,6 +899,8 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                     fontWeight = FontWeight.Normal,
                 )
                 val testTtsSentence = stringResource(R.string.test_tts_sentence)
+                val ttsNotAvailable = stringResource(R.string.tts_not_available)
+                val ttsNotInitialized = stringResource(R.string.tts_not_initialized)
                 Button(
                     {
                         coroutineScope.launch {
@@ -908,14 +911,14 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                             } else if (TextToSpeech.ready) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.tts_not_available),
+                                    ttsNotAvailable,
                                     Toast.LENGTH_SHORT,
                                 ).show()
                                 TextToSpeech.openInstallationScreen(context)
                             } else {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.tts_not_initialized),
+                                    ttsNotInitialized,
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }
@@ -1052,7 +1055,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
         )
         Text(
             String.format(
-                Locale.getDefault(),
+                Locale.current.platformLocale,
                 "%02d:%02d",
                 viewModel.state.values.schedule.start / 60,
                 viewModel.state.values.schedule.start % 60,
@@ -1069,7 +1072,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
         )
         Text(
             String.format(
-                Locale.getDefault(),
+                Locale.current.platformLocale,
                 "%02d:%02d",
                 viewModel.state.values.schedule.end / 60,
                 viewModel.state.values.schedule.end % 60,
@@ -1133,4 +1136,39 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Normal,
         )
+    var showCooldownInput by remember { mutableStateOf(viewModel.state.values.cooldown != null) }
+    Row(
+        Modifier.toggleable(showCooldownInput) {
+            showCooldownInput = it
+            if (!it)
+                viewModel.updateForm(
+                    viewModel.state.page,
+                    viewModel.state.values.copy(cooldown = null),
+                )
+        },
+        Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        Alignment.CenterVertically,
+    ) {
+        Checkbox(showCooldownInput, null)
+        Text(
+            stringResource(R.string.filter_cooldown),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+    AnimatedVisibility(showCooldownInput) {
+        DurationInput(
+            viewModel.state.values.cooldown ?: 0,
+            {
+                viewModel.updateForm(
+                    viewModel.state.page,
+                    viewModel.state.values.copy(cooldown = it),
+                )
+            },
+            Modifier.fillMaxWidth(),
+            stringResource(R.string.filter_cooldown_length),
+            listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS),
+        )
+    }
+    if (viewModel.state.error == FormError.INVALID_COOLDOWN) ErrorText(R.string.invalid_cooldown)
 }
