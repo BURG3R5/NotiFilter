@@ -663,16 +663,18 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                         fontWeight = FontWeight.Normal,
                     )
                 }
-                IntegerInput(
-                    (viewModel.state.values.action as? Action.DELAY)?.delayLength ?: 5,
-                    1,
-                    30,
-                    R.string.delay_length,
-                ) { value ->
-                    viewModel.updateForm(
-                        viewModel.state.page,
-                        viewModel.state.values.copy(action = Action.DELAY(value)),
-                    )
+                AnimatedVisibility(useDelayFor) {
+                    IntegerInput(
+                        (viewModel.state.values.action as? Action.DELAY)?.delayLength ?: 5,
+                        1,
+                        30,
+                        R.string.delay_length,
+                    ) { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.DELAY(value)),
+                        )
+                    }
                 }
             }
         }
