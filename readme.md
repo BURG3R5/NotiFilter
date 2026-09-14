@@ -31,7 +31,9 @@ NotiFilter listens to all device notifications and quietly manages those that ma
     9. Disable DND mode 🔊
     10. Remove after a delay ⏲️
     11. Replace with a custom notification 📝
-- **Schedule** - Choose when filters run (e.g. only during work hours) ⏰
+    12. Read it aloud 🗣
+- **Schedule** - Choose when filters run (e.g. only during work hours) and how often (i.e. apply a
+  filter-level cooldown) ⏰
 - **History** - Recently dismissed notifications are stored locally, for reference and retrieval 🧾
 - **Widget** - Configure filters to send notifications to a home screen widget 📱
 - **Export/Import** - Backup or transfer your filters as JSON files 📂
