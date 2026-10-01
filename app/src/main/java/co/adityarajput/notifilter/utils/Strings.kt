@@ -47,5 +47,42 @@ fun Int.toHourMinuteString() =
 fun Boolean.getToggleString(): String =
     stringResource(if (this) R.string.disable else R.string.enable)
 
-@Suppress("DEPRECATION")
-val Bundle.printable get() = "Bundle(${keySet().joinToString(", ") { "$it=${get(it)}" }})"
+val Bundle.printable: String
+    get() = try {
+        formatBundleMap(
+            keySet().associateWith { key ->
+                try {
+                    when {
+                        getBoolean(key) -> getBoolean(key) // INFO: `false` values will fall back to `Object`
+                        getInt(key, Int.MIN_VALUE) != Int.MIN_VALUE -> getInt(key)
+                        getFloat(key, Float.MIN_VALUE) != Float.MIN_VALUE -> getFloat(key)
+                        getLong(key, Long.MIN_VALUE) != Long.MIN_VALUE -> getLong(key)
+                        getString(key) != null -> getString(key)
+                        getCharSequence(key) != null -> getCharSequence(key)
+                        else -> "Object"
+                    }
+                } catch (_: Throwable) {
+                    "Object"
+                }
+            },
+        )
+    } catch (_: Throwable) {
+        "Bundle[Object]"
+    }
+
+fun formatBundleMap(map: Map<String, Any?>): String {
+    return "Bundle(${
+        map.entries.joinToString(", ") { (k, v) ->
+            val valueString = try {
+                when (v) {
+                    null -> "null"
+                    is String, is CharSequence, is Number, is Boolean -> v.toString()
+                    else -> "Object"
+                }
+            } catch (_: Throwable) {
+                "Object"
+            }
+            "$k=$valueString"
+        }
+    })"
+}
