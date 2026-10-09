@@ -11,10 +11,10 @@ jobs:
     permissions: write-all
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: 17
           distribution: "temurin"
@@ -40,10 +40,10 @@ jobs:
           files: NotiFilter_${{ github.ref_name }}.apk:app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Move mapping
-        run: mv app/build/outputs/mapping/release/mapping.txt mapping_${{ github.ref_name }}.txt
+        run: mv app/build/outputs/mapping/release/mapping.txt NotiFilter_mapping_${{ github.ref_name }}.txt
 
       - name: Upload mapping
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          path: mapping_${{ github.ref_name }}.txt
+          path: NotiFilter_mapping_${{ github.ref_name }}.txt
           archive: false
