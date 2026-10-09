@@ -44,4 +44,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NotiFilter_nightly
-          path: app/NotiFilter_nightly.apk
+          path: |
+            app/NotiFilter_nightly.apk
+            app/build/outputs/mapping/nightly/mapping.txt
