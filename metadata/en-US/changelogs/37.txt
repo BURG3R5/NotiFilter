@@ -1,0 +1,2 @@
+• fix: Don't deserialize unknown objects while printing Bundles
+• fix: Snapshot volatile data before iterating on it

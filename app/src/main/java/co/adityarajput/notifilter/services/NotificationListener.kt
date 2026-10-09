@@ -127,11 +127,11 @@ class NotificationListener : NotificationListenerService() {
             startForeground()
 
         serviceScope.launch {
+            notifications = repository.notifications().first()
             repository.filters().collectLatest { newFilters ->
                 filters = newFilters
                 Logger.d("NotificationListener", "Filters updated: $filters")
             }
-            notifications = repository.notifications().first()
         }
     }
 
@@ -183,6 +183,10 @@ class NotificationListener : NotificationListenerService() {
         val notification = Notification(sbn)
         val intents = Intents(sbn)
         Logger.d("NotificationListener", "Received $notification")
+
+        // INFO: Snapshot volatiles
+        val filters = filters.toList()
+        val notifications = notifications.toList()
 
         val filter = filters.filter {
             (notification.origin == it.app.packageName || it.app == Any)
@@ -378,7 +382,7 @@ class NotificationListener : NotificationListenerService() {
                 ),
             )
             Cache.intents[notification.data.hashCode()] = intents
-            notifications = repository.notifications().first()
+            this@NotificationListener.notifications = repository.notifications().first()
             Logger.d("NotificationListener", "Notifications updated: $notifications")
         }
     }

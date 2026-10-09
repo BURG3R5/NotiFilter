@@ -37,4 +37,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: true
           gzip: folders
-          files: NotiFilter_${{ github.ref_name }}.apk:app/build/outputs/apk/release/app-release-unsigned.apk
+          files: >
+            NotiFilter_${{ github.ref_name }}.apk:app/build/outputs/apk/release/app-release-unsigned.apk
+            mapping_${{ github.ref_name }}.txt:app/build/outputs/mapping/release/mapping.txt
