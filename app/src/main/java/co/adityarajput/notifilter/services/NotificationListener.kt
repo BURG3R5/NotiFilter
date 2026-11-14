@@ -109,6 +109,12 @@ class NotificationListener : NotificationListenerService() {
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val alarmManager by lazy { getSystemService(ALARM_SERVICE) as AlarmManager }
 
+    val activeNotifications
+        get() = if (!isServiceInitialized) emptyList() else
+            super.activeNotifications
+                .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
+                .mapIndexed { id, sbn -> Notification(sbn, id) }
+
     @Volatile
     private var filters: List<Filter> = emptyList()
 
@@ -197,7 +203,30 @@ class NotificationListener : NotificationListenerService() {
         }.minByOrNull { it.priority } ?: return
 
         Logger.i("NotificationListener", "Matched $filter")
+        val shouldRegisterHit = executeFilterOnNotification(filter, sbn)
 
+        if (shouldRegisterHit)
+            serviceScope.launch {
+                repository.registerHit(
+                    filter,
+                    notification.copy(
+                        filterId = filter.id,
+                        showInHistory = filter.historyEnabled,
+                        showInWidget = filter.widgetEnabled,
+                    ),
+                )
+                Cache.intents[notification.data.hashCode()] = intents
+                this@NotificationListener.notifications = repository.notifications().first()
+                Logger.d("NotificationListener", "Notifications updated: $notifications")
+            }
+    }
+
+    private fun executeFilterOnNotification(
+        filter: Filter,
+        sbn: StatusBarNotification,
+        notification: Notification = Notification(sbn),
+        intents: Intents = Intents(sbn),
+    ): Boolean {
         when (filter.action) {
             is Action.DISMISS -> dismissNotification(sbn.key, sbn.isClearable)
 
@@ -206,7 +235,7 @@ class NotificationListener : NotificationListenerService() {
                     intents.launchMain()
                 } catch (e: Exception) {
                     Logger.e("NotificationListener", "Failed to tap notification", e)
-                    return
+                    return false
                 }
 
             is Action.TAP_BUTTON ->
@@ -216,7 +245,7 @@ class NotificationListener : NotificationListenerService() {
                     }?.value?.send()
                 } catch (e: Exception) {
                     Logger.e("NotificationListener", "Failed to tap button", e)
-                    return
+                    return false
                 }
 
             is Action.BATCH -> {
@@ -236,7 +265,7 @@ class NotificationListener : NotificationListenerService() {
                 } else if (notifications.any { it.data == notification.data }) {
                     // TODO: The above condition does not use the updated `notification.matches(other, delay)` check.
                     Logger.d("NotificationListener", "Already batched")
-                    return
+                    return false
                 } else {
                     snoozeNotification(
                         sbn.key,
@@ -264,7 +293,7 @@ class NotificationListener : NotificationListenerService() {
                     Logger.d("NotificationListener", "Less than 1 second of delay")
                 } else if (notifications.any { notification.matches(it, delay) }) {
                     Logger.d("NotificationListener", "Already delayed")
-                    return
+                    return false
                 } else {
                     snoozeNotification(sbn.key, delay)
                 }
@@ -372,20 +401,22 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        serviceScope.launch {
-            repository.registerHit(
-                filter,
-                notification.copy(
-                    filterId = filter.id,
-                    showInHistory = filter.historyEnabled,
-                    showInWidget = filter.widgetEnabled,
-                ),
-            )
-            Cache.intents[notification.data.hashCode()] = intents
-            this@NotificationListener.notifications = repository.notifications().first()
-            Logger.d("NotificationListener", "Notifications updated: $notifications")
-        }
+        return true
     }
+
+    /**
+     * Acts on active notifications that match the filter.
+     *
+     * Disregards `filter.enabled`, `filter.schedule`, and `filter.cooldown`.
+     */
+    fun executeFilterOnActiveNotifications(filter: Filter) =
+        super.activeNotifications.filter {
+            (it.packageName == filter.app.packageName || filter.app == Any)
+                    && filter.matchesTextOf(Notification(it))
+        }.forEach { sbn ->
+            Logger.i("NotificationListener", "$sbn matched $filter")
+            executeFilterOnNotification(filter, sbn)
+        }
 
     fun dismissNotification(key: String, isClearable: Boolean) {
         if (isClearable) {

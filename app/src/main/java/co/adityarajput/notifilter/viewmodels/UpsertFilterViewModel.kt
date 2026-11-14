@@ -1,6 +1,5 @@
 package co.adityarajput.notifilter.viewmodels
 
-import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,13 +72,7 @@ class UpsertFilterViewModel(
 
     var allPackages by mutableStateOf<List<App>>(emptyList())
 
-    var activeNotifications by mutableStateOf(
-        if (!NotificationListener.isServiceInitialized) emptyList() else
-            NotificationListener.instance
-                .activeNotifications
-                .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                .mapIndexed { id, sbn -> Notification(sbn, id) },
-    )
+    var activeNotifications by mutableStateOf(NotificationListener.instance.activeNotifications)
 
     init {
         viewModelScope.launch {
@@ -89,11 +82,7 @@ class UpsertFilterViewModel(
             }
 
             while (true) {
-                activeNotifications =
-                    if (!NotificationListener.isServiceInitialized) emptyList() else
-                        NotificationListener.instance.activeNotifications
-                            .filter { it.notification.flags and FLAG_GROUP_SUMMARY == 0 }
-                            .mapIndexed { id, sbn -> Notification(sbn, id) }
+                activeNotifications = NotificationListener.instance.activeNotifications
                 delay(500.milliseconds)
             }
         }

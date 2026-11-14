@@ -213,6 +213,21 @@ fun FiltersScreen(
                                     },
                                 )
                                 DropdownMenuItem(
+                                    { Text(stringResource(R.string.execute_filter_manually)) },
+                                    {
+                                        dropdownExpanded = false
+                                        NotificationListener.instance.executeFilterOnActiveNotifications(
+                                            it,
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.play_circle),
+                                            stringResource(R.string.execute_filter_manually),
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
                                     {
                                         Text(
                                             stringResource(
