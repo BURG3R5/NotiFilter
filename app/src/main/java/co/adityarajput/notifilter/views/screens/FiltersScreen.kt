@@ -1,15 +1,15 @@
 package co.adityarajput.notifilter.views.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.adityarajput.notifilter.R
@@ -41,6 +42,7 @@ import co.adityarajput.notifilter.views.components.MissingPermissionsDialog
 import co.adityarajput.notifilter.views.components.Tile
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -134,92 +136,30 @@ fun FiltersScreen(
                     .fillMaxSize(),
             ) {
                 items(state.value.filters!!, { it.id }) {
-                    Tile(
-                        it.title,
-                        it.action.verb(),
-                        if (it.app == Any) stringResource(R.string.any_app)
-                        else it.app.name.getFirst(30),
-                        if (!it.enabled) stringResource(R.string.filter_disabled)
-                        else if (!it.historyEnabled) stringResource(R.string.history_disabled)
-                        else pluralStringResource(R.plurals.hit, it.hits, it.hits),
-                        it.schedule.description,
-                        {
-                            if (viewModel.selectedFilter == it) viewModel.selectedFilter = null
-                            else viewModel.selectedFilter = it
+                    var dropdownExpanded by remember { mutableStateOf(false) }
+                    var dropdownOffset by remember { mutableStateOf(Offset.Zero) }
+
+                    Box(
+                        Modifier.pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = { position ->
+                                    dropdownOffset = position
+                                    viewModel.selectedFilter = it
+                                    dropdownExpanded = true
+                                },
+                            )
                         },
-                        null,
-                        {
-                            if (!isAdjustingPriorities) {
-                                IconButton(
-                                    {
-                                        viewModel.normalizePriorities()
-                                        isAdjustingPriorities = true
-                                    },
-                                ) {
-                                    Icon(
-                                        painterResource(R.drawable.format_line_spacing),
-                                        stringResource(R.string.adjust_priorities),
-                                    )
-                                }
-                                if (it.action is Action.REPLACE)
-                                    IconButton(
-                                        {
-                                            NotificationListener.createReplaceNotificationChannel(
-                                                it.id,
-                                                true,
-                                            )
-                                        },
-                                    ) {
-                                        Icon(
-                                            painterResource(R.drawable.notification_settings),
-                                            stringResource(R.string.adjust_priorities),
-                                        )
-                                    }
-                                IconButton(
-                                    {
-                                        viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
-                                    },
-                                ) {
-                                    Icon(
-                                        painterResource(R.drawable.manage_history),
-                                        stringResource(
-                                            R.string.toggle_history,
-                                            it.historyEnabled.getToggleString(),
-                                        ),
-                                    )
-                                }
-                                IconButton(
-                                    {
-                                        viewModel.dialogState = FilterDialogState.TOGGLE_FILTER
-                                    },
-                                ) {
-                                    Icon(
-                                        if (it.enabled) painterResource(R.drawable.archive)
-                                        else painterResource(R.drawable.unarchive),
-                                        stringResource(
-                                            R.string.toggle_filter,
-                                            it.enabled.getToggleString(),
-                                        ),
-                                    )
-                                }
-                                IconButton({ goToUpsertFilterScreen(Json.encodeToString(it)) }) {
-                                    Icon(
-                                        painterResource(R.drawable.edit),
-                                        stringResource(R.string.edit_filter),
-                                    )
-                                }
-                                IconButton(
-                                    { viewModel.dialogState = FilterDialogState.DELETE },
-                                    colors = IconButtonDefaults.iconButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.tertiary,
-                                    ),
-                                ) {
-                                    Icon(
-                                        painterResource(R.drawable.delete),
-                                        stringResource(R.string.delete),
-                                    )
-                                }
-                            } else {
+                    ) {
+                        Tile(
+                            it.title,
+                            it.action.verb(),
+                            if (it.app == Any) stringResource(R.string.any_app)
+                            else it.app.name.getFirst(30),
+                            if (!it.enabled) stringResource(R.string.filter_disabled)
+                            else if (!it.historyEnabled) stringResource(R.string.history_disabled)
+                            else pluralStringResource(R.plurals.hit, it.hits, it.hits),
+                            it.schedule.description,
+                            buttons = {
                                 IconButton({ viewModel.updatePriority(it, true) }) {
                                     Icon(
                                         painterResource(R.drawable.up),
@@ -238,11 +178,153 @@ fun FiltersScreen(
                                         stringResource(R.string.save),
                                     )
                                 }
+                            },
+                            expanded = isAdjustingPriorities,
+                            dividerBetweenTitleAndContent = true,
+                        )
+                        Box(
+                            Modifier
+                                .offset {
+                                    IntOffset(
+                                        dropdownOffset.x.roundToInt(),
+                                        dropdownOffset.y.roundToInt(),
+                                    )
+                                }
+                                .size(1.dp),
+                        ) {
+                            DropdownMenu(
+                                dropdownExpanded,
+                                {
+                                    viewModel.selectedFilter = null
+                                    dropdownExpanded = false
+                                },
+                            ) {
+                                DropdownMenuItem(
+                                    { Text(stringResource(R.string.edit_filter)) },
+                                    {
+                                        dropdownExpanded = false
+                                        goToUpsertFilterScreen(Json.encodeToString(it))
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.edit),
+                                            stringResource(R.string.edit_filter),
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    { Text(stringResource(R.string.execute_filter_manually)) },
+                                    {
+                                        dropdownExpanded = false
+                                        NotificationListener.instance.executeFilterOnActiveNotifications(
+                                            it,
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.play_circle),
+                                            stringResource(R.string.execute_filter_manually),
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    {
+                                        Text(
+                                            stringResource(
+                                                R.string.toggle_filter,
+                                                it.enabled.getToggleString(),
+                                            ),
+                                        )
+                                    },
+                                    {
+                                        dropdownExpanded = false
+                                        viewModel.dialogState = FilterDialogState.TOGGLE_FILTER
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            if (it.enabled) painterResource(R.drawable.archive)
+                                            else painterResource(R.drawable.unarchive),
+                                            stringResource(
+                                                R.string.toggle_filter,
+                                                it.enabled.getToggleString(),
+                                            ),
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    {
+                                        Text(
+                                            stringResource(
+                                                R.string.toggle_history,
+                                                it.historyEnabled.getToggleString(),
+                                            ),
+                                        )
+                                    },
+                                    {
+                                        dropdownExpanded = false
+                                        viewModel.dialogState = FilterDialogState.TOGGLE_HISTORY
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.manage_history),
+                                            stringResource(
+                                                R.string.toggle_history,
+                                                it.historyEnabled.getToggleString(),
+                                            ),
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    { Text(stringResource(R.string.rearrange_filters)) },
+                                    {
+                                        dropdownExpanded = false
+                                        viewModel.normalizePriorities()
+                                        isAdjustingPriorities = true
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.format_line_spacing),
+                                            stringResource(R.string.rearrange_filters),
+                                        )
+                                    },
+                                )
+                                if (it.action is Action.REPLACE)
+                                    DropdownMenuItem(
+                                        { Text(stringResource(R.string.configure_notifications)) },
+                                        {
+                                            dropdownExpanded = false
+                                            NotificationListener.createReplaceNotificationChannel(
+                                                it.id,
+                                                true,
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                painterResource(R.drawable.notification_settings),
+                                                stringResource(R.string.configure_notifications),
+                                            )
+                                        },
+                                    )
+                                DropdownMenuItem(
+                                    { Text(stringResource(R.string.delete_filter)) },
+                                    {
+                                        dropdownExpanded = false
+                                        viewModel.dialogState = FilterDialogState.DELETE
+                                    },
+                                    colors = MenuDefaults.itemColors(
+                                        textColor = MaterialTheme.colorScheme.tertiary,
+                                        leadingIconColor = MaterialTheme.colorScheme.tertiary,
+                                    ),
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(R.drawable.delete),
+                                            stringResource(R.string.delete_filter),
+                                        )
+                                    },
+                                )
                             }
-                        },
-                        isAdjustingPriorities || viewModel.selectedFilter == it,
-                        true,
-                    )
+                        }
+                    }
                 }
                 item { Box(Modifier.height(100.dp)) {} }
             }

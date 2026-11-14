@@ -23,7 +23,7 @@ fun Tile(
     leading: String,
     trailing: String? = null,
     preContent: String? = null,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     buttons: @Composable RowScope.() -> Unit = {},
     expanded: Boolean = false,
@@ -38,11 +38,12 @@ fun Tile(
                     durationMillis = 300,
                     easing = LinearOutSlowInEasing,
                 ),
-            )
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick ?: onClick,
-            ),
+            ).let {
+                if (onClick == null) it else it.combinedClickable(
+                    onClick = onClick,
+                    onLongClick = onLongClick ?: onClick,
+                )
+            },
     ) {
         Column(
             Modifier
