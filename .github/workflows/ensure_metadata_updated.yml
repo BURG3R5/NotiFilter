@@ -5,6 +5,10 @@ on:
     types: [ opened, synchronize, reopened ]
     branches: [ master ]
 
+concurrency:
+  group: "metadata"
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

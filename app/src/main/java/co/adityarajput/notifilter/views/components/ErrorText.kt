@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import co.adityarajput.notifilter.views.Orange
+import co.adityarajput.notifilter.views.AppTheme
 
 @Composable
 fun ErrorText(text: Int) = Text(
@@ -16,6 +16,6 @@ fun ErrorText(text: Int) = Text(
 @Composable
 fun WarningText(text: Int) = Text(
     stringResource(text),
-    color = Orange,
+    color = AppTheme.colors.warning,
     style = MaterialTheme.typography.labelLarge,
 )

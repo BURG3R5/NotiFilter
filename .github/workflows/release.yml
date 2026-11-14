@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+concurrency:
+  group: "release"
+  cancel-in-progress: true
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
