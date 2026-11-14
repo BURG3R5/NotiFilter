@@ -209,7 +209,6 @@ private fun ZapperPage(viewModel: UpsertFilterViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PackagePage(viewModel: UpsertFilterViewModel) {
     var searchString by remember {

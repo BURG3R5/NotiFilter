@@ -27,7 +27,7 @@
     <string name="history_disabled">history disabled</string>
     <string name="filter_disabled">filter disabled</string>
 
-    <string name="adjust_priorities">Adjust priorities</string>
+    <string name="rearrange_filters">Rearrange filters</string>
     <string name="move_up">Move up</string>
     <string name="move_down">Move down</string>
     <string name="configure_notifications">Configure notifications</string>
