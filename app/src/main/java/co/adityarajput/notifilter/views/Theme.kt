@@ -6,6 +6,8 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -20,8 +22,8 @@ enum class Brightness(val icon: Int, val description: Int) {
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF7C70FF), // Purple
-    secondary = Color(0xFF70FFA4), // Green
-    tertiary = Color(0xFFFF7070), // Red
+    secondary = Color(0xFF2F6A43), // Green
+    tertiary = Color(0xFF904A49), // Red
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -30,7 +32,7 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Color(0xFFFF7070), // Red
 )
 
-val Orange = Color(0xFFffad7d)
+// region Custom colors
 
 private val Typography = Typography().run {
     val firaMono = FontFamily(
@@ -58,9 +60,32 @@ private val Typography = Typography().run {
     )
 }
 
+data class AppColors(val warning: Color) {
+    companion object {
+        val Light = AppColors(warning = Color(0xFF8C4F28))
+        val Dark = AppColors(warning = Color(0xFFFFAD7D))
+    }
+}
+
+private val LocalAppColors = compositionLocalOf { AppColors.Dark }
+
+object AppTheme {
+    val colors: AppColors
+        @Composable
+        get() = LocalAppColors.current
+}
+
+// endregion
+
 @Composable
-fun Theme(brightness: Brightness = Brightness.SYSTEM, content: @Composable () -> Unit) =
-    MaterialTheme(
-        if (brightness == Brightness.LIGHT || (brightness == Brightness.SYSTEM && !isSystemInDarkTheme())) LightColorScheme else DarkColorScheme,
-        MaterialTheme.shapes, Typography, content,
-    )
+fun Theme(brightness: Brightness = Brightness.SYSTEM, content: @Composable () -> Unit) {
+    val isLightTheme =
+        brightness == Brightness.LIGHT || (brightness == Brightness.SYSTEM && !isSystemInDarkTheme())
+
+    CompositionLocalProvider(LocalAppColors provides if (isLightTheme) AppColors.Light else AppColors.Dark) {
+        MaterialTheme(
+            if (isLightTheme) LightColorScheme else DarkColorScheme,
+            MaterialTheme.shapes, Typography, content,
+        )
+    }
+}
