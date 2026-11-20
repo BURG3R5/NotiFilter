@@ -1,6 +1,7 @@
 package co.adityarajput.notifilter.services
 
 import android.app.AlarmManager
+import android.app.Notification.FLAG_AUTO_CANCEL
 import android.app.Notification.FLAG_GROUP_SUMMARY
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -384,6 +385,7 @@ class NotificationListener : NotificationListenerService() {
                                 notification, allPackages,
                             ),
                         )
+                        .setAutoCancel(sbn.notification.flags and FLAG_AUTO_CANCEL != 0)
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setContentIntent(sbn.notification.contentIntent)
                         .build(),
