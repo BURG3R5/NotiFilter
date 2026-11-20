@@ -208,6 +208,7 @@ fun SettingsScreen(
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
                     val importSuccess = stringResource(R.string.import_success)
+                    val importFailure = stringResource(R.string.import_failure)
                     val exportSuccess = stringResource(R.string.export_success)
                     val appNameAndVersion =
                         "${stringResource(R.string.app_name)}_${BuildConfig.VERSION_NAME}"
@@ -219,11 +220,18 @@ fun SettingsScreen(
                             uri
                                 ?.let { context.contentResolver.openInputStream(it) }
                                 ?.use {
-                                    appContainer.import(it.bufferedReader().readText())
-                                    goBack()
-                                    Toast
-                                        .makeText(context, importSuccess, Toast.LENGTH_SHORT)
-                                        .show()
+                                    try {
+                                        appContainer.import(it.bufferedReader().readText())
+                                        goBack()
+                                        Toast
+                                            .makeText(context, importSuccess, Toast.LENGTH_SHORT)
+                                            .show()
+                                    } catch (e: Exception) {
+                                        Logger.e("SettingsScreen", "Failed to import filters", e)
+                                        Toast
+                                            .makeText(context, importFailure, Toast.LENGTH_LONG)
+                                            .show()
+                                    }
                                 }
                         }
                     }
