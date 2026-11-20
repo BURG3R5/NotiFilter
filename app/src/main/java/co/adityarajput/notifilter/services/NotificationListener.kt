@@ -161,7 +161,7 @@ class NotificationListener : NotificationListenerService() {
             NotificationCompat.Builder(this, Constants.FOREGROUND_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.app_name_launcher))
                 .setContentText(getString(R.string.foreground_notification_content))
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.notifications_off)
                 .setOngoing(true).setSilent(true).build(),
         )
         Logger.i("NotificationListener", "Promoted to foreground")
@@ -325,7 +325,7 @@ class NotificationListener : NotificationListenerService() {
                     Constants.ALERT_NOTIFICATION_ID,
                     NotificationCompat.Builder(this, Constants.ALERT_NOTIFICATION_CHANNEL_ID)
                         .setContentTitle(getString(R.string.app_name_launcher))
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.notifications_off)
                         .setAutoCancel(true).build(),
                 )
                 serviceScope.launch {
@@ -386,7 +386,7 @@ class NotificationListener : NotificationListenerService() {
                             ),
                         )
                         .setAutoCancel(sbn.notification.flags and FLAG_AUTO_CANCEL != 0)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.notifications_off)
                         .setContentIntent(sbn.notification.contentIntent)
                         .build(),
                 )
