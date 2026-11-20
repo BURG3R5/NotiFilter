@@ -11,6 +11,9 @@ class Repository(
 ) {
     suspend fun upsert(vararg filters: Filter) = filterDao.upsert(*filters)
 
+    suspend fun deleteAndCreateFilters(vararg filters: Filter) =
+        filterDao.deleteAndCreateAll(*filters)
+
     suspend fun upsert(vararg notifications: Notification) = notificationDao.upsert(*notifications)
 
     fun filters() = filterDao.list()
@@ -48,8 +51,6 @@ class Repository(
         Cache.intents.remove(notification.data.hashCode())
         notificationDao.delete(notification)
     }
-
-    suspend fun deleteFilters() = filterDao.deleteAll()
 
     suspend fun deleteNotifications() {
         Cache.intents.clear()

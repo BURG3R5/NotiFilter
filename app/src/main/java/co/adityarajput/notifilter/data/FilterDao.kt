@@ -1,9 +1,6 @@
 package co.adityarajput.notifilter.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Query
-import androidx.room.Upsert
+import androidx.room.*
 import co.adityarajput.notifilter.data.models.Filter
 import kotlinx.coroutines.flow.Flow
 
@@ -11,6 +8,12 @@ import kotlinx.coroutines.flow.Flow
 interface FilterDao {
     @Upsert
     suspend fun upsert(vararg filters: Filter)
+
+    @Transaction
+    suspend fun deleteAndCreateAll(vararg filters: Filter) {
+        deleteAll()
+        upsert(*filters)
+    }
 
     @Query("SELECT * from filters ORDER BY priority, id")
     fun list(): Flow<List<Filter>>
