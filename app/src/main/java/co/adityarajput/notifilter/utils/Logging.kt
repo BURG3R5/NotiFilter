@@ -27,7 +27,7 @@ object Logger {
         Log.e(tag, msg, tr)
 
         if (logs.size >= Constants.LOG_SIZE) logs.removeFirst()
-        logs.addLast("[${System.currentTimeMillis()}][$tag][ERROR] $msg")
+        logs.addLast("[${System.currentTimeMillis()}][$tag][ERROR] $msg ${tr?.javaClass} ${tr?.message}")
 
         ACRA.errorReporter.putCustomData("logs", logs.joinToString("\n"))
     }

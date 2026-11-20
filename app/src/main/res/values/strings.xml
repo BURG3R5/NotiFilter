@@ -69,6 +69,7 @@
     <string name="import_filters">Import filters</string>
     <string name="import_warning">Overrides your current filters</string>
     <string name="import_success">Filters imported successfully</string>
+    <string name="import_failure">"Couldn't import filters"</string>
     <string name="export_filters">Export filters</string>
     <string name="export_explanation">Generates a JSON file</string>
     <string name="export_success">Filters exported successfully</string>
