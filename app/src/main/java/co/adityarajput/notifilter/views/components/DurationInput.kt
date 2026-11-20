@@ -2,6 +2,7 @@ package co.adityarajput.notifilter.views.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -21,9 +22,9 @@ import java.util.concurrent.TimeUnit
 fun DurationInput(
     value: Long,
     onValueChange: (Long) -> Unit,
-    modifier: Modifier = Modifier,
     label: String,
-    units: List<TimeUnit>,
+    modifier: Modifier = Modifier,
+    units: List<TimeUnit> = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS),
 ) {
     var unit by remember(units) { mutableStateOf(units.first()) }
     var dropdownExpanded by remember { mutableStateOf(false) }
@@ -33,7 +34,7 @@ fun DurationInput(
     OutlinedTextField(
         displayValue.toString(),
         { onValueChange((it.toIntOrNull() ?: 0) * unit.inMillis) },
-        modifier,
+        modifier.fillMaxWidth(),
         label = { Text(label) },
         trailingIcon = {
             ExposedDropdownMenuBox(dropdownExpanded, { dropdownExpanded = !dropdownExpanded }) {
