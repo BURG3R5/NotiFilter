@@ -1,0 +1,5 @@
+• fix: Darken light theme colors
+• feat: Move filter tile actions to dropdown menu
+• feat: Allow manual execution of filters
+• feat: Set auto-cancel if the replaced notification uses auto-cancel
+• fix: Prevent data loss in case of failed import
