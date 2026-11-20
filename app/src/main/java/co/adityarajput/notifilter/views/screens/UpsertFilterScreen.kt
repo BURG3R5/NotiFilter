@@ -43,7 +43,6 @@ import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 import co.adityarajput.notifilter.views.components.*
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun UpsertFilterScreen(
@@ -1166,9 +1165,7 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
                     viewModel.state.values.copy(cooldown = it),
                 )
             },
-            Modifier.fillMaxWidth(),
             stringResource(R.string.filter_cooldown_length),
-            listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS),
         )
     }
     if (viewModel.state.error == FormError.INVALID_COOLDOWN) ErrorText(R.string.invalid_cooldown)
