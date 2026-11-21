@@ -24,12 +24,14 @@ private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF7C70FF), // Purple
     secondary = Color(0xFF2F6A43), // Green
     tertiary = Color(0xFF904A49), // Red
+    error = Color(0xFF904A49), // Red
 )
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF7C70FF), // Purple
     secondary = Color(0xFF70FFA4), // Green
     tertiary = Color(0xFFFF7070), // Red
+    error = Color(0xFFFF7070), // Red
 )
 
 // region Custom colors

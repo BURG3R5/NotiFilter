@@ -16,4 +16,16 @@
         <item quantity="one">%1$d hit</item>
         <item quantity="other">%1$d hits</item>
     </plurals>
+
+    <!-- These are technically ICU strings, not plurals. But they'll contain the same logic as a plural, hence they must be kept with the plurals. -->
+    <string name="hour">{0, plural,
+    =0 {0 hours}
+    one {# hour}
+    other {# hours}}
+    </string>
+    <string name="minute">{0, plural,
+    =0 {0 minutes}
+    one {# minute}
+    other {# minutes}}
+    </string>
 </resources>

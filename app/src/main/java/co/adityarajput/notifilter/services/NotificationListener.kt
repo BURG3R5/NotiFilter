@@ -253,7 +253,7 @@ class NotificationListener : NotificationListenerService() {
                 val zone = ZoneId.systemDefault()
                 val now = ZonedDateTime.now(zone)
                 val today = now.toLocalDate().atStartOfDay(zone)
-                var batchLength = filter.action.batchLength * 60 * 60 * 1000L
+                var batchLength = (filter.action.batchLength * 3_600_000L).toLong()
                 if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
                     // INFO: While debugging, batch for minutes instead of hours
                     batchLength /= 60
@@ -280,7 +280,7 @@ class NotificationListener : NotificationListenerService() {
                 val now = ZonedDateTime.now(zone)
                 val delay =
                     if (filter.action.delayLength != null)
-                        filter.action.delayLength * 60 * 1000L
+                        (filter.action.delayLength * 60_000L).toLong()
                     else
                         now.until(
                             now.toLocalDate()
@@ -303,11 +303,11 @@ class NotificationListener : NotificationListenerService() {
             is Action.DEBOUNCE -> {
                 if (!cooldowns.containsKey(filter.id)) {
                     Logger.d("NotificationListener", "Setting cooldown")
-                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
+                    cooldowns += filter.id to (System.currentTimeMillis() + (filter.action.cooldownLength * 60_000L).toLong())
                     muteNotificationsWhileCooldown(filter)
                 } else {
                     Logger.i("NotificationListener", "Updating cooldown")
-                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.cooldownLength * 60 * 1000L)
+                    cooldowns += filter.id to (System.currentTimeMillis() + (filter.action.cooldownLength * 60_000L).toLong())
                 }
             }
 
@@ -337,18 +337,18 @@ class NotificationListener : NotificationListenerService() {
             is Action.DISTURB -> {
                 if (!cooldowns.containsKey(filter.id) && audioManager.ringerMode != AudioManager.RINGER_MODE_NORMAL) {
                     Logger.d("NotificationListener", "Disabling DND")
-                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
+                    cooldowns += filter.id to (System.currentTimeMillis() + (filter.action.pauseLength * 60_000L).toLong())
                     snoozeNotification(sbn.key, 100)
                     disableDNDWhileCooldown(filter)
                 } else {
                     Logger.i("NotificationListener", "Extending disturbance")
-                    cooldowns += filter.id to (System.currentTimeMillis() + filter.action.pauseLength * 60 * 1000L)
+                    cooldowns += filter.id to (System.currentTimeMillis() + (filter.action.pauseLength * 60_000L).toLong())
                 }
             }
 
             is Action.DISMISS_STALE -> {
                 serviceScope.launch {
-                    var retentionLength = filter.action.retentionLength * 60 * 1000L
+                    var retentionLength = (filter.action.retentionLength * 60_000L).toLong()
                     if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
                         // INFO: While debugging, retain for shorter intervals
                         retentionLength /= 5

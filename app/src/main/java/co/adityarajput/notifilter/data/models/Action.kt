@@ -1,14 +1,14 @@
 package co.adityarajput.notifilter.data.models
 
 import android.content.Context
-import androidx.annotation.PluralsRes
+import android.icu.text.MessageFormat
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import co.adityarajput.notifilter.R
 import co.adityarajput.notifilter.utils.Logger
 import kotlinx.serialization.Serializable
+import java.util.Locale
 
 @Suppress("ClassName")
 @Serializable
@@ -23,13 +23,28 @@ sealed class Action {
     data class TAP_BUTTON(val buttonRegex: String) : Action()
 
     @Serializable
-    data class BATCH(val batchLength: Int) : Action()
+    data class BATCH(
+        /**
+         * In hours
+         */
+        val batchLength: Double,
+    ) : Action()
 
     @Serializable
-    data class DELAY(val delayLength: Int? = null) : Action()
+    data class DELAY(
+        /**
+         * In minutes
+         */
+        val delayLength: Double? = null,
+    ) : Action()
 
     @Serializable
-    data class DEBOUNCE(val cooldownLength: Int) : Action()
+    data class DEBOUNCE(
+        /**
+         * In minutes
+         */
+        val cooldownLength: Double,
+    ) : Action()
 
     @Serializable
     data object MUTE : Action()
@@ -38,10 +53,20 @@ sealed class Action {
     data object ALERT : Action()
 
     @Serializable
-    data class DISTURB(val pauseLength: Int) : Action()
+    data class DISTURB(
+        /**
+         * In minutes
+         */
+        val pauseLength: Double,
+    ) : Action()
 
     @Serializable
-    data class DISMISS_STALE(val retentionLength: Int) : Action()
+    data class DISMISS_STALE(
+        /**
+         * In minutes
+         */
+        val retentionLength: Double,
+    ) : Action()
 
     @Serializable
     data class REPLACE(val titleTemplate: String, val contentTemplate: String) : Action()
@@ -56,13 +81,6 @@ sealed class Action {
             if (isGlance) context!!.getString(id, *formatArgs)
             else stringResource(id, *formatArgs)
 
-        @Composable
-        fun getPlural(@PluralsRes id: Int, count: Int, vararg formatArgs: Any) =
-            if (isGlance)
-                context!!.applicationContext.resources.getQuantityString(id, count, *formatArgs)
-            else
-                pluralStringResource(id, count, *formatArgs)
-
         return when (this) {
             is DISMISS -> getString(R.string.dismiss_short)
             is TAP_NOTIFICATION -> getString(R.string.tap_notification_short)
@@ -72,27 +90,37 @@ sealed class Action {
 
             is DELAY -> if (delayLength == null) getString(R.string.delay_short) else getString(
                 R.string.delay_by_short,
-                getPlural(R.plurals.minute, delayLength, delayLength),
+                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
+                    arrayOf(delayLength),
+                ),
             )
 
             is BATCH -> getString(
                 R.string.batch_short,
-                getPlural(R.plurals.hour, batchLength, batchLength),
+                MessageFormat(getString(R.string.hour), Locale.getDefault()).format(
+                    arrayOf(batchLength),
+                ),
             )
 
             is DEBOUNCE -> getString(
                 R.string.debounce_short,
-                getPlural(R.plurals.minute, cooldownLength, cooldownLength),
+                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
+                    arrayOf(cooldownLength),
+                ),
             )
 
             is DISTURB -> getString(
                 R.string.disturb_short,
-                getPlural(R.plurals.minute, pauseLength, pauseLength),
+                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
+                    arrayOf(pauseLength),
+                ),
             )
 
             is DISMISS_STALE -> getString(
                 R.string.dismiss_stale_short,
-                getPlural(R.plurals.minute, retentionLength, retentionLength),
+                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
+                    arrayOf(retentionLength),
+                ),
             )
 
             is REPLACE -> getString(R.string.replace_short, titleTemplate, contentTemplate)
@@ -124,8 +152,8 @@ sealed class Action {
     companion object {
         val entries by lazy {
             listOf(
-                DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3),
-                DELAY(), DEBOUNCE(2), MUTE, ALERT, DISTURB(5), DISMISS_STALE(15),
+                DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3.0),
+                DELAY(), DEBOUNCE(2.0), MUTE, ALERT, DISTURB(5.0), DISMISS_STALE(15.0),
                 REPLACE($$"${app} - ${title}", $$"${content}"), READ($$"${title}: ${content}"),
             )
         }
@@ -147,23 +175,23 @@ sealed class Action {
                 }
 
                 BATCH_REGEX.matchEntire(value)?.groupValues?.let {
-                    return BATCH(it[1].toInt())
+                    return BATCH(it[1].toDouble())
                 }
 
                 DELAY_REGEX.matchEntire(value)?.groupValues?.let {
-                    return if (it[1] == "null") DELAY() else DELAY(it[1].toInt())
+                    return if (it[1] == "null") DELAY() else DELAY(it[1].toDouble())
                 }
 
                 DEBOUNCE_REGEX.matchEntire(value)?.groupValues?.let {
-                    return DEBOUNCE(it[1].toInt())
+                    return DEBOUNCE(it[1].toDouble())
                 }
 
                 DISTURB_REGEX.matchEntire(value)?.groupValues?.let {
-                    return DISTURB(it[1].toInt())
+                    return DISTURB(it[1].toDouble())
                 }
 
                 DISMISS_STALE_REGEX.matchEntire(value)?.groupValues?.let {
-                    return DISMISS_STALE(it[1].toInt())
+                    return DISMISS_STALE(it[1].toDouble())
                 }
 
                 REPLACE_REGEX.matchEntire(value)?.groupValues?.let {
@@ -179,12 +207,16 @@ sealed class Action {
             }
         }
 
+        private const val UNSIGNED_DOUBLE_REGEX = "(?:[0-9]*\\.)?[0-9]+"
+
         private val TAP_BUTTON_REGEX = Regex("^TAP_BUTTON\\(buttonRegex=(.*)\\)$")
-        private val BATCH_REGEX = Regex("^BATCH\\(batchLength=(\\d+)\\)$")
-        private val DELAY_REGEX = Regex("^DELAY\\(delayLength=(null|\\d+)\\)$")
-        private val DEBOUNCE_REGEX = Regex("^DEBOUNCE\\(cooldownLength=(\\d+)\\)$")
-        private val DISTURB_REGEX = Regex("^DISTURB\\(pauseLength=(\\d+)\\)$")
-        private val DISMISS_STALE_REGEX = Regex("^DISMISS_STALE\\(retentionLength=(\\d+)\\)$")
+        private val BATCH_REGEX = Regex("^BATCH\\(batchLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
+        private val DELAY_REGEX = Regex("^DELAY\\(delayLength=(null|$UNSIGNED_DOUBLE_REGEX)\\)$")
+        private val DEBOUNCE_REGEX =
+            Regex("^DEBOUNCE\\(cooldownLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
+        private val DISTURB_REGEX = Regex("^DISTURB\\(pauseLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
+        private val DISMISS_STALE_REGEX =
+            Regex("^DISMISS_STALE\\(retentionLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
         private val REPLACE_REGEX =
             Regex("^REPLACE\\(titleTemplate=(.*?), contentTemplate=(.*)\\)$")
         private val READ_REGEX = Regex("^READ\\(speechTemplate=(.*?)\\)$")

@@ -23,10 +23,13 @@ fun DurationInput(
     value: Long,
     onValueChange: (Long) -> Unit,
     label: String,
+    isError: Boolean,
+    errorText: Int,
     modifier: Modifier = Modifier,
     units: List<TimeUnit> = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS),
+    initialUnit: TimeUnit = units.first(),
 ) {
-    var unit by remember(units) { mutableStateOf(units.first()) }
+    var unit by remember(units) { mutableStateOf(initialUnit) }
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     val displayValue = (value / unit.inMillis).toInt()
@@ -71,6 +74,10 @@ fun DurationInput(
                 }
             }
         },
+        supportingText = if (isError) {
+            { ErrorText(errorText) }
+        } else null,
+        isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
@@ -80,6 +87,22 @@ fun DurationInput(
         ),
     )
 }
+
+@Composable
+fun DurationInput(
+    value: Double,
+    valueUnit: TimeUnit,
+    onValueChange: (Double) -> Unit,
+    label: String,
+    isError: Boolean,
+    errorText: Int,
+    modifier: Modifier = Modifier,
+    units: List<TimeUnit> = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS),
+) = DurationInput(
+    (value * valueUnit.inMillis).toLong(),
+    { onValueChange(it.toDouble() / valueUnit.inMillis) },
+    label, isError, errorText, modifier, units, valueUnit,
+)
 
 private val TimeUnit.inMillis: Long
     get() = when (this) {

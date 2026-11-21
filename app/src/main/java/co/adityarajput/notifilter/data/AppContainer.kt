@@ -52,7 +52,7 @@ class AppContainer(private val context: Context) {
                     Filter(
                         App("Gmail", "com.google.android.gm"),
                         "[Nn]ewsletter",
-                        Action.BATCH(3),
+                        Action.BATCH(3.0),
                         RegexTarget.OR,
                         widgetEnabled = true,
                         hits = 1,
@@ -69,7 +69,7 @@ class AppContainer(private val context: Context) {
                     Filter(
                         App("WhatsApp", "com.whatsapp"),
                         "Photo",
-                        Action.DEBOUNCE(1),
+                        Action.DEBOUNCE(1.0),
                         RegexTarget.CONTENT,
                         historyEnabled = false,
                     ),
@@ -92,14 +92,14 @@ class AppContainer(private val context: Context) {
                     Filter(
                         Any,
                         "urgent",
-                        Action.DISTURB(5),
+                        Action.DISTURB(5.0),
                         RegexTarget.OR,
                         historyEnabled = false,
                     ),
                     Filter(
                         App("Twitch", "tv.twitch.android.app"),
                         "live",
-                        Action.DISMISS_STALE(60),
+                        Action.DISMISS_STALE(60.0),
                         RegexTarget.OR,
                         historyEnabled = false,
                     ),
