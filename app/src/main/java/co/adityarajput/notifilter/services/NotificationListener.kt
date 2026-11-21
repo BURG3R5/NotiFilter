@@ -171,7 +171,7 @@ class NotificationListener : NotificationListenerService() {
         super.onListenerConnected()
         Logger.i("NotificationListener", "Listener connected")
         serviceScope.launch { TextToSpeech.initialize(this@NotificationListener) }
-        requestListenerHints(0)
+        setListenerHints(0)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -314,10 +314,10 @@ class NotificationListener : NotificationListenerService() {
             is Action.MUTE -> serviceScope.launch {
                 delay(300.milliseconds)
                 Logger.i("NotificationListener", "Muting")
-                requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
+                setListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
                 delay(NOTIFICATION_SOUND_DURATION.milliseconds)
                 Logger.d("NotificationListener", "Unmuting")
-                requestListenerHints(0)
+                setListenerHints(0)
             }
 
             is Action.ALERT -> {
@@ -438,7 +438,7 @@ class NotificationListener : NotificationListenerService() {
         serviceScope.launch {
             delay(NOTIFICATION_SOUND_DURATION.milliseconds) // INFO: Wait for original notification sound
             Logger.d("NotificationListener", "Applying cooldown")
-            requestListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
+            setListenerHints(HINT_HOST_DISABLE_NOTIFICATION_EFFECTS)
             try {
                 while (true) {
                     val cooldownEnd = cooldowns[filter.id] ?: break
@@ -448,7 +448,7 @@ class NotificationListener : NotificationListenerService() {
             } finally {
                 Logger.d("NotificationListener", "Cooldown ended")
                 cooldowns -= filter.id
-                requestListenerHints(0)
+                setListenerHints(0)
             }
         }
     }
@@ -478,6 +478,14 @@ class NotificationListener : NotificationListenerService() {
                     notificationManager.setInterruptionFilter(originalInterruptionFilter)
                 }
             }
+        }
+    }
+
+    private fun setListenerHints(hints: Int) {
+        try {
+            requestListenerHints(hints)
+        } catch (e: SecurityException) {
+            Logger.e("NotificationListener", "Couldn't request hints", e)
         }
     }
 
