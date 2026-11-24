@@ -136,6 +136,8 @@
     <string name="cant_debounce_any">"Debounce action can't be used when targeting all apps"</string>
     <string name="mute_long">Mute notifications</string>
     <string name="alert_long">Play an alert</string>
+    <string name="alert_lifespan">Dismiss the alert notification after</string>
+    <string name="invalid_alert_lifespan">Value must be between 1 second and 1 minute</string>
     <string name="alert_notifications_description">NotiFilter sends short-lived notifications to play alerts.</string>
     <string name="disturb_long">Disable \"Do Not Disturb\"</string>
     <string name="pause_length">Re-enable DND after</string>
@@ -196,7 +198,7 @@
     <string name="about">About</string>
     <string name="app_description">" listens to all device notifications and quietly manages those that match your filters."</string>
     <string name="app_links"><![CDATA[Licensed under <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a><br/>Source code available on <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>Visit the <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">project wiki</a> for more]]></string>
-    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT actions, if any</li><li>ACCESS_NOTIFICATION_POLICY: to execute DISTURB actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to execute DISMISS_STALE actions, if any</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul>Other permissions may be used by libraries to manage tasks, such as widget updates.</small>]]></string>
+    <string name="app_permissions"><![CDATA[Permissions<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE: to listen and react to notifications</li><li>QUERY_ALL_PACKAGES: to search through installed apps while adding filters</li><li>BIND_ACCESSIBILITY_SERVICE: to execute TAP_NOTIFICATION actions, if any</li><li>POST_NOTIFICATIONS: to execute ALERT/REPLACE actions, if any</li><li>ACCESS_NOTIFICATION_POLICY: to execute DISTURB actions, if any</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: to execute DISMISS_STALE actions, if any</li><li>FOREGROUND_SERVICE_SPECIAL_USE: to optionally promote to the core service to foreground, avoiding aggressive OS optimizations</li></ul>Other permissions may be used by libraries to manage tasks, such as widget updates.</small>]]></string>
     <string name="dev_credit"><![CDATA[Developed by <a href=\"https://github.com/BURG3R5/\">BURG3R5</a>]]></string>
     <!-- endregion -->
 

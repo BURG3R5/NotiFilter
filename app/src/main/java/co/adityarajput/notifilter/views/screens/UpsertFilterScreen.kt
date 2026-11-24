@@ -707,28 +707,40 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 if (viewModel.state.error == FormError.CANT_DEBOUNCE_ANY) ErrorText(R.string.cant_debounce_any)
             }
         }
-        AnimatedVisibility(
-            it is Action.ALERT
-                    && viewModel.state.values.action is Action.ALERT
-                    && !hasPermissions.getValue(Permission.POST_NOTIFICATIONS),
-        ) {
+        AnimatedVisibility(it is Action.ALERT && viewModel.state.values.action is Action.ALERT) {
             Column(
                 Modifier
                     .fillMaxWidth()
                     .padding(start = dimensionResource(R.dimen.padding_medium)),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                ErrorText(R.string.alert_notifications_description)
-                Button(
-                    { context.request(Permission.POST_NOTIFICATIONS) },
-                    Modifier.align(Alignment.CenterHorizontally),
-                    colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                ) {
-                    Text(
-                        stringResource(R.string.grant_permission),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Normal,
-                    )
+                DurationInput(
+                    (viewModel.state.values.action as? Action.ALERT)?.alertLifespan ?: 2.0,
+                    TimeUnit.SECONDS,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.ALERT(value)),
+                        )
+                    },
+                    stringResource(R.string.alert_lifespan),
+                    viewModel.state.error == FormError.INVALID_ALERT_LIFESPAN,
+                    R.string.invalid_alert_lifespan,
+                    units = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES),
+                )
+                if (!hasPermissions.getValue(Permission.POST_NOTIFICATIONS)) {
+                    ErrorText(R.string.alert_notifications_description)
+                    Button(
+                        { context.request(Permission.POST_NOTIFICATIONS) },
+                        Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) {
+                        Text(
+                            stringResource(R.string.grant_permission),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Normal,
+                        )
+                    }
                 }
             }
         }

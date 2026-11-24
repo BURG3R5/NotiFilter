@@ -50,7 +50,12 @@ sealed class Action {
     data object MUTE : Action()
 
     @Serializable
-    data object ALERT : Action()
+    data class ALERT(
+        /**
+         * In seconds
+         */
+        val alertLifespan: Double,
+    ) : Action()
 
     @Serializable
     data class DISTURB(
@@ -153,7 +158,8 @@ sealed class Action {
         val entries by lazy {
             listOf(
                 DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3.0),
-                DELAY(), DEBOUNCE(2.0), MUTE, ALERT, DISTURB(5.0), DISMISS_STALE(15.0),
+                DELAY(), DEBOUNCE(2.0), MUTE, ALERT(2.0),
+                DISTURB(5.0), DISMISS_STALE(15.0),
                 REPLACE($$"${app} - ${title}", $$"${content}"), READ($$"${title}: ${content}"),
             )
         }
@@ -167,7 +173,7 @@ sealed class Action {
 
             "MUTE" -> MUTE
 
-            "ALERT" -> ALERT
+            "ALERT" -> ALERT(2.0)
 
             else -> {
                 TAP_BUTTON_REGEX.matchEntire(value)?.groupValues?.let {
@@ -184,6 +190,10 @@ sealed class Action {
 
                 DEBOUNCE_REGEX.matchEntire(value)?.groupValues?.let {
                     return DEBOUNCE(it[1].toDouble())
+                }
+
+                ALERT_REGEX.matchEntire(value)?.groupValues?.let {
+                    return ALERT(it[1].toDouble())
                 }
 
                 DISTURB_REGEX.matchEntire(value)?.groupValues?.let {
@@ -214,6 +224,7 @@ sealed class Action {
         private val DELAY_REGEX = Regex("^DELAY\\(delayLength=(null|$UNSIGNED_DOUBLE_REGEX)\\)$")
         private val DEBOUNCE_REGEX =
             Regex("^DEBOUNCE\\(cooldownLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
+        private val ALERT_REGEX = Regex("^ALERT\\(alertLifespan=($UNSIGNED_DOUBLE_REGEX)\\)$")
         private val DISTURB_REGEX = Regex("^DISTURB\\(pauseLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
         private val DISMISS_STALE_REGEX =
             Regex("^DISMISS_STALE\\(retentionLength=($UNSIGNED_DOUBLE_REGEX)\\)$")
