@@ -43,6 +43,7 @@ import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.viewmodels.UpsertFilterViewModel
 import co.adityarajput.notifilter.views.components.*
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun UpsertFilterScreen(
@@ -596,17 +597,19 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
             }
         }
         AnimatedVisibility(it is Action.BATCH && viewModel.state.values.action is Action.BATCH) {
-            IntegerInput(
-                (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3,
-                1,
-                12,
-                R.string.batch_frequency,
-            ) { value ->
-                viewModel.updateForm(
-                    viewModel.state.page,
-                    viewModel.state.values.copy(action = Action.BATCH(value)),
-                )
-            }
+            DurationInput(
+                (viewModel.state.values.action as? Action.BATCH)?.batchLength ?: 3.0,
+                TimeUnit.HOURS,
+                { value ->
+                    viewModel.updateForm(
+                        viewModel.state.page,
+                        viewModel.state.values.copy(action = Action.BATCH(value)),
+                    )
+                },
+                stringResource(R.string.batch_length),
+                viewModel.state.error == FormError.INVALID_BATCH_LENGTH,
+                R.string.invalid_batch_length,
+            )
         }
         AnimatedVisibility(it is Action.DELAY && viewModel.state.values.action is Action.DELAY) {
             Column(
@@ -645,7 +648,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                         .selectable(useDelayFor) {
                             viewModel.updateForm(
                                 viewModel.state.page,
-                                viewModel.state.values.copy(action = Action.DELAY(5)),
+                                viewModel.state.values.copy(action = Action.DELAY(5.0)),
                             )
                         },
                     verticalAlignment = Alignment.CenterVertically,
@@ -662,17 +665,19 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                     )
                 }
                 AnimatedVisibility(useDelayFor) {
-                    IntegerInput(
-                        (viewModel.state.values.action as? Action.DELAY)?.delayLength ?: 5,
-                        1,
-                        30,
-                        R.string.delay_length,
-                    ) { value ->
-                        viewModel.updateForm(
-                            viewModel.state.page,
-                            viewModel.state.values.copy(action = Action.DELAY(value)),
-                        )
-                    }
+                    DurationInput(
+                        (viewModel.state.values.action as? Action.DELAY)?.delayLength ?: 5.0,
+                        TimeUnit.MINUTES,
+                        { value ->
+                            viewModel.updateForm(
+                                viewModel.state.page,
+                                viewModel.state.values.copy(action = Action.DELAY(value)),
+                            )
+                        },
+                        stringResource(R.string.delay_length),
+                        viewModel.state.error == FormError.INVALID_DELAY_LENGTH,
+                        R.string.value_must_be_between_one_min_and_one_day,
+                    )
                 }
             }
         }
@@ -681,17 +686,19 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                IntegerInput(
-                    (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2,
-                    1,
-                    30,
-                    R.string.cooldown_length,
-                ) { value ->
-                    viewModel.updateForm(
-                        viewModel.state.page,
-                        viewModel.state.values.copy(action = Action.DEBOUNCE(value)),
-                    )
-                }
+                DurationInput(
+                    (viewModel.state.values.action as? Action.DEBOUNCE)?.cooldownLength ?: 2.0,
+                    TimeUnit.MINUTES,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.DEBOUNCE(value)),
+                        )
+                    },
+                    stringResource(R.string.cooldown_length),
+                    viewModel.state.error == FormError.INVALID_COOLDOWN_LENGTH,
+                    R.string.value_must_be_between_one_min_and_one_day,
+                )
                 Text(
                     stringResource(R.string.explain_debounce),
                     style = MaterialTheme.typography.labelLarge,
@@ -730,17 +737,19 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                IntegerInput(
-                    (viewModel.state.values.action as? Action.DISTURB)?.pauseLength ?: 5,
-                    1,
-                    30,
-                    R.string.pause_length,
-                ) { value ->
-                    viewModel.updateForm(
-                        viewModel.state.page,
-                        viewModel.state.values.copy(action = Action.DISTURB(value)),
-                    )
-                }
+                DurationInput(
+                    (viewModel.state.values.action as? Action.DISTURB)?.pauseLength ?: 5.0,
+                    TimeUnit.MINUTES,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.DISTURB(value)),
+                        )
+                    },
+                    stringResource(R.string.pause_length),
+                    viewModel.state.error == FormError.INVALID_PAUSE_LENGTH,
+                    R.string.value_must_be_between_one_min_and_one_day,
+                )
                 if (!hasPermissions.getValue(Permission.NOTIFICATION_POLICY)) {
                     ErrorText(R.string.notification_policy_permission_description)
                     Button(
@@ -764,20 +773,20 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                 Modifier.fillMaxWidth(),
                 Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             ) {
-                IntegerInput(
-                    (viewModel.state.values.action as? Action.DISMISS_STALE)?.retentionLength ?: 15,
-                    5,
-                    300,
-                    R.string.retention_length,
-                    5,
-                    30,
-                    3,
-                ) { value ->
-                    viewModel.updateForm(
-                        viewModel.state.page,
-                        viewModel.state.values.copy(action = Action.DISMISS_STALE(value)),
-                    )
-                }
+                DurationInput(
+                    (viewModel.state.values.action as? Action.DISMISS_STALE)?.retentionLength
+                        ?: 15.0,
+                    TimeUnit.MINUTES,
+                    { value ->
+                        viewModel.updateForm(
+                            viewModel.state.page,
+                            viewModel.state.values.copy(action = Action.DISMISS_STALE(value)),
+                        )
+                    },
+                    stringResource(R.string.retention_length),
+                    viewModel.state.error == FormError.INVALID_RETENTION_LENGTH,
+                    R.string.value_must_be_between_one_min_and_one_day,
+                )
                 if (!hasPermissions.getValue(Permission.SCHEDULE_EXACT_ALARM)) {
                     ErrorText(R.string.exact_alarm_permission_description)
                     Button(
@@ -1166,7 +1175,8 @@ private fun SchedulePage(viewModel: UpsertFilterViewModel) {
                 )
             },
             stringResource(R.string.filter_cooldown_length),
+            viewModel.state.error == FormError.INVALID_FILTER_COOLDOWN_LENGTH,
+            R.string.invalid_filter_cooldown_length,
         )
     }
-    if (viewModel.state.error == FormError.INVALID_COOLDOWN) ErrorText(R.string.invalid_cooldown)
 }

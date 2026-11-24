@@ -10,8 +10,8 @@ class ActionTest {
     fun Action_serialization_roundtrip() {
         val actions = Action.entries + listOf(
             // INFO: Non-default values for instantiable actions
-            TAP_BUTTON("^Sno{2}z(e)$"), BATCH(6), DELAY(5),
-            DEBOUNCE(4), DISTURB(10), DISMISS_STALE(30),
+            TAP_BUTTON("^Sno{2}z(e)$"), BATCH(6.0), DELAY(5.0),
+            DEBOUNCE(4.0), DISTURB(10.0), DISMISS_STALE(30.0),
             REPLACE(
                 $$"${app} said ${title} at ${postTime}.",
                 $$"The description was \"${content}\".",
@@ -22,9 +22,6 @@ class ActionTest {
         actions.forEach {
             assertEquals(it, Action.fromString(it.toString()))
         }
-
-        // INFO: The (outdated) object form of "DELAY" should also be supported
-        assertEquals(DELAY(), Action.fromString("DELAY"))
     }
 
     @Test
@@ -46,6 +43,25 @@ class ActionTest {
     }
 
     @Test
+    fun Action_deserialization_legacy_params() {
+        // INFO: The (outdated) object form of "DELAY" should also be supported
+        assertEquals(DELAY(), Action.fromString("DELAY"))
+
+        // INFO: 4 and 4.0 should be treated the same, for actions containing numeric (previously Int, now Double) parameters
+        val legacyIntParams = listOf(
+            "BATCH(batchLength=4)",
+            "DELAY(delayLength=4)",
+            "DEBOUNCE(cooldownLength=4)",
+            "DISTURB(pauseLength=4)",
+            "DISMISS_STALE(retentionLength=4)",
+        )
+
+        legacyIntParams.forEach {
+            assertEquals(Action.fromString(it.replace("4", "4.0")), Action.fromString(it))
+        }
+    }
+
+    @Test
     fun Action_deserialization_incorrectParams() {
         listOf(
             // INFO: Missing or wrong parameters
@@ -58,7 +74,7 @@ class ActionTest {
             "REPLACE(param=10, contentTemplate=content)",
             "READ()", "READ(param=11)",
 
-            // INFO: Non-integer parameters
+            // INFO: Non-numeric parameters
             "BATCH(batchLength=a)", "DELAY(delayLength=e)", "DEBOUNCE(cooldownLength=b)",
             "DISTURB(pauseLength=c)", "DISMISS_STALE(retentionLength=d)",
         ).forEach {

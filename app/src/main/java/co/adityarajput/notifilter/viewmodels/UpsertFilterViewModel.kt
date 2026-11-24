@@ -121,21 +121,57 @@ class UpsertFilterViewModel(
             }
 
             FormPage.ACTION -> {
-                if (values.action is Action.TAP_BUTTON) {
-                    if (values.action.buttonRegex.isBlank()) return FormError.BLANK_FIELDS
+                when (values.action) {
+                    is Action.TAP_BUTTON -> {
+                        if (values.action.buttonRegex.isBlank())
+                            return FormError.BLANK_FIELDS
 
-                    if (!values.action.buttonRegex.isValidRegex()) return FormError.INVALID_BUTTON_REGEX
-                }
+                        if (!values.action.buttonRegex.isValidRegex())
+                            return FormError.INVALID_BUTTON_REGEX
+                    }
 
-                if (values.action is Action.DEBOUNCE && values.app == Any) {
-                    return FormError.CANT_DEBOUNCE_ANY
+                    /**
+                     * 30 minutes to 12 hours
+                     */
+                    is Action.BATCH if values.action.batchLength !in 0.5..12.0 -> return FormError.INVALID_BATCH_LENGTH
+
+                    /**
+                     * One minute to one day
+                     */
+                    is Action.DELAY -> {
+                        if (values.action.delayLength != null && values.action.delayLength !in 1.0..24 * 60.0)
+                            return FormError.INVALID_DELAY_LENGTH
+                    }
+
+                    is Action.DEBOUNCE -> {
+                        if (values.app == Any)
+                            return FormError.CANT_DEBOUNCE_ANY
+
+                        /**
+                         * One minute to one day
+                         */
+                        if (values.action.cooldownLength !in 1.0..24 * 60.0)
+                            return FormError.INVALID_COOLDOWN_LENGTH
+                    }
+
+                    /**
+                     * One minute to one day
+                     */
+                    is Action.DISTURB if values.action.pauseLength !in 1.0..24 * 60.0 -> return FormError.INVALID_PAUSE_LENGTH
+
+                    /**
+                     * One minute to one day
+                     */
+                    is Action.DISMISS_STALE if values.action.retentionLength !in 1.0..24 * 60.0 -> return FormError.INVALID_RETENTION_LENGTH
+
+                    else -> {}
                 }
             }
 
             FormPage.SCHEDULE -> {
                 if (!values.schedule.isRangeValid()) return FormError.INVALID_TIME_RANGE
                 if (values.schedule.days.isEmpty()) return FormError.BLANK_FIELDS
-                if (values.cooldown != null && values.cooldown !in 1..<86_400_000L) return FormError.INVALID_COOLDOWN
+                if (values.cooldown != null && values.cooldown !in 1..<86_400_000L) return FormError.INVALID_FILTER_COOLDOWN_LENGTH
             }
         }
         return null
@@ -205,9 +241,14 @@ enum class FormError {
     INVALID_NOTIFICATION_REGEX,
     INVALID_EXPRESSION,
     INVALID_BUTTON_REGEX,
+    INVALID_BATCH_LENGTH,
+    INVALID_DELAY_LENGTH,
     CANT_DEBOUNCE_ANY,
+    INVALID_COOLDOWN_LENGTH,
+    INVALID_PAUSE_LENGTH,
+    INVALID_RETENTION_LENGTH,
     INVALID_TIME_RANGE,
-    INVALID_COOLDOWN,
+    INVALID_FILTER_COOLDOWN_LENGTH,
 }
 
 enum class FormWarning(val description: Int) {
