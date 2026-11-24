@@ -84,7 +84,7 @@ class AppContainer(private val context: Context) {
                     Filter(
                         App("F-Droid", "org.fdroid"),
                         "Update available",
-                        Action.ALERT,
+                        Action.ALERT(2.0),
                         RegexTarget.AND,
                         "NotiFilter|Alarmetrics|FileFlow",
                         historyEnabled = false,

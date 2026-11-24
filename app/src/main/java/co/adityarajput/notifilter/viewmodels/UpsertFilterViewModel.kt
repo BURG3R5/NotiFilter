@@ -155,6 +155,11 @@ class UpsertFilterViewModel(
                     }
 
                     /**
+                     * One second to one minute
+                     */
+                    is Action.ALERT if values.action.alertLifespan !in 1.0..60.0 -> return FormError.INVALID_ALERT_LIFESPAN
+
+                    /**
                      * One minute to one day
                      */
                     is Action.DISTURB if values.action.pauseLength !in 1.0..24 * 60.0 -> return FormError.INVALID_PAUSE_LENGTH
@@ -245,6 +250,7 @@ enum class FormError {
     INVALID_DELAY_LENGTH,
     CANT_DEBOUNCE_ANY,
     INVALID_COOLDOWN_LENGTH,
+    INVALID_ALERT_LIFESPAN,
     INVALID_PAUSE_LENGTH,
     INVALID_RETENTION_LENGTH,
     INVALID_TIME_RANGE,

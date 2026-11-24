@@ -329,7 +329,7 @@ class NotificationListener : NotificationListenerService() {
                         .setAutoCancel(true).build(),
                 )
                 serviceScope.launch {
-                    delay(2.seconds)
+                    delay(filter.action.alertLifespan.seconds)
                     notificationManager.cancel(Constants.ALERT_NOTIFICATION_ID)
                 }
             }
