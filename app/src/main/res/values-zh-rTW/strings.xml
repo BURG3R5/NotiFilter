@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name" translatable="false">NotiFilter</string>
+    <string name="app_name_launcher" translatable="false">NotiFilter</string>
+
+    <!-- region FiltersScreen -->
+    <string name="listener_uninitialized"><![CDATA[正在等待系統初始化通知監聽服務]]></string>
+    <string name="no_filters">尚未新增篩選器。\n點擊 + 開始。</string>
+    <string name="on_weekdays">工作日</string>
+    <string name="on_weekends">週末</string>
+    <string name="on_days">在%1$s</string>
+    <string name="from_to">從 %1$s 到 %2$s</string>
+    <string name="dismiss_short">關閉通知</string>
+    <string name="tap_notification_short">點擊通知</string>
+    <string name="tap_button_short">點擊「%1$s」</string>
+    <string name="batch_short">每 %1$s 彙總一次</string>
+    <string name="delay_short">延遲通知</string>
+    <string name="delay_by_short">延遲通知 %1$s</string>
+    <string name="debounce_short">%1$s 內不重複觸發</string>
+    <string name="mute_short">靜音通知</string>
+    <string name="alert_short">播放提示音</string>
+    <string name="disturb_short">關閉勿擾模式 %1$s</string>
+    <string name="dismiss_stale_short">%1$s 後關閉通知</string>
+    <string name="replace_short">取代為 %1$s | %2$s</string>
+    <string name="read_short">朗讀「%1$s」</string>
+    <string name="any_app">所有應用程式</string>
+    <string name="history_disabled">歷史記錄已關閉</string>
+    <string name="filter_disabled">篩選器已關閉</string>
+
+    <string name="rearrange_filters">調整篩選器順序</string>
+    <string name="move_up">上移</string>
+    <string name="move_down">下移</string>
+    <string name="configure_notifications">通知設定</string>
+    <string name="execute_filter_manually">手動執行篩選器</string>
+    <string name="toggle_history">%1$s歷史記錄</string>
+    <string name="disable_history_confirmation">關閉歷史記錄並重設此篩選器的命中次數？關閉後，被篩選的通知將不再儲存。</string>
+    <string name="enable_history_confirmation">要為此篩選器開啟歷史記錄嗎？</string>
+    <string name="toggle_filter">%1$s篩選器</string>
+    <string name="toggle_filter_confirmation">確定要%1$s此篩選器嗎？</string>
+    <string name="delete_filter">刪除篩選器</string>
+    <string name="delete_confirmation">刪除後無法復原，您的篩選器及其統計資料將遺失。%1$s</string>
+    <string name="disable_suggestion">建議改為關閉。</string>
+    <string name="enable">啟用</string>
+    <string name="disable">停用</string>
+    <string name="delete">刪除</string>
+
+    <string name="missing_permissions">缺少權限</string>
+    <string name="explain_missing_permissions">您的篩選器需要下列權限才能正常運作：</string>
+    <string name="explain_accessibility_service_permission">取得無障礙服務權限</string>
+    <string name="explain_post_notifications_permission">取得通知權限</string>
+    <string name="explain_notification_policy_permission">管理勿擾模式狀態</string>
+    <string name="explain_exact_alarm_permission">允許背景執行</string>
+    <string name="hide_permanently">"不再顯示"</string>
+    <string name="done">完成</string>
+    <!-- endregion -->
+
+    <!-- region SettingsScreen -->
+    <string name="settings">設定</string>
+    <string name="settings_section_1">選用增強功能</string>
+    <string name="explain_disabling_battery_optimization">服務保活為選用項目，未開啟時可能會暫停背景工作</string>
+    <string name="run_in_foreground">狀態列常駐</string>
+    <string name="explain_running_in_foreground">背景常駐執行（顯示狀態列通知）</string>
+    <string name="settings_section_2">應用程式外觀</string>
+    <string name="app_theme">應用程式主題</string>
+    <string name="light">淺色</string>
+    <string name="system">跟隨系統</string>
+    <string name="dark">深色</string>
+    <string name="settings_section_3">資料傳輸</string>
+    <string name="import_filters">匯入設定</string>
+    <string name="import_warning">將覆蓋目前的設定</string>
+    <string name="import_success">設定匯入成功</string>
+    <string name="import_failure">無法匯入設定</string>
+    <string name="export_filters">匯出設定</string>
+    <string name="export_explanation">產生 JSON 設定檔</string>
+    <string name="export_success">設定匯出成功</string>
+    <string name="copy_logs">複製日誌</string>
+    <string name="view_licenses">檢視開源授權</string>
+    <string name="copy_success">日誌已複製到剪貼簿</string>
+    <string name="about_app">關於 NotiFilter</string>
+    <!-- endregion -->
+
+    <!-- region UpsertFilterScreen -->
+    <string name="add_filter">新增篩選器</string>
+    <string name="edit_filter">編輯篩選器</string>
+    <string name="no_active_notifications">正在等待作用中的通知…</string>
+    <string name="zapper_page_title">選擇要比對的通知</string>
+    <string name="package_page_title">選擇要比對的應用程式</string>
+    <string name="advanced_options">進階選項</string>
+    <string name="target_all_apps">比對所有應用程式？</string>
+    <string name="all_apps_warning">通常沒有必要比對所有應用程式，否則可能引發意外的問題</string>
+    <string name="show_system_packages">顯示系統應用程式？</string>
+    <string name="system_packages_warning">來自系統應用程式的通知可能包含重要資訊</string>
+    <string name="package_name">套件名稱</string>
+    <string name="package_name_placeholder">搜尋已安裝的應用程式</string>
+    <string name="pattern_page_title">設定比對方式</string>
+    <string name="search_text">比對該通知的</string>
+    <string name="title">標題</string>
+    <string name="content">內容</string>
+    <string name="title_or_content">標題或內容</string>
+    <string name="title_and_content">標題和內容</string>
+    <string name="use_expression">使用運算式</string>
+    <string name="notification_pattern">通知比對規則</string>
+    <string name="title_pattern">標題比對規則</string>
+    <string name="content_pattern">內容比對規則</string>
+    <string name="expression">運算式</string>
+    <string name="pattern_placeholder">輸入正規表達式</string>
+    <string name="expression_placeholder">輸入有效的運算式</string>
+    <string name="pattern_supporting">"輸入可與「%1$s」比對的規則。 "</string>
+    <string name="or">或</string>
+    <string name="generate">產生比對規則</string>
+    <string name="pattern_advice"><![CDATA[提示：篩選器的作用在於保留關鍵字、排除無關內容。點擊 <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Examples\">此處↗</a> 檢視範例。]]></string>
+    <string name="expression_advice"><![CDATA[點擊 <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Expressions\">此處↗</a> 瞭解運算式。]]></string>
+    <string name="invalid_regex">正規表達式有誤</string>
+    <string name="invalid_expression">運算式有誤</string>
+    <string name="pattern_doesnt_match_title">正規表達式與所選篩選方式不符</string>
+    <string name="pattern_doesnt_match_content">正規表達式與所選篩選方式不符</string>
+    <string name="expression_doesnt_match_notification">運算式與所選通知的資料不符</string>
+    <string name="action_page_title">選擇要執行的操作</string>
+    <string name="dismiss_long">關閉通知</string>
+    <string name="tap_notification_long">點擊通知</string>
+    <string name="accessibility_service_description">NotiFilter 需要無障礙服務才能點擊通知。</string>
+    <string name="enable_service">啟用服務</string>
+    <string name="tap_button_long">點擊按鈕</string>
+    <string name="button_pattern">按鈕比對規則</string>
+    <string name="batch_long">批次處理通知</string>
+    <string name="batch_length">每隔多久彙總一批</string>
+    <string name="invalid_batch_length">時長必須在 30 分鐘到 12 小時之間</string>
+    <string name="delay_long">延遲通知</string>
+    <string name="delay_while_active">篩選器生效期間</string>
+    <string name="delay_for">指定時長</string>
+    <string name="delay_length">延遲通知時長</string>
+    <string name="value_must_be_between_one_min_and_one_day">時長必須在 1 分鐘到 1 天之間</string>
+    <string name="debounce_long">通知防抖</string>
+    <string name="cooldown_length">冷卻時長</string>
+    <string name="explain_debounce">短時間內連續傳送的通知將被靜音。</string>
+    <string name="cant_debounce_any">比對所有應用程式時無法使用防抖操作</string>
+    <string name="mute_long">靜音通知</string>
+    <string name="alert_long">播放提示音</string>
+    <string name="alert_lifespan">多久後關閉提示通知</string>
+    <string name="invalid_alert_lifespan">時長必須在 1 秒到 1 分鐘之間</string>
+    <string name="alert_notifications_description">NotiFilter 會傳送短暫的通知來播放提示音。</string>
+    <string name="disturb_long">關閉勿擾模式</string>
+    <string name="pause_length">多久後重新開啟勿擾模式</string>
+    <string name="notification_policy_permission_description">NotiFilter 需要通知策略權限才能變更勿擾模式狀態。</string>
+    <string name="dismiss_stale_long">移除過期通知</string>
+    <string name="retention_length">多久後關閉</string>
+    <string name="exact_alarm_permission_description">NotiFilter 需要取得電池最佳化豁免才能執行延遲關閉。</string>
+    <string name="replace_long">取代為自訂通知</string>
+    <string name="title_template">標題範本</string>
+    <string name="content_template">內容範本</string>
+    <string name="notification_template_advice"><![CDATA[可使用 ${app}、${title} 與 ${content} 作為預留位置來讀取原通知的資料。點擊 <a href=\"https://github.com/BURG3R5/NotiFilter/wiki/Notification-Data\">此處↗</a> 檢視更多範本。]]></string>
+    <string name="replace_notifications_description">NotiFilter 會關閉原通知，並依照您填寫的內容傳送一則新通知。</string>
+    <string name="read_long">朗讀內容</string>
+    <string name="speech_template">語音範本</string>
+    <string name="test_tts">測試語音合成</string>
+    <string name="test_tts_sentence">四是四，十是十，十四是十四，四十是四十。</string>
+    <string name="tts_not_available">目前的語言不支援語音合成。</string>
+    <string name="tts_not_initialized">語音合成尚未初始化，請稍後重試。</string>
+    <string name="display_options">選擇通知的顯示位置</string>
+    <string name="describe_history_screen">應用程式內歷史記錄頁面</string>
+    <string name="describe_widget">桌面日誌小工具</string>
+    <string name="prompt_log_widget">將小工具新增至桌面</string>
+    <string name="make_tappable">讓通知可點擊</string>
+    <string name="schedule_page_title">設定生效時段</string>
+    <string name="run_from">"生效時間從 "</string>
+    <string name="to">" 到 "</string>
+    <string name="on">，適用日期</string>
+    <string name="delay_action_reminder">此期間收到的通知將被延遲，直到篩選器失效。</string>
+    <string name="empty_active_days">未選擇任何日期</string>
+    <string name="invalid_time_range">時間範圍無效</string>
+    <string name="filter_cooldown">觸發後進入冷卻期（期間不再重複執行）</string>
+    <string name="filter_cooldown_length">冷卻時長</string>
+    <string name="arrow_drop_down">向下的箭頭</string>
+    <string name="invalid_filter_cooldown_length">冷卻時間必須在 1 秒到 1 天之間</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="skip">略過</string>
+    <string name="next">下一步</string>
+    <string name="add">新增</string>
+    <string name="save">儲存</string>
+    <!-- endregion -->
+
+    <!-- region NotificationsScreen -->
+    <string name="history">歷史記錄</string>
+    <string name="no_notifications">尚無攔截的通知</string>
+    <string name="clear_history">清空歷史記錄</string>
+    <string name="clear_history_confirmation">確定清除全部通知篩選記錄嗎？</string>
+    <!-- endregion -->
+
+    <!-- region OnboardingScreen -->
+    <string name="onboarding_info_1">"NotiFilter 會執行一個低資源占用的背景服務，監聽裝置上的所有通知，並依照您設定的篩選器靜默處理。\n\n所有資料都留在您的裝置中，NotiFilter 不會將資料上傳到網路。"</string>
+    <string name="grant_permission">授予通知使用權限</string>
+    <string name="onboarding_info_2">某些型號的裝置上，「電池最佳化」會導致通知關閉延遲，因此您仍可能被首次通知打擾。\n\n部分廠商的優化較為激進，您可能需要稍後在應用程式設定中開啟「工作列常駐」。</string>
+    <string name="disable_optimization">關閉電池最佳化</string>
+    <!-- endregion -->
+
+    <!-- region AboutScreen -->
+    <string name="about">關於</string>
+    <string name="app_description">" 會監聽您裝置上的所有通知，並依照您設定的篩選器靜默處理符合的通知。"</string>
+    <string name="app_links"><![CDATA[此專案遵循 <a href=\"https://github.com/BURG3R5/NotiFilter/blob/master/LICENSE\">GPLv3</a> 授權<br/>原始碼託管於 <a href=\"https://github.com/BURG3R5/NotiFilter\">GitHub</a><br/>您可以造訪 <a href=\"https://github.com/BURG3R5/NotiFilter/wiki\">專案 Wiki</a> 了解更多]]></string>
+    <string name="app_permissions"><![CDATA[權限<small><ul><li>BIND_NOTIFICATION_LISTENER_SERVICE：監聽並回應通知</li><li>QUERY_ALL_PACKAGES：新增篩選器時搜尋已安裝的應用程式</li><li>BIND_ACCESSIBILITY_SERVICE：執行 TAP_NOTIFICATION 操作（如需）</li><li>POST_NOTIFICATIONS：執行 ALERT/REPLACE 操作（如需）</li><li>ACCESS_NOTIFICATION_POLICY：執行 DISTURB 操作（如需）</li><li>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS：執行 DISMISS_STALE 操作（如需）</li><li>FOREGROUND_SERVICE_SPECIAL_USE：可選擇將核心服務提升為前景，避免系統過度優化</li></ul>其他權限可能由第三方函式庫用於管理工作，例如更新小工具。</small>]]></string>
+    <string name="dev_credit"><![CDATA[由 <a href=\"https://github.com/BURG3R5/\">BURG3R5</a> 開發]]></string>
+    <!-- endregion -->
+
+    <!-- region LicensesScreen -->
+    <string name="licenses">授權條款</string>
+    <!-- endregion -->
+
+    <!-- region Widget -->
+    <string name="log_widget_title">NotiFilter 日誌</string>
+    <string name="log_widget_description">檢視已記錄的通知</string>
+    <string name="no_notifications_logged">尚無記錄的通知</string>
+    <string name="panel_widget_title">NotiFilter 開關</string>
+    <string name="panel_widget_description">切換篩選器開關</string>
+    <string name="no_filters_short">尚未新增篩選器</string>
+    <!-- endregion -->
+
+    <!-- region alttext -->
+    <string name="alttext_app_logo">應用程式圖示</string>
+    <string name="alttext_back_button">返回按鈕</string>
+    <string name="alttext_add">新增</string>
+    <string name="alttext_subtract">減少</string>
+    <string name="alttext_logs">日誌</string>
+    <string name="alttext_info">資訊</string>
+    <!-- endregion -->
+
+    <!-- region system -->
+    <string name="foreground_notification_content">NotiFilter 正在執行</string>
+    <!-- endregion -->
+</resources>
