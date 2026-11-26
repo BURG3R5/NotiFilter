@@ -65,6 +65,14 @@
     <string name="light">Light</string>
     <string name="system">System</string>
     <string name="dark">Dark</string>
+
+    <string name="settings_language">Language</string>
+    <string name="language_follow_system">Follow system</string>
+    <string name="language_english">English</string>
+    <string name="language_simplified_chinese">Simplified Chinese</string>
+    <string name="language_traditional_chinese_tw">Traditional Chinese (Taiwan)</string>
+    <string name="language_traditional_chinese_hk">Traditional Chinese (Hong Kong)</string>
+
     <string name="settings_section_3">Data Transfer</string>
     <string name="import_filters">Import filters</string>
     <string name="import_warning">Overrides your current filters</string>

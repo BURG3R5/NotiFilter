@@ -65,6 +65,14 @@
     <string name="light">淺色</string>
     <string name="system">跟隨系統</string>
     <string name="dark">深色</string>
+
+    <string name="settings_language">語言設定</string>
+    <string name="language_follow_system">跟隨系統</string>
+    <string name="language_english">英文</string>
+    <string name="language_simplified_chinese">簡體中文</string>
+    <string name="language_traditional_chinese_tw">繁體中文（台灣）</string>
+    <string name="language_traditional_chinese_hk">繁體中文（香港）</string>
+
     <string name="settings_section_3">數據傳輸</string>
     <string name="import_filters">匯入設定</string>
     <string name="import_warning">將覆蓋目前的設定</string>
