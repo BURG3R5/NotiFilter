@@ -47,6 +47,9 @@ sealed class Action {
     ) : Action()
 
     @Serializable
+    data object HIDE : Action()
+
+    @Serializable
     data object MUTE : Action()
 
     @Serializable
@@ -88,6 +91,7 @@ sealed class Action {
 
         return when (this) {
             is DISMISS -> getString(R.string.dismiss_short)
+            is HIDE -> getString(R.string.hide_short)
             is TAP_NOTIFICATION -> getString(R.string.tap_notification_short)
             is TAP_BUTTON -> getString(R.string.tap_button_short, buttonRegex)
             is MUTE -> getString(R.string.mute_short)
@@ -138,6 +142,7 @@ sealed class Action {
     fun description() = stringResource(
         when (this) {
             is DISMISS -> R.string.dismiss_long
+            is HIDE -> R.string.hide_long
             is TAP_NOTIFICATION -> R.string.tap_notification_long
             is TAP_BUTTON -> R.string.tap_button_long
             is BATCH -> R.string.batch_long
@@ -157,7 +162,7 @@ sealed class Action {
     companion object {
         val entries by lazy {
             listOf(
-                DISMISS, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3.0),
+                DISMISS, HIDE, TAP_NOTIFICATION, TAP_BUTTON(""), BATCH(3.0),
                 DELAY(), DEBOUNCE(2.0), MUTE, ALERT(2.0),
                 DISTURB(5.0), DISMISS_STALE(15.0),
                 REPLACE($$"${app} - ${title}", $$"${content}"), READ($$"${title}: ${content}"),
@@ -166,6 +171,8 @@ sealed class Action {
 
         fun fromString(value: String): Action = when (value) {
             "DISMISS" -> DISMISS
+
+            "HIDE" -> HIDE
 
             "TAP_NOTIFICATION" -> TAP_NOTIFICATION
 

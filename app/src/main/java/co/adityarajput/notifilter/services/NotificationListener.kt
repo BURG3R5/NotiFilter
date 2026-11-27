@@ -231,6 +231,11 @@ class NotificationListener : NotificationListenerService() {
         when (filter.action) {
             is Action.DISMISS -> dismissNotification(sbn.key, sbn.isClearable)
 
+            is Action.HIDE -> {
+                Logger.d("NotificationListener", "Hiding $sbn")
+                cancelNotification(sbn.key)
+            }
+
             is Action.TAP_NOTIFICATION ->
                 try {
                     intents.launchMain()
