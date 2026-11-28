@@ -54,7 +54,7 @@ sealed class Action {
         /**
          * In seconds
          */
-        val alertLifespan: Double,
+        val alertLifespan: Double = 2.0,
     ) : Action()
 
     @Serializable
@@ -86,46 +86,78 @@ sealed class Action {
             if (isGlance) context!!.getString(id, *formatArgs)
             else stringResource(id, *formatArgs)
 
+        @Composable
+        fun getStringWithParameterAndUnits(
+            @StringRes message: Int,
+            value: Number,
+            @StringRes unit: Int,
+        ) = getString(
+            message,
+            MessageFormat(getString(unit), Locale.getDefault()).format(arrayOf(value)),
+        )
+
         return when (this) {
             is DISMISS -> getString(R.string.dismiss_short)
             is TAP_NOTIFICATION -> getString(R.string.tap_notification_short)
             is TAP_BUTTON -> getString(R.string.tap_button_short, buttonRegex)
             is MUTE -> getString(R.string.mute_short)
-            is ALERT -> getString(R.string.alert_short)
 
-            is DELAY -> if (delayLength == null) getString(R.string.delay_short) else getString(
-                R.string.delay_by_short,
-                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
-                    arrayOf(delayLength),
-                ),
-            )
+            is DELAY -> if (delayLength == null) getString(R.string.delay_short) else {
+                if (delayLength >= 1.0) getStringWithParameterAndUnits(
+                    R.string.delay_by_short,
+                    delayLength,
+                    R.string.minute,
+                ) else getStringWithParameterAndUnits(
+                    R.string.delay_by_short,
+                    (delayLength * 60).toInt(),
+                    R.string.second,
+                )
+            }
 
-            is BATCH -> getString(
+            is BATCH -> if (batchLength >= 1.0) getStringWithParameterAndUnits(
                 R.string.batch_short,
-                MessageFormat(getString(R.string.hour), Locale.getDefault()).format(
-                    arrayOf(batchLength),
-                ),
+                batchLength,
+                R.string.hour,
+            ) else getStringWithParameterAndUnits(
+                R.string.batch_short,
+                batchLength * 60,
+                R.string.minute,
             )
 
-            is DEBOUNCE -> getString(
+            is DEBOUNCE -> if (cooldownLength >= 1.0) getStringWithParameterAndUnits(
                 R.string.debounce_short,
-                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
-                    arrayOf(cooldownLength),
-                ),
+                cooldownLength,
+                R.string.minute,
+            ) else getStringWithParameterAndUnits(
+                R.string.debounce_short,
+                (cooldownLength * 60).toInt(),
+                R.string.second,
             )
 
-            is DISTURB -> getString(
+            is ALERT -> getStringWithParameterAndUnits(
+                R.string.alert_short,
+                alertLifespan.toInt(),
+                R.string.second,
+            )
+
+            is DISTURB -> if (pauseLength >= 1.0) getStringWithParameterAndUnits(
                 R.string.disturb_short,
-                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
-                    arrayOf(pauseLength),
-                ),
+                pauseLength,
+                R.string.minute,
+            ) else getStringWithParameterAndUnits(
+                R.string.disturb_short,
+                (pauseLength * 60).toInt(),
+                R.string.second,
             )
 
-            is DISMISS_STALE -> getString(
+            is DISMISS_STALE -> if (retentionLength >= 1.0) getStringWithParameterAndUnits(
                 R.string.dismiss_stale_short,
-                MessageFormat(getString(R.string.minute), Locale.getDefault()).format(
-                    arrayOf(retentionLength),
-                ),
+                retentionLength,
+                R.string.minute,
+            ) else getStringWithParameterAndUnits(
+                R.string.dismiss_stale_short,
+                (retentionLength * 60).toInt(),
+                R.string.second,
             )
 
             is REPLACE -> getString(R.string.replace_short, titleTemplate, contentTemplate)

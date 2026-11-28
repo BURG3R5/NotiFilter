@@ -18,7 +18,7 @@
     <string name="delay_by_short">delay notifications by %1$s</string>
     <string name="debounce_short">debounce for %1$s</string>
     <string name="mute_short">mute notification</string>
-    <string name="alert_short">play an alert</string>
+    <string name="alert_short">play an alert for %1$s</string>
     <string name="disturb_short">disable DND for %1$s</string>
     <string name="dismiss_stale_short">dismiss after %1$s</string>
     <string name="replace_short">replace with %1$s | %2$s</string>

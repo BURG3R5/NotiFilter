@@ -28,4 +28,9 @@
     one {# minute}
     other {# minutes}}
     </string>
+    <string name="second">{0, plural,
+    =0 {0 seconds}
+    one {# second}
+    other {# seconds}}
+    </string>
 </resources>
