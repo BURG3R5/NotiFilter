@@ -421,16 +421,30 @@ class NotificationListener : NotificationListenerService() {
         }
 
     fun dismissNotification(key: String, isClearable: Boolean) {
-        if (isClearable) {
-            try {
-                Logger.d("NotificationListener", "Canceling")
-                cancelNotification(key)
-            } catch (e: Throwable) {
-                Logger.e("NotificationListener", "Failed to dismiss notification", e)
+        try {
+            Logger.d("NotificationListener", "Canceling notification $key with isClearable=$isClearable")
+            cancelNotification(key)
+            return
+        } catch (e: Exception) {
+            Logger.e("NotificationListener", "Failed to dismiss notification $key", e)
+            snoozeSafely(key)
+        }
+
+        serviceScope.launch {
+            delay(500.milliseconds)
+            if (isServiceInitialized && super.activeNotifications.any { it.key == key }) {
+                Logger.d("NotificationListener", "Notification $key still active, falling back to snooze")
+                snoozeSafely(key)
             }
-        } else {
-            Logger.d("NotificationListener", "Snoozing")
+        }
+    }
+
+    private fun snoozeSafely(key: String) {
+        Logger.d("NotificationListener", "Snoozing $key")
+        try {
             snoozeNotification(key, 5 * 60 * 60 * 1000L)
+        } catch (e: Exception) {
+            Logger.e("NotificationListener", "Failed to snooze notification $key", e)
         }
     }
 
