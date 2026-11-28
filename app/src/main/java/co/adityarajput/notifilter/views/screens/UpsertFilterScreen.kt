@@ -797,7 +797,7 @@ private fun ColumnScope.ActionPage(viewModel: UpsertFilterViewModel) {
                     },
                     stringResource(R.string.retention_length),
                     viewModel.state.error == FormError.INVALID_RETENTION_LENGTH,
-                    R.string.value_must_be_between_one_min_and_one_day,
+                    R.string.invalid_retention_length,
                 )
                 if (!hasPermissions.getValue(Permission.SCHEDULE_EXACT_ALARM)) {
                     ErrorText(R.string.exact_alarm_permission_description)

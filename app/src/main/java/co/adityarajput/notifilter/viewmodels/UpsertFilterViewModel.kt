@@ -165,9 +165,13 @@ class UpsertFilterViewModel(
                     is Action.DISTURB if values.action.pauseLength !in 1.0..24 * 60.0 -> return FormError.INVALID_PAUSE_LENGTH
 
                     /**
-                     * One minute to one day
+                     * One second to one day
+                     *
+                     * ...well *technically* the minimum is ¹/₁₀₀ minutes instead of 1 second.
+                     * But this is safer decimal-representation-wise, and prevents the edge-case of comparing ¹/₆₀ to ¹/₆₀.
+                     * `DISMISS_STALE`'s `DurationInput` doesn't let users input sub-second value anyway, so it's alright.
                      */
-                    is Action.DISMISS_STALE if values.action.retentionLength !in 1.0..24 * 60.0 -> return FormError.INVALID_RETENTION_LENGTH
+                    is Action.DISMISS_STALE if values.action.retentionLength !in 0.01..24 * 60.0 -> return FormError.INVALID_RETENTION_LENGTH
 
                     else -> {}
                 }

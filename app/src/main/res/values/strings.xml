@@ -144,6 +144,7 @@
     <string name="notification_policy_permission_description">NotiFilter requires access to the Notification Policy to change DND status.</string>
     <string name="dismiss_stale_long">Remove stale notifications</string>
     <string name="retention_length">Dismiss after</string>
+    <string name="invalid_retention_length">Value must be between 1 second and 1 day</string>
     <string name="exact_alarm_permission_description">NotiFilter requires exemption from battery optimization to execute delayed dismissal.</string>
     <string name="replace_long">Replace with custom notification</string>
     <string name="title_template">Title template</string>
