@@ -229,7 +229,7 @@ class NotificationListener : NotificationListenerService() {
         intents: Intents = Intents(sbn),
     ): Boolean {
         when (filter.action) {
-            is Action.DISMISS -> dismissNotification(sbn.key, sbn.isClearable)
+            is Action.DISMISS -> dismissNotification(sbn.key)
 
             is Action.TAP_NOTIFICATION ->
                 try {
@@ -420,17 +420,25 @@ class NotificationListener : NotificationListenerService() {
             executeFilterOnNotification(filter, sbn)
         }
 
-    fun dismissNotification(key: String, isClearable: Boolean) {
-        if (isClearable) {
-            try {
-                Logger.d("NotificationListener", "Canceling")
-                cancelNotification(key)
-            } catch (e: Throwable) {
-                Logger.e("NotificationListener", "Failed to dismiss notification", e)
+    fun dismissNotification(key: String) {
+        try {
+            Logger.d("NotificationListener", "Canceling notification $key")
+            cancelNotification(key)
+        } catch (e: Exception) {
+            Logger.e("NotificationListener", "Failed to cancel notification $key", e)
+        } finally {
+            serviceScope.launch {
+                delay(100.milliseconds)
+                if (isServiceInitialized && super.activeNotifications.any { it.key == key }) {
+                    Logger.d("NotificationListener", "Notification $key is still active")
+                    Logger.d("NotificationListener", "Snoozing notification $key")
+                    try {
+                        snoozeNotification(key, 5 * 60 * 60 * 1000L)
+                    } catch (e: Exception) {
+                        Logger.e("NotificationListener", "Failed to snooze notification $key", e)
+                    }
+                }
             }
-        } else {
-            Logger.d("NotificationListener", "Snoozing")
-            snoozeNotification(key, 5 * 60 * 60 * 1000L)
         }
     }
 
