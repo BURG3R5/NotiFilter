@@ -11,9 +11,6 @@ class AlarmReceiver : BroadcastReceiver() {
         Logger.d("AlarmReceiver", "Received intent with action: ${intent.action}")
 
         if (intent.action == Constants.ACTION_DISMISS_STALE) {
-            val key = intent.getStringExtra(Constants.EXTRA_SBN_KEY) ?: return
-            val isClearable = intent.getBooleanExtra(Constants.EXTRA_SBN_IS_CLEARABLE, false)
-
             if (!NotificationListener.isServiceInitialized) {
                 Logger.i(
                     "AlarmReceiver",
@@ -22,7 +19,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 return
             }
 
-            NotificationListener.instance.dismissNotification(key, isClearable)
+            NotificationListener.instance.dismissNotification(
+                intent.getStringExtra(Constants.EXTRA_SBN_KEY) ?: return,
+            )
         }
     }
 }

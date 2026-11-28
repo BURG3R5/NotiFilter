@@ -229,7 +229,7 @@ class NotificationListener : NotificationListenerService() {
         intents: Intents = Intents(sbn),
     ): Boolean {
         when (filter.action) {
-            is Action.DISMISS -> dismissNotification(sbn.key, sbn.isClearable)
+            is Action.DISMISS -> dismissNotification(sbn.key)
 
             is Action.TAP_NOTIFICATION ->
                 try {
@@ -420,31 +420,25 @@ class NotificationListener : NotificationListenerService() {
             executeFilterOnNotification(filter, sbn)
         }
 
-    fun dismissNotification(key: String, isClearable: Boolean) {
+    fun dismissNotification(key: String) {
         try {
-            Logger.d("NotificationListener", "Canceling notification $key with isClearable=$isClearable")
+            Logger.d("NotificationListener", "Canceling notification $key")
             cancelNotification(key)
-            return
         } catch (e: Exception) {
-            Logger.e("NotificationListener", "Failed to dismiss notification $key", e)
-            snoozeSafely(key)
-        }
-
-        serviceScope.launch {
-            delay(500.milliseconds)
-            if (isServiceInitialized && super.activeNotifications.any { it.key == key }) {
-                Logger.d("NotificationListener", "Notification $key still active, falling back to snooze")
-                snoozeSafely(key)
+            Logger.e("NotificationListener", "Failed to cancel notification $key", e)
+        } finally {
+            serviceScope.launch {
+                delay(100.milliseconds)
+                if (isServiceInitialized && super.activeNotifications.any { it.key == key }) {
+                    Logger.d("NotificationListener", "Notification $key is still active")
+                    Logger.d("NotificationListener", "Snoozing notification $key")
+                    try {
+                        snoozeNotification(key, 5 * 60 * 60 * 1000L)
+                    } catch (e: Exception) {
+                        Logger.e("NotificationListener", "Failed to snooze notification $key", e)
+                    }
+                }
             }
-        }
-    }
-
-    private fun snoozeSafely(key: String) {
-        Logger.d("NotificationListener", "Snoozing $key")
-        try {
-            snoozeNotification(key, 5 * 60 * 60 * 1000L)
-        } catch (e: Exception) {
-            Logger.e("NotificationListener", "Failed to snooze notification $key", e)
         }
     }
 
