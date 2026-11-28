@@ -36,4 +36,10 @@ object Preferences {
     var brightness
         get() = settings.getInt(BRIGHTNESS, 1)
         set(value) = settings.edit { putInt(BRIGHTNESS, value) }
+
+    private const val LANGUAGE = "language"
+    /** 空字符串表示跟随系统；其余为 BCP-47 语言标签，例如 "zh-CN" */
+    var language
+        get() = settings.getString(LANGUAGE, "") ?: ""
+        set(value) = settings.edit { putString(LANGUAGE, value) }
 }

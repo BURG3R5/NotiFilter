@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="hour">
+        <item quantity="one">%1$d 小時</item>
+        <item quantity="other">%1$d 小時</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">%1$d 分鐘</item>
+        <item quantity="other">%1$d 分鐘</item>
+    </plurals>
+    <plurals name="second">
+        <item quantity="one">%1$d 秒</item>
+        <item quantity="other">%1$d 秒</item>
+    </plurals>
+    <plurals name="hit">
+        <item quantity="one">%1$d 次命中</item>
+        <item quantity="other">%1$d 次命中</item>
+    </plurals>
+
+    <!-- 這些雖然名為 string，實際是 ICU 複數運算式，結構需與複數保持一致 -->
+    <string name="hour">{0, plural,
+    =0 {0 小時}
+    one {# 小時}
+    other {# 小時}}
+    </string>
+    <string name="minute">{0, plural,
+    =0 {0 分鐘}
+    one {# 分鐘}
+    other {# 分鐘}}
+    </string>
+</resources>

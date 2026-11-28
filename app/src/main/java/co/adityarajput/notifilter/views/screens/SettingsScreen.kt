@@ -1,6 +1,9 @@
 package co.adityarajput.notifilter.views.screens
 
+import android.app.Activity
 import android.content.ClipData
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -39,6 +42,12 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 @Composable
 fun SettingsScreen(
     goToLicensesScreen: () -> Unit = {},
@@ -58,6 +67,16 @@ fun SettingsScreen(
     var isRunningInForeground by remember {
         mutableStateOf(Preferences.runInForeground)
     }
+    var currentLanguage by remember { mutableStateOf(Preferences.language) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    val languages = listOf(
+        "" to R.string.language_follow_system,
+        "en" to R.string.language_english,
+        "zh-CN" to R.string.language_simplified_chinese,
+        "zh-TW" to R.string.language_traditional_chinese_tw,
+        "zh-HK" to R.string.language_traditional_chinese_hk,
+    )
 
     val watcher = object : Runnable {
         override fun run() {
@@ -200,6 +219,39 @@ fun SettingsScreen(
                                 )
                             }
                         }
+                    }
+                }
+                Card(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.padding_small)),
+                ) {
+                    Text(
+                        stringResource(R.string.settings_language),
+                        Modifier.padding(
+                            dimensionResource(R.dimen.padding_large),
+                            dimensionResource(R.dimen.padding_medium),
+                        ),
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { showLanguageDialog = true }
+                            .padding(
+                                start = dimensionResource(R.dimen.padding_large),
+                                end = dimensionResource(R.dimen.padding_large),
+                                bottom = dimensionResource(R.dimen.padding_medium),
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            stringResource(
+                                languages.firstOrNull { it.first == currentLanguage }?.second
+                                    ?: R.string.language_follow_system,
+                            ),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
                     }
                 }
                 Card(
@@ -378,5 +430,40 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(stringResource(R.string.settings_language)) },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimensionResource(R.dimen.padding_medium),
+                    ),
+                ) {
+                    languages.forEach { (tag, labelRes) ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    Preferences.language = tag
+                                    currentLanguage = tag
+                                    showLanguageDialog = false
+                                    context.findActivity()?.recreate()
+                                },
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(tag == currentLanguage, null)
+                            Text(stringResource(labelRes))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton({ showLanguageDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 }

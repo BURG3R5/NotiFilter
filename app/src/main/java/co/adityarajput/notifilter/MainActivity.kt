@@ -18,7 +18,10 @@
 
 package co.adityarajput.notifilter
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
+import android.os.LocaleList
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +33,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import co.adityarajput.notifilter.data.Cache
+import co.adityarajput.notifilter.services.Preferences
 import co.adityarajput.notifilter.viewmodels.AppearanceViewModel
 import co.adityarajput.notifilter.viewmodels.Provider
 import co.adityarajput.notifilter.views.Navigator
@@ -39,6 +43,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        val tag = Preferences.language
+        if (tag.isEmpty()) {
+            super.attachBaseContext(newBase)
+        } else {
+            val config = Configuration(newBase.resources.configuration)
+            config.setLocales(LocaleList.forLanguageTags(tag))
+            super.attachBaseContext(newBase.createConfigurationContext(config))
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
