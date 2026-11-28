@@ -97,7 +97,6 @@ dependencies {
     testImplementation(kotlin("test"))
 
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.glance.preview)
